@@ -26,7 +26,7 @@ const formSchema = new Schema({
   clteAdults: {type: Number, required:true},
   clteFledges: {type: Number, required:true},
   clteChicks: {type: Number, required:true},
-  adults:{type: [adult]},
+  adults:{type: [adultSchema]},
   humanSitting: {type: Number, required:true},
   humanMoving: {type: Number, required:true},
   sports: {type: Number, required:true},
