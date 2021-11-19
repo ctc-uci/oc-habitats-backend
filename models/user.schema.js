@@ -9,7 +9,8 @@ const UserSchema = new mongoose.Schema({
   isAdmin: Boolean,
   isSuperAdmin: Boolean,
   isActive: Boolean,
-  segments: [{
+  segments: [
+    {
     type: Schema.Types.ObjectId,
     ref: 'Segments'
   }],
