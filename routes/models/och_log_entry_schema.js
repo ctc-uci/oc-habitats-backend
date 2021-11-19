@@ -12,7 +12,6 @@ const logEntry = new Schema({
   surveyStart: Date, // 8:15 am, get time   -> possible reduction but w/ consequences of time being different than date ie 2-day surveys
   surveyEnd: Date, // 11:15am ,get time
   lastEdited: {type: Date, default: Date.now},
-    
   temperature: Number,
   cloudCover: Number, // do they want int -> percentages? 0 = 0% , 1 = 33%, 2 = 66%, 3 = 100%
   precipitation: {
