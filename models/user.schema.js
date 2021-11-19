@@ -12,7 +12,7 @@ const UserSchema = new mongoose.Schema({
   segments: [
     {
       type: Schema.Types.ObjectId,
-    ref: 'Segments'
+      ref: 'Segments',
   }],
 });
 
