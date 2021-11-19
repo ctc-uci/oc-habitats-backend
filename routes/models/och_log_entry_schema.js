@@ -23,7 +23,7 @@ const logEntry = new Schema({
     wind: [{speed: Number, direction: String}],   // Speed and Direction: 6 / NW
   tides: Number, // 0.1 feet
 
-    overallHabitatType: String, // Sandy beach
+  overallHabitatType: String, // Sandy beach
   habitatWidth: String, // 300ft +
   mapIncluded: Boolean, // Yes/True
   surveyComplete: Boolean, // Yes/True
