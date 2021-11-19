@@ -20,7 +20,7 @@ const logEntry = new Schema({
     enum: ['None', 'Fog', 'Drizzle', 'Rain'],
     default: 'None',
   },
-    wind: [{speed: Number, direction: String}],   // Speed and Direction: 6 / NW
+  wind: [{speed: Number, direction: String}], // Speed and Direction: 6 / NW
   tides: Number, // 0.1 feet
 
   overallHabitatType: String, // Sandy beach
