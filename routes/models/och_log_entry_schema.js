@@ -4,7 +4,7 @@ const {Schema} = mongoose;
 
 const logEntry = new Schema({
   isMonitorLog: Boolean, // MonitorLog/CheckIn? Yes portion, but what is the BetterImpact thing?
-    monitorLogId: String, // Log No. 04-15-21.OC9a.Stacey Chartier-Grable  -- generate from date,habitat code (survey Location/Segment), surveyor name
+  monitorLogId: String, // Log No. 04-15-21.OC9a.Stacey Chartier-Grable  -- generate from date,habitat code (survey Location/Segment), surveyor name
     title:  String, // Coastal Dune Habitat Survey Log
     surveyLocation: String, // OC9a
     surveyorName: String, // Stacey Chartier-Grable
