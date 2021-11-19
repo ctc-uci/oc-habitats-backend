@@ -17,7 +17,7 @@ const logEntry = new Schema({
     cloudCover: Number, // do they want int -> percentages? 0 = 0% , 1 = 33%, 2 = 66%, 3 = 100%
     precipitation: {
         type: String,
-        enum:['None','Fog', 'Drizzle', 'Rain'],
+    enum: ['None', 'Fog', 'Drizzle', 'Rain'],
         default: 'None'
     },
     wind: [{speed: Number, direction: String}],   // Speed and Direction: 6 / NW
