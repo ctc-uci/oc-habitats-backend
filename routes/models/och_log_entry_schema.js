@@ -8,7 +8,7 @@ const logEntry = new Schema({
   title: String, // Coastal Dune Habitat Survey Log
   surveyLocation: String, // OC9a
     surveyorName: String, // Stacey Chartier-Grable
-    surveyDate: Date, // 4-15-21
+  surveyDate: Date, // 4-15-21
   surveyStart: Date, // 8:15 am, get time   -> possible reduction but w/ consequences of time being different than date ie 2-day surveys
   surveyEnd: Date, // 11:15am ,get time
   lastEdited: {type: Date, default: Date.now},
