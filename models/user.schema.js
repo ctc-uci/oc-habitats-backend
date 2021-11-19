@@ -11,7 +11,7 @@ const UserSchema = new mongoose.Schema({
   isActive: Boolean,
   segments: [
     {
-    type: Schema.Types.ObjectId,
+      type: Schema.Types.ObjectId,
     ref: 'Segments'
   }],
 });
