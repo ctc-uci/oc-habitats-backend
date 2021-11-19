@@ -18,7 +18,7 @@ const logEntry = new Schema({
   precipitation: {
         type: String,
     enum: ['None', 'Fog', 'Drizzle', 'Rain'],
-        default: 'None'
+    default: 'None',
     },
     wind: [{speed: Number, direction: String}],   // Speed and Direction: 6 / NW
   tides: Number, // 0.1 feet
