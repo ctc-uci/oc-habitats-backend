@@ -1,4 +1,4 @@
-import adultSchema from "./Adult.schema";
+import adultSchema from "./Adult";
 const mongoose = require('mongoose');
 
 const Schema = mongoose.Schema;
