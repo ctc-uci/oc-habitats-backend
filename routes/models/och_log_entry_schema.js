@@ -13,7 +13,7 @@ const logEntry = new Schema({
   surveyEnd: Date, // 11:15am ,get time
   lastEdited: {type: Date, default: Date.now},
     
-    temperature: Number,
+  temperature: Number,
   cloudCover: Number, // do they want int -> percentages? 0 = 0% , 1 = 33%, 2 = 66%, 3 = 100%
   precipitation: {
         type: String,
