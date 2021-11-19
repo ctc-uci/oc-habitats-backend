@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 
-const { Schema } = mongoose;
+const {Schema} = mongoose;
 
 const logEntry = new Schema({
     isMonitorLog: Boolean, // MonitorLog/CheckIn? Yes portion, but what is the BetterImpact thing?
