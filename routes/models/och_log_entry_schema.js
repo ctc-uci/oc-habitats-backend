@@ -14,7 +14,7 @@ const logEntry = new Schema({
   lastEdited: {type: Date, default: Date.now},
     
     temperature: Number,
-    cloudCover: Number, // do they want int -> percentages? 0 = 0% , 1 = 33%, 2 = 66%, 3 = 100%
+  cloudCover: Number, // do they want int -> percentages? 0 = 0% , 1 = 33%, 2 = 66%, 3 = 100%
     precipitation: {
         type: String,
     enum: ['None', 'Fog', 'Drizzle', 'Rain'],
