@@ -26,6 +26,6 @@ const logEntry = new Schema({
     overallHabitatType: String, // Sandy beach
   habitatWidth: String, // 300ft +
   mapIncluded: Boolean, // Yes/True
-    surveyComplete: Boolean,   // Yes/True
+  surveyComplete: Boolean, // Yes/True
     additionalFields: Array // ["Name;DataType", "Name2;DataType2"] Then for each string element in the array, add to schema 
 });
