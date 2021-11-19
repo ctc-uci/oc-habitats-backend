@@ -1,8 +1,8 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
 const segmentSchema = new mongoose.Schema({
   _id: String,
-  name: { type: String, required: true, unique: true },
+  name: {type: String, required: true, unique: true},
   description: String,
   geofence_area: {
     latitude: Number,
@@ -11,10 +11,10 @@ const segmentSchema = new mongoose.Schema({
   deadline: Date,
   volunteers: [
     {
-      id: ObjectId,
+      id: Schema.Types.ObjectId,
       name: String,
     },
   ],
 });
 
-module.exports = mongoose.model("Segment", segmentSchema);
+module.exports = mongoose.model('Segment', segmentSchema);
