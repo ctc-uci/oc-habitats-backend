@@ -11,7 +11,7 @@ const userSchema = new mongoose.Schema({
   isTrainee: Boolean,
   segments: [
     {
-      type: Schema.Types.ObjectId,
+      type: mongoose.Schema.Types.ObjectId,
       ref: 'Segments',
     },
   ],
