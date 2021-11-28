@@ -1,4 +1,5 @@
 import segmentSchema from './segment.schema';
+
 const mongoose = require('mongoose');
 
 const sectionSchema = new mongoose.Schema({

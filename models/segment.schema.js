@@ -11,7 +11,7 @@ const segmentSchema = new mongoose.Schema({
   deadline: Date,
   volunteers: [
     {
-      id: Schema.Types.ObjectId,
+      id: mongoose.Schema.Types.ObjectId,
       name: String,
     },
   ],
