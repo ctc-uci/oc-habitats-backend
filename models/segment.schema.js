@@ -4,10 +4,7 @@ const segmentSchema = new mongoose.Schema({
   _id: String,
   name: {type: String, required: true, unique: true},
   description: String,
-  geofence_area: {
-    latitude: Number,
-    longitude: Number,
-  },
+  geofence_area: String,
   deadline: Date,
   volunteers: [
     {
