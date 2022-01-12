@@ -13,6 +13,12 @@ app.use(
   }),
 );
 
+app.use(
+  express.urlencoded({ extended: true }),
+  express.json(),
+  cors({ credentials: true, origin: true }),
+);
+
 app.listen(PORT, () => {
   console.log(`Server listening on ${PORT}`);
 });
