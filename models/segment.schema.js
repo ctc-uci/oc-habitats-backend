@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const segmentSchema = new mongoose.Schema({
   _id: String,
-  name: {type: String, required: true, unique: true},
+  name: { type: String, required: true, unique: true },
   description: String,
   geofence_area: String,
   deadline: Date,

@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 
 const sectionSchema = new mongoose.Schema({
   _id: String,
-  name: {type: String, required: true, unique: true},
+  name: { type: String, required: true, unique: true },
   segments: [segmentSchema],
 });
 
