@@ -22,6 +22,17 @@ router.get('/:id', async (req, res) => {
   }
 });
 
+// get all profiles
+router.get("/", async (req, res) => {
+  try {
+    // const allProfiles = await userService.getAllProfiles();
+    // res.status(200).send(allProfiles);
+  } catch (err) {
+    // console.error(err);
+    res.status(400).json({ message: err.message });
+  }
+});
+
 // update profile picture
 // TODO:
 // Update Schema For Picture? Note: If we do this, this whole function is unnecessary
