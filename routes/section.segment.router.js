@@ -1,6 +1,24 @@
 const express = require('express');
+// const Segment = require('../models/segment.schema');
 
 const router = express.Router();
+
+// TODO: Create services in a new file
+// Example
+// testing
+/* 
+router.post('/', async (req, res) => {
+  try {
+    const test = new Segment({ _id: 'testing', name: 'testing' });
+    const mongoResponse = await test.save();
+    // const mongoResponse = await sectionSegmentService.createSection(req.body);
+    res.status(200).send(mongoResponse);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send(new Error('Operation failed'));
+  }
+});
+*/
 
 // Create section
 router.post('/section', async (req, res) => {
@@ -49,7 +67,7 @@ router.delete('/section/:id', async (req, res) => {
 // Edit segment
 router.put('/segment/:id', async (req, res) => {
   try {
-    // const mongoResponse = await sectionSegmentService.editSegment(req.body);
+    // const mongoResponse = await sectionSegmentService.updateSegment(req.body);
     // res.status(200).send(mongoResponse);
   } catch (err) {
     // console.error(err);

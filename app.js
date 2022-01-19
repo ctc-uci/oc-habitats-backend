@@ -10,7 +10,7 @@ const app = express();
 const PORT = process.env.PORT || 3001;
 
 mongoose.connect(process.env.MONGO_URI, {
-  useCreateIndex: true,
+  // useCreateIndex: true,
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });
