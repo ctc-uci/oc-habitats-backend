@@ -1,34 +1,28 @@
 const express = require('express');
+const userService = require('../services/user.service');
 
 const router = express.Router();
 
-// get user profile
 router.get('/:id', async (req, res) => {
   const { id } = req.params;
   try {
-    // TODO: Check if profile exists
-    // const profileExists = await userService.findProfile(id)
-
-    const profileExists = true;
-    if (!profileExists) {
+    const foundProfile = await userService.getProfile(id);
+    if (!foundProfile) {
       res.status(400).json({ message: `Profile ${id} doesn't exist` });
     }
-
-    // TODO: Get profile based on ID
-    // res.status(200).send(profile)
+    res.status(200).send(foundProfile);
   } catch (err) {
-    // console.error(err);
+    console.error(err);
     res.status(400).json({ error: err });
   }
 });
 
-// get all profiles
 router.get('/', async (req, res) => {
   try {
-    // const allProfiles = await userService.getAllProfiles();
-    // res.status(200).send(allProfiles);
+    const allProfiles = await userService.getAllProfiles();
+    res.status(200).send(allProfiles);
   } catch (err) {
-    // console.error(err);
+    console.error(err);
     res.status(400).json({ message: err.message });
   }
 });
@@ -47,28 +41,28 @@ router.put('/picture', async (req, res) => {
   }
 });
 
-// update profile
 router.post('/:id', async (req, res) => {
-  // const { id } = req.params;
+  const { id } = req.params;
   try {
-    // TODO: Update profile
-    // let mongoResponse = await userService.updateProfile(id, req.body)
+    await userService.updateProfile(id, req.body);
   } catch (err) {
-    // console.error(err);
+    console.error(err);
     res.status(400).json({ error: err });
   }
 });
 
-// delete profile
 router.delete('/id', async (req, res) => {
-  // const { id } = req.params;
+  const { id } = req.params;
   try {
-    // TODO: Delete profile
-    // let deleted = await userService.deleteProfile(id, req.body)
-    // res.status(200).send({ message: "Profile ${id} was succesfully deleted"});
+    const deletedProfile = await userService.deleteProfile(id);
+    if (deletedProfile.n === 0) {
+      return res.status(400).json({ message: `Profile: ${id} not deleted` });
+    }
+    res.status(200).send({ message: `Profile ${id} was succesfully deleted` });
   } catch (err) {
-    // console.error(err);
+    console.error(err);
     res.status(400).json({ error: err });
   }
 });
+
 module.exports = router;
