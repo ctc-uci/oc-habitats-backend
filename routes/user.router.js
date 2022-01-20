@@ -23,7 +23,7 @@ router.get('/:id', async (req, res) => {
 });
 
 // get all profiles
-router.get("/", async (req, res) => {
+router.get('/', async (req, res) => {
   try {
     // const allProfiles = await userService.getAllProfiles();
     // res.status(200).send(allProfiles);
