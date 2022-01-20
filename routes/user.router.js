@@ -27,30 +27,6 @@ router.get('/', async (req, res) => {
   }
 });
 
-// update profile picture
-// TODO:
-// Update Schema For Picture? Note: If we do this, this whole function is unnecessary
-// Figure out what image type is.
-router.put('/picture', async (req, res) => {
-  // const { picture } = req.params;
-  try {
-    // Do something
-  } catch (err) {
-    // console.error(err);
-    res.status(400).json({ error: err });
-  }
-});
-
-router.post('/:id', async (req, res) => {
-  const { id } = req.params;
-  try {
-    await userService.updateProfile(id, req.body);
-  } catch (err) {
-    console.error(err);
-    res.status(400).json({ error: err });
-  }
-});
-
 router.delete('/id', async (req, res) => {
   const { id } = req.params;
   try {

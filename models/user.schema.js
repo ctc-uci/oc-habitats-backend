@@ -10,6 +10,10 @@ const userSchema = new mongoose.Schema({
   isSuperAdmin: Boolean,
   isActive: Boolean,
   isTrainee: Boolean,
+  profileImage: {
+    data: Buffer,
+    contentType: String,
+  },
   segments: [
     {
       type: mongoose.Schema.Types.ObjectId,
