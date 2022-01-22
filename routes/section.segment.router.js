@@ -1,4 +1,5 @@
 const express = require('express');
+const sectionSegmentService = require('../services/section.segment.service');
 // const Segment = require('../models/segment.schema');
 
 const router = express.Router();
@@ -23,11 +24,11 @@ router.post('/', async (req, res) => {
 // Create section
 router.post('/section', async (req, res) => {
   try {
-    // const mongoResponse = await sectionSegmentService.createSection(req.body);
-    // res.status(200).send(mongoResponse);
+    const mongoResponse = await sectionSegmentService.createSection(req.body);
+    res.status(200).send(mongoResponse);
   } catch (err) {
     // console.error(err);
-    res.status(500).send(new Error('Operation failed'));
+    res.status(500).json({ message: err.message });
   }
 });
 
@@ -38,7 +39,7 @@ router.post('/segment', async (req, res) => {
     // res.status(200).send(mongoResponse);
   } catch (err) {
     // console.error(err);
-    res.status(500).send(new Error('Operation failed'));
+    res.status(500).json({ message: err.message });
   }
 });
 
@@ -49,18 +50,18 @@ router.put('/section/:id', async (req, res) => {
     // res.status(200).send(mongoResponse);
   } catch (err) {
     // console.error(err);
-    res.status(500).send(new Error('Operation failed'));
+    res.status(500).json({ message: err.message });
   }
 });
 
 // Delete section
 router.delete('/section/:id', async (req, res) => {
+  const { id } = req.params;
   try {
-    // const mongoResponse = await sectionSegmentService.deleteSection(req.body);
-    // res.status(200).send(mongoResponse);
+    const mongoResponse = await sectionSegmentService.deleteSection(id);
+    res.status(200).send(mongoResponse);
   } catch (err) {
-    // console.error(err);
-    res.status(500).send(new Error('Operation failed'));
+    res.status(500).json({ message: err.message });
   }
 });
 
@@ -71,7 +72,7 @@ router.put('/segment/:id', async (req, res) => {
     // res.status(200).send(mongoResponse);
   } catch (err) {
     // console.error(err);
-    res.status(500).send(new Error('Operation failed'));
+    res.status(500).json({ message: err.message });
   }
 });
 
@@ -82,7 +83,7 @@ router.delete('/segment/:id', async (req, res) => {
     // res.status(200).send(mongoResponse);
   } catch (err) {
     // console.error(err);
-    res.status(500).send(new Error('Operation failed'));
+    res.status(500).json({ message: err.message });
   }
 });
 
@@ -93,18 +94,18 @@ router.get('/segment/:id', async (req, res) => {
     // res.status(200).send(mongoResponse);
   } catch (err) {
     // console.error(err);
-    res.status(500).send(new Error('Operation failed'));
+    res.status(500).json({ message: err.message });
   }
 });
 
 // Get section
 router.get('/section/:id', async (req, res) => {
+  const { id } = req.params;
   try {
-    // const mongoResponse = await sectionSegmentService.getSection(req.body);
-    // res.status(200).send(mongoResponse);
+    const mongoResponse = await sectionSegmentService.getSection(id);
+    res.status(200).send(mongoResponse);
   } catch (err) {
-    // console.error(err);
-    res.status(500).send(new Error('Operation failed'));
+    res.status(500).json({ message: err.message });
   }
 });
 
