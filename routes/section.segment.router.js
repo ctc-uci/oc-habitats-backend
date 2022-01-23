@@ -7,7 +7,7 @@ const router = express.Router();
 // TODO: Create services in a new file
 // Example
 // testing
-/* 
+/*
 router.post('/', async (req, res) => {
   try {
     const test = new Segment({ _id: 'testing', name: 'testing' });
@@ -45,11 +45,11 @@ router.post('/segment', async (req, res) => {
 
 // Edit section
 router.put('/section/:id', async (req, res) => {
+  const { id } = req.params;
   try {
-    // const mongoResponse = await sectionSegmentService.updateSection(req.body);
-    // res.status(200).send(mongoResponse);
+    const mongoResponse = await sectionSegmentService.updateSection(req.body);
+    res.status(200).send(mongoResponse);
   } catch (err) {
-    // console.error(err);
     res.status(500).json({ message: err.message });
   }
 });
@@ -89,11 +89,11 @@ router.delete('/segment/:id', async (req, res) => {
 
 // Get segment
 router.get('/segment/:id', async (req, res) => {
+  const { id } = req.params;
   try {
-    // const mongoResponse = await sectionSegmentService.getSegment(req.body);
-    // res.status(200).send(mongoResponse);
+    const mongoResponse = await sectionSegmentService.getSegment(id);
+    res.status(200).send(mongoResponse);
   } catch (err) {
-    // console.error(err);
     res.status(500).json({ message: err.message });
   }
 });
