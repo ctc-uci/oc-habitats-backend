@@ -11,18 +11,14 @@ module.exports = {
     return Segment.findById(id);
   },
   createSection: async (section) => {
-    const newSection = new Section({
-      _id: section.id,
-      name: section.name,
-      segments: section.segments,
-    });
-
+    const newSection = new Section(section);
     return newSection.save();
   },
   createSegment: async () => {},
   updateSection: async (id, updatedSection) => {
     return Section.findByIdAndUpdate(id, updatedSection);
   },
+  // When we update segment, we need to update in section too
   updateSegment: async () => {},
   deleteSection: async (id) => {
     return Section.findByIdAndDelete(id);
@@ -31,4 +27,3 @@ module.exports = {
 };
 
 // Andrea: createSegment, editSegment
-// Rochelle: getSegment, editSection

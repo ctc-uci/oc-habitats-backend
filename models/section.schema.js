@@ -1,6 +1,5 @@
-import segmentSchema from './segment.schema';
-
 const mongoose = require('mongoose');
+const segmentSchema = require('./segment.schema').schema;
 
 const sectionSchema = new mongoose.Schema({
   _id: String,
