@@ -17,10 +17,9 @@ router.post('/section', async (req, res) => {
 // Create segments for section
 router.post('/segment', async (req, res) => {
   try {
-    // const mongoResponse = await sectionSegmentService.createSegment(req.body);
-    // res.status(200).send(mongoResponse);
+    const mongoResponse = await sectionSegmentService.createSegment(req.body);
+    res.status(200).send(mongoResponse);
   } catch (err) {
-    // console.error(err);
     res.status(500).json({ message: err.message });
   }
 });
@@ -50,10 +49,9 @@ router.delete('/section/:id', async (req, res) => {
 // Edit segment
 router.put('/segment/:id', async (req, res) => {
   try {
-    // const mongoResponse = await sectionSegmentService.updateSegment(req.body);
-    // res.status(200).send(mongoResponse);
+    const mongoResponse = await sectionSegmentService.updateSegment(req.body);
+    res.status(200).send(mongoResponse);
   } catch (err) {
-    // console.error(err);
     res.status(500).json({ message: err.message });
   }
 });

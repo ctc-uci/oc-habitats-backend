@@ -14,16 +14,19 @@ module.exports = {
     const newSection = new Section(section);
     return newSection.save();
   },
-  createSegment: async () => {},
+  createSegment: async (segment) => {
+    const newSegment = new Segment(segment);
+    return newSegment.save();
+  },
   updateSection: async (id, updatedSection) => {
     return Section.findByIdAndUpdate(id, updatedSection);
   },
   // When we update segment, we need to update in section too
-  updateSegment: async () => {},
+  updateSegment: async (id, updatedSegment) => {
+    return Segment.findByIdAndUpdate(id, updatedSegment);
+  },
   deleteSection: async (id) => {
     return Section.findByIdAndDelete(id);
   },
   //   deleteSegment: async (segment) => {},
 };
-
-// Andrea: createSegment, editSegment
