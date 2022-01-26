@@ -5,7 +5,7 @@ const options = { new: true };
 
 module.exports = {
   getSection: async (id) => {
-    return Section.findById(id);
+    return Section.findById(id).populate('segments.name');
   },
   getSegment: async (id) => {
     return Segment.findById(id);
