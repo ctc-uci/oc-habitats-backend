@@ -1,15 +1,19 @@
 const express = require('express');
-const sectionSegmentService = require('../services/section.segment.service');
 
 const router = express.Router();
+const sectionSegmentService = require('../services/section.segment.service');
 
 // Create section
 router.post('/section', async (req, res) => {
   try {
-    const mongoResponse = await sectionSegmentService.createSection(req.body);
+    const newSection = { ...req.body };
+    delete newSection.segmentName;
+    const mongoResponse = await sectionSegmentService.createSection(
+      newSection,
+      req.body.segmentName,
+    );
     res.status(200).send(mongoResponse);
   } catch (err) {
-    // console.error(err);
     res.status(500).json({ message: err.message });
   }
 });
@@ -24,11 +28,22 @@ router.post('/segment', async (req, res) => {
   }
 });
 
-// Edit section
+// Update section
 router.put('/section/:id', async (req, res) => {
   const { id } = req.params;
   try {
     const mongoResponse = await sectionSegmentService.updateSection(id, req.body);
+    res.status(200).send(mongoResponse);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// Update segment
+router.put('/segment/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    const mongoResponse = await sectionSegmentService.updateSegment(id, req.body);
     res.status(200).send(mongoResponse);
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -46,28 +61,18 @@ router.delete('/section/:id', async (req, res) => {
   }
 });
 
-// Edit segment
-router.put('/segment/:id', async (req, res) => {
+// Delete segment
+router.delete('/segment/:id', async (req, res) => {
+  const { id } = req.params;
   try {
-    const mongoResponse = await sectionSegmentService.updateSegment(req.body);
+    const mongoResponse = await sectionSegmentService.deleteSegment(id, req.body.sectionName);
     res.status(200).send(mongoResponse);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 });
 
-// Delete segment
-router.delete('/segment/:id', async (req, res) => {
-  try {
-    // const mongoResponse = await sectionSegmentService.deleteSegment(req.body);
-    // res.status(200).send(mongoResponse);
-  } catch (err) {
-    // console.error(err);
-    res.status(500).json({ message: err.message });
-  }
-});
-
-// Get segment
+// Get specific segment
 router.get('/segment/:id', async (req, res) => {
   const { id } = req.params;
   try {
@@ -78,7 +83,17 @@ router.get('/segment/:id', async (req, res) => {
   }
 });
 
-// Get section
+// Get all unassigned segments
+router.get('/segment', async (req, res) => {
+  try {
+    const mongoResponse = await sectionSegmentService.getUnassignedSegments();
+    res.status(200).send(mongoResponse);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// Get specific section
 router.get('/section/:id', async (req, res) => {
   const { id } = req.params;
   try {

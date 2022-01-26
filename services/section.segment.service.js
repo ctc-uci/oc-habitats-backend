@@ -1,7 +1,7 @@
 const Segment = require('../models/segment.schema');
 const Section = require('../models/section.schema');
 
-// TODO: Implement checking if deleted/get nothing
+const options = { new: true };
 
 module.exports = {
   getSection: async (id) => {
@@ -10,23 +10,40 @@ module.exports = {
   getSegment: async (id) => {
     return Segment.findById(id);
   },
-  createSection: async (section) => {
-    const newSection = new Section(section);
-    return newSection.save();
+  getUnassignedSegments: async () => {
+    return Segment.find({ assigned: false }).select('_id');
   },
-  createSegment: async (segment) => {
+  createSection: async (section, segmentName) => {
+    const newSection = new Section(section);
+    const results = { section: null, segment: null };
+    results.section = await newSection.save();
+    results.segment = await Segment.findOneAndUpdate({ name: segmentName }, { assigned: true });
+    return results;
+  },
+  createSegment: (segment) => {
     const newSegment = new Segment(segment);
     return newSegment.save();
   },
-  updateSection: async (id, updatedSection) => {
-    return Section.findByIdAndUpdate(id, updatedSection);
+  updateSection: (id, updatedSection) => {
+    return Section.findByIdAndUpdate(id, updatedSection, options);
   },
-  // When we update segment, we need to update in section too
-  updateSegment: async (id, updatedSegment) => {
-    return Segment.findByIdAndUpdate(id, updatedSegment);
+  updateSegment: (id, updatedSegment) => {
+    return Segment.findByIdAndUpdate(id, updatedSegment, options);
   },
-  deleteSection: async (id) => {
+  deleteSection: (id) => {
     return Section.findByIdAndDelete(id);
   },
-  //   deleteSegment: async (segment) => {},
+  deleteSegment: async (segmentID, sectionName) => {
+    const results = { section: null, segment: null };
+    results.segment = await Segment.findByIdAndDelete(segmentID);
+    results.section = await Section.findOneAndUpdate(
+      { name: sectionName },
+      {
+        $pull: {
+          segments: { name: segmentID },
+        },
+      },
+    );
+    return results;
+  },
 };
