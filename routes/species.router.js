@@ -15,10 +15,10 @@ router.get('/', async (req, res) => {
 });
 
 // change species to listed/not listed
-router.put('/:id', async (req, res) => {
-  const { id } = req.params;
+router.put('/:id/:newListing', async (req, res) => {
+  const { id, newListing } = req.params;
   try {
-    const changeListing = await speciesService.changeListing(id);
+    const changeListing = await speciesService.changeListing(id, newListing);
     if (changeListing.nModified === 0) {
       res.status(400).json({ message: `Species listing ${id} not updated` });
     } else {
@@ -33,7 +33,7 @@ router.put('/:id', async (req, res) => {
 // add new species
 router.post('/', async (req, res) => {
   try {
-    const species = await speciesService.createSpecies(req.body);
+    const species = await speciesService.addNewSpecies(req.body);
     res.status(200).send(species);
   } catch (err) {
     console.error(err);
@@ -56,3 +56,5 @@ router.delete('/:id', async (req, res) => {
     res.status(400).json({ error: err.message });
   }
 });
+
+module.exports = router;

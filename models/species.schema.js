@@ -1,7 +1,6 @@
 const mongoose = require('mongoose');
 
 const speciesSchema = new mongoose.Schema({
-  _id: String,
   name: { type: String, required: true, unique: true },
   code: { type: String, required: true, unique: true },
   isEndangered: { type: Boolean, default: false },
