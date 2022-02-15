@@ -20,6 +20,7 @@ const formSchema = new mongoose.Schema({
   generalAdditionalFields: [fieldSchema],
   listedSpeciesAdditonalFields: [fieldSchema],
   predatorAdditionalFields: [fieldSchema],
+  humanActivityAdditionalFields: [fieldSchema],
 });
 
 module.exports = mongoose.model('Form', formSchema);

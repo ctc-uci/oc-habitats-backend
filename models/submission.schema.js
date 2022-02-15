@@ -5,7 +5,7 @@ const valueSchema = new mongoose.Schema({
 });
 
 const listedSpeciesSchema = new mongoose.Schema({
-  speciesId: mongoose.Schema.Types.ObjectId, // doesn't exist
+  speciesId: String,
   numAdults: Number,
   numFledges: Number,
   numChicks: Number,
@@ -16,11 +16,14 @@ const listedSpeciesSchema = new mongoose.Schema({
   crossStreet: String, // ????
   bandsSexBehavior: [
     {
-      // to do: bands
+      topLeftBand: [String],
+      topRightBand: [String],
+      bottonLeftBand: [String],
+      bottomRightBand: [String],
       bandingCode: String,
       sex: String,
-      nestAndEggs: String,
-      behaviors: String,
+      nestAndEggs: [String],
+      behaviors: [String],
     },
   ],
   additionalNotes: String,
@@ -45,6 +48,7 @@ const submissionSchema = new mongoose.Schema({
   listedSpeciesEntries: [listedSpeciesSchema],
   additionalSpeciesEntries: [valueSchema],
   predatorAdditionalFieldValues: [valueSchema],
+  humanActivityAdditionalFieldValues: [valueSchema],
   submitter: String,
   sessionPartners: [String],
 });
