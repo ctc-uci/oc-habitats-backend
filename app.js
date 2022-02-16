@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
 const sectionSegmentRouter = require('./routes/section.segment.router');
+const monitorLogRouter = require('./routes/monitorLog.router');
 
 require('dotenv').config();
 
@@ -28,6 +29,7 @@ app.use(
 );
 
 app.use(sectionSegmentRouter);
+app.use(monitorLogRouter);
 
 app.listen(PORT, () => {
   console.log(`Server listening on ${PORT}`);

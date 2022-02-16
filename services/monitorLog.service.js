@@ -23,6 +23,10 @@ const updateSubmission = async (submissionId, updatedSubmission) => {
   );
 };
 
+const getSubmissions = async () => {
+  return Submission.find();
+};
+
 const getSubmission = async (submissionId) => {
   return Submission.findOne({ _id: submissionId });
 };
@@ -35,7 +39,7 @@ const createSubmission = async (submission) => {
   if (!submission.submitter || !submission.generalFieldValues || !submission.listedSpeciesEntries) {
     throw new Error('Arguments missing in submission');
   }
-  const createdSubmission = new Submission(submission);
+  const createdSubmission = new Submission({ ...submission, submittedAt: new Date() });
   return createdSubmission.save();
 };
 
@@ -45,5 +49,6 @@ module.exports = {
   updateSubmission,
   deleteSubmission,
   getSubmission,
+  getSubmissions,
   createSubmission,
 };
