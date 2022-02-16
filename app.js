@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
 const sectionSegmentRouter = require('./routes/section.segment.router');
+const speciesRouter = require('./routes/species.router');
 
 require('dotenv').config();
 
@@ -28,6 +29,8 @@ app.use(
 );
 
 app.use(sectionSegmentRouter);
+
+app.use('/species', speciesRouter);
 
 app.listen(PORT, () => {
   console.log(`Server listening on ${PORT}`);
