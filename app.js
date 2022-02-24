@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
 const sectionSegmentRouter = require('./routes/section.segment.router');
+const monitorLogRouter = require('./routes/monitorLog.router');
 const speciesRouter = require('./routes/species.router');
 
 require('dotenv').config();
@@ -29,6 +30,7 @@ app.use(
 );
 
 app.use(sectionSegmentRouter);
+app.use(monitorLogRouter);
 
 app.use('/species', speciesRouter);
 
