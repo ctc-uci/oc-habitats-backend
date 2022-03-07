@@ -1,4 +1,3 @@
-const { v4: uuid } = require('uuid');
 const UserModel = require('../models/user.schema');
 
 const getProfile = async (profileId) => {
@@ -23,15 +22,14 @@ const deleteProfile = async (profileId) => {
 };
 
 const createProfile = async (user) => {
-  if (!user.firstName || !user.lastname || !user.email || !user.password) {
-    throw new Error('Arguments missing in lesson');
+  if (!user.firstName || !user.lastName || !user.email) {
+    throw new Error('Arguments missing in createUser');
   }
   const createdProfile = new UserModel({
-    _id: uuid(),
+    firebaseID: user.firebaseID,
     firstName: user.firstName,
     lastName: user.lastName,
     email: user.email,
-    password: user.password,
     isAdmin: user.isAdmin,
     isSuperAdmin: user.isSuperAdmin,
     isActive: user.isActive,
