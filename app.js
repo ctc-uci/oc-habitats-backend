@@ -6,8 +6,8 @@ const sectionSegmentRouter = require('./routes/section.segment.router');
 const monitorLogRouter = require('./routes/monitorLog.router');
 const speciesRouter = require('./routes/species.router');
 
-const userRouter = require('./routes/users');
-const { authRouter, verifyToken } = require('./routes/auth');
+const userRouter = require('./routes/user.router');
+const { authRouter, verifyToken } = require('./routes/auth.router');
 
 require('dotenv').config();
 
@@ -37,6 +37,7 @@ app.use(
 app.use(cookieParser());
 
 app.use('/users', userRouter);
+// TODO remove
 app.use('/test', [verifyToken, userRouter]);
 app.use('/auth', authRouter);
 

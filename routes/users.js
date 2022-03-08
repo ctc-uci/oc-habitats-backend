@@ -37,8 +37,9 @@ userRouter.get('/:id', async (req, res) => {
   console.log(`Getting user with ID: ${id}`);
   try {
     const foundProfile = await userService.getProfile(id);
+    console.log(foundProfile);
     if (!foundProfile) {
-      res.status(400).json({ message: `Profile ${id} doesn't exist` });
+      res.status(400).send(`Profile ${id} doesn't exist`);
     } else {
       console.log(foundProfile);
       res.status(200).send(foundProfile);
@@ -87,11 +88,12 @@ userRouter.delete('/:id', async (req, res) => {
 
 // Add user to NPO database
 userRouter.post('/create', async (req, res) => {
-  const { email, id, firstName, lastName, registered } = req.body;
-  isAlphaNumeric(id); // ID must be alphanumeric
+  const { email, userId, firstName, lastName, registered } = req.body;
+  isAlphaNumeric(userId); // ID must be alphanumeric
 
   try {
     const profile = await userService.createProfile({
+      userId,
       firstName,
       lastName,
       email,

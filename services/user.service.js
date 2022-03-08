@@ -10,7 +10,7 @@ const getAllProfiles = async () => {
 
 const updateProfile = async (profileId, updatedProfile) => {
   return UserModel.updateOne(
-    { profileId },
+    { firebaseId: profileId },
     {
       $set: updatedProfile,
     },
@@ -22,18 +22,18 @@ const deleteProfile = async (profileId) => {
 };
 
 const createProfile = async (user) => {
-  if (!user.firstName || !user.lastName || !user.email) {
+  if (!user.userId || !user.firstName || !user.lastName || !user.email) {
     throw new Error('Arguments missing in createUser');
   }
   const createdProfile = new UserModel({
-    firebaseID: user.firebaseID,
+    firebaseId: user.userId,
     firstName: user.firstName,
     lastName: user.lastName,
     email: user.email,
-    isAdmin: user.isAdmin,
-    isSuperAdmin: user.isSuperAdmin,
+    role: user.role,
     isActive: user.isActive,
     isTrainee: user.isTrainee,
+    registered: user.registered,
     profileImage: {},
     segments: [],
   });

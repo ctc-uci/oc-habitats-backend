@@ -1,14 +1,14 @@
 const mongoose = require('mongoose');
 
 const userSchema = new mongoose.Schema({
-  _id: String,
+  firebaseId: String,
   firstName: String,
   lastName: String,
   email: String,
-  isAdmin: Boolean,
-  isSuperAdmin: Boolean,
+  role: String,
   isActive: Boolean,
   isTrainee: Boolean,
+  registered: Boolean,
   profileImage: {
     data: Buffer,
     contentType: String,
