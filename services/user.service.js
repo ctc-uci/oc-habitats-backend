@@ -21,6 +21,20 @@ const updateProfile = async (profileId, updatedProfile) => {
   );
 };
 
+const assignSegment = async (profileId, segmentId) => {
+  console.log(`profileId: ${profileId}`);
+  console.log(`segmentId: ${segmentId}`);
+
+  return UserModel.findOneAndUpdate(
+    { _id: profileId },
+    {
+      $push: {
+        segments: segmentId,
+      },
+    },
+  );
+};
+
 const deleteProfile = async (profileId) => {
   return UserModel.remove({ firebaseId: profileId });
 };
@@ -38,6 +52,7 @@ module.exports = {
   getProfileByEmail,
   getAllProfiles,
   updateProfile,
+  assignSegment,
   deleteProfile,
   createProfile,
 };
