@@ -5,6 +5,8 @@ const sectionSegmentRouter = require('./routes/section.segment.router');
 const monitorLogRouter = require('./routes/monitorLog.router');
 const speciesRouter = require('./routes/species.router');
 
+const userRouter = require('./routes/user.router');
+
 require('dotenv').config();
 
 const app = express();
@@ -29,6 +31,7 @@ app.use(
   cors({ credentials: true, origin: true }),
 );
 
+app.use('/users', userRouter);
 app.use(sectionSegmentRouter);
 app.use(monitorLogRouter);
 
