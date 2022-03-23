@@ -4,7 +4,6 @@ const mongoose = require('mongoose');
 const sectionSegmentRouter = require('./routes/section.segment.router');
 const monitorLogRouter = require('./routes/monitorLog.router');
 const speciesRouter = require('./routes/species.router');
-
 const userRouter = require('./routes/user.router');
 
 require('dotenv').config();
@@ -31,11 +30,11 @@ app.use(
   cors({ credentials: true, origin: true }),
 );
 
-app.use('/users', userRouter);
 app.use(sectionSegmentRouter);
 app.use(monitorLogRouter);
 
 app.use('/species', speciesRouter);
+app.use('/users', userRouter);
 
 app.listen(PORT, () => {
   console.log(`Server listening on ${PORT}`);
