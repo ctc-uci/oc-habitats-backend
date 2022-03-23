@@ -18,12 +18,26 @@ const updateProfile = async (profileId, updatedProfile) => {
   );
 };
 
+const assignSegment = async (profileId, segmentId) => {
+  console.log(`profileId: ${profileId}`);
+  console.log(`segmentId: ${segmentId}`);
+
+  return UserModel.findOneAndUpdate(
+    { _id: profileId },
+    {
+      $push: {
+        segments: segmentId,
+      },
+    },
+  );
+};
+
 const deleteProfile = async (profileId) => {
   return UserModel.remove({ profileId });
 };
 
 const createProfile = async (user) => {
-  if (!user.firstName || !user.lastname || !user.email || !user.password) {
+  if (!user.firstName || !user.lastName || !user.email || !user.password) {
     throw new Error('Arguments missing in lesson');
   }
   const createdProfile = new UserModel({
@@ -46,6 +60,7 @@ module.exports = {
   getProfile,
   getAllProfiles,
   updateProfile,
+  assignSegment,
   deleteProfile,
   createProfile,
 };
