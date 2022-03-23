@@ -2,7 +2,7 @@ const { v4: uuid } = require('uuid');
 const UserModel = require('../models/user.schema');
 
 const getProfile = async (profileId) => {
-  return UserModel.findOne({ profileId });
+  return UserModel.findOne({ _id: profileId });
 };
 
 const getAllProfiles = async () => {
@@ -11,7 +11,7 @@ const getAllProfiles = async () => {
 
 const updateProfile = async (profileId, updatedProfile) => {
   return UserModel.updateOne(
-    { profileId },
+    { _id: profileId },
     {
       $set: updatedProfile,
     },
@@ -19,11 +19,11 @@ const updateProfile = async (profileId, updatedProfile) => {
 };
 
 const deleteProfile = async (profileId) => {
-  return UserModel.remove({ profileId });
+  return UserModel.deleteOne({ _id: profileId });
 };
 
 const createProfile = async (user) => {
-  if (!user.firstName || !user.lastname || !user.email || !user.password) {
+  if (!user.firstName || !user.lastName || !user.email || !user.password) {
     throw new Error('Arguments missing in lesson');
   }
   const createdProfile = new UserModel({
