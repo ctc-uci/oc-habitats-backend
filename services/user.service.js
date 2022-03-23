@@ -29,6 +29,9 @@ const assignSegment = async (profileId, segmentId) => {
         segments: segmentId,
       },
     },
+    {
+      new: true,
+    },
   );
 };
 
