@@ -12,6 +12,8 @@ const adminInviteRouter = require('./routes/adminInvite.router');
 const userRouter = require('./routes/user.router');
 const { authRouter, verifyToken } = require('./routes/auth.router');
 
+const userRouter = require('./routes/user.router');
+
 require('dotenv').config();
 
 const app = express();
@@ -40,6 +42,7 @@ app.use('/auth', authRouter);
 // TODO remove
 app.use('/test', [verifyToken, userRouter]);
 
+app.use('/users', userRouter);
 app.use(sectionSegmentRouter);
 app.use(monitorLogRouter);
 
