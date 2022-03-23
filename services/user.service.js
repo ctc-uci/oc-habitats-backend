@@ -19,9 +19,6 @@ const updateProfile = async (profileId, updatedProfile) => {
 };
 
 const assignSegment = async (profileId, segmentId) => {
-  console.log(`profileId: ${profileId}`);
-  console.log(`segmentId: ${segmentId}`);
-
   return UserModel.findOneAndUpdate(
     { _id: profileId },
     {
