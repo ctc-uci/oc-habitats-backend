@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const userSchema = new mongoose.Schema({
-  firebaseId: String,
+  id: String,
   firstName: String,
   lastName: String,
   email: String,

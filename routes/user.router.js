@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 const express = require('express');
 const userService = require('../services/user.service');
 const admin = require('../firebase');
@@ -10,13 +11,29 @@ const isAlphaNumeric = (value) => {
   }
 };
 
-// get profile
+// get profile by id
 router.get('/:id', async (req, res) => {
   const { id } = req.params;
   try {
     const foundProfile = await userService.getProfile(id);
     if (!foundProfile) {
       res.status(400).json({ message: `Profile ${id} doesn't exist` });
+    } else {
+      res.status(200).send(foundProfile);
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(400).json({ error: err });
+  }
+});
+
+// get profile by email
+router.get('email/:email', async (req, res) => {
+  const { email } = req.params;
+  try {
+    const foundProfile = await userService.getProfileByEmail(email);
+    if (!foundProfile) {
+      res.status(400).json({ message: `Profile with email ${email} doesn't exist` });
     } else {
       res.status(200).send(foundProfile);
     }

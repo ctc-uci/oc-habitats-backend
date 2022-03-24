@@ -1,7 +1,11 @@
 const UserModel = require('../models/user.schema');
 
 const getProfile = async (profileId) => {
-  return UserModel.findOne({ profileId });
+  return UserModel.findOne({ id: profileId });
+};
+
+const getProfileByEmail = async (profileEmail) => {
+  return UserModel.findOne({ email: profileEmail });
 };
 
 const getAllProfiles = async () => {
@@ -10,7 +14,7 @@ const getAllProfiles = async () => {
 
 const updateProfile = async (profileId, updatedProfile) => {
   return UserModel.updateOne(
-    { firebaseId: profileId },
+    { id: profileId },
     {
       $set: updatedProfile,
     },
@@ -22,26 +26,16 @@ const deleteProfile = async (profileId) => {
 };
 
 const createProfile = async (user) => {
-  if (!user.userId || !user.firstName || !user.lastName || !user.email) {
-    throw new Error('Arguments missing in createUser');
-  }
-  const createdProfile = new UserModel({
-    firebaseId: user.userId,
-    firstName: user.firstName,
-    lastName: user.lastName,
-    email: user.email,
-    role: user.role,
-    isActive: user.isActive,
-    isTrainee: user.isTrainee,
-    registered: user.registered,
-    profileImage: {},
-    segments: [],
-  });
+  // if (!user.userId || !user.firstName || !user.lastName || !user.email) {
+  //   throw new Error('Arguments missing in createUser');
+  // }
+  const createdProfile = new UserModel(user);
   return createdProfile.save();
 };
 
 module.exports = {
   getProfile,
+  getProfileByEmail,
   getAllProfiles,
   updateProfile,
   deleteProfile,
