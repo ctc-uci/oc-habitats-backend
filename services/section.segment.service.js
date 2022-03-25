@@ -10,6 +10,9 @@ module.exports = {
   getSegment: async (id) => {
     return Segment.findById(id);
   },
+  getSegments: async () => {
+    return Segment.find({});
+  },
   getUnassignedSegments: async () => {
     return Segment.find({ assigned: false }).select('_id');
   },
