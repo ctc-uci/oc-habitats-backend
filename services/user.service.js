@@ -2,11 +2,11 @@ const { v4: uuid } = require('uuid');
 const UserModel = require('../models/user.schema');
 
 const getProfile = async (profileId) => {
-  return UserModel.findOne({ profileId });
+  return UserModel.findOne({ profileId }).populate({ path: 'segments', model: 'Segment' });
 };
 
 const getAllProfiles = async () => {
-  return UserModel.find({});
+  return UserModel.find({}).populate({ path: 'segments', model: 'Segment' });
 };
 
 const updateProfile = async (profileId, updatedProfile) => {
