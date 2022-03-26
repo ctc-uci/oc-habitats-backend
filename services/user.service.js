@@ -1,7 +1,10 @@
 const UserModel = require('../models/user.schema');
 
 const getProfile = async (profileId) => {
-  return UserModel.findOne({ firebaseId: profileId });
+  return UserModel.findOne({ firebaseId: profileId }).populate({
+    path: 'segments',
+    model: 'Segment',
+  });
 };
 
 const getProfileByEmail = async (profileEmail) => {
@@ -9,7 +12,7 @@ const getProfileByEmail = async (profileEmail) => {
 };
 
 const getAllProfiles = async () => {
-  return UserModel.find({});
+  return UserModel.find({}).populate({ path: 'segments', model: 'Segment' });
 };
 
 const updateProfile = async (profileId, updatedProfile) => {
