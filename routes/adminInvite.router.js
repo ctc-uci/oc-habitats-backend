@@ -18,6 +18,8 @@ router.get('/:id', async (req, res) => {
     if (!foundInvite) {
       res.status(400).json({ message: `Invite ${id} doesn't exist` });
     } else {
+      console.log('GET /adminInvite/:id hit, foundInvite looks like:');
+      console.log(foundInvite);
       res.status(200).send(foundInvite);
     }
   } catch (err) {

@@ -1,7 +1,7 @@
 const AdminInviteModel = require('../models/adminInvite.schema');
 
 const getInvite = async (inviteId) => {
-  return AdminInviteModel.findOne({ inviteId });
+  return AdminInviteModel.findOne({ id: inviteId });
 };
 
 const getAllInvites = async () => {
@@ -22,11 +22,20 @@ const deleteInvite = async (inviteId) => {
 };
 
 const createInvite = async (invite) => {
-  if (!invite.id || !invite.email || !invite.role || !invite.expireDate) {
+  if (
+    !invite.id ||
+    !invite.firstName ||
+    !invite.lastName ||
+    !invite.email ||
+    !invite.role ||
+    !invite.expireDate
+  ) {
     throw new Error('Arguments missing in invite');
   }
   const createdInvite = new AdminInviteModel({
     id: invite.id,
+    firstName: invite.firstName,
+    lastName: invite.lastName,
     email: invite.email,
     role: invite.role,
     expireDate: invite.expireDate,
