@@ -25,24 +25,20 @@ mongoose.connect(process.env.MONGO_URI, {
 });
 
 app.use(
+  express.urlencoded({ extended: true }),
+  express.json(),
   cors({
     origin: `${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}`,
     credentials: true,
   }),
 );
 
-app.use(
-  express.urlencoded({ extended: true }),
-  express.json(),
-  cors({ credentials: true, origin: true }),
-);
-
 app.use(cookieParser());
 
 app.use('/users', userRouter);
+app.use('/auth', authRouter);
 // TODO remove
 app.use('/test', [verifyToken, userRouter]);
-app.use('/auth', authRouter);
 
 app.use(sectionSegmentRouter);
 app.use(monitorLogRouter);
