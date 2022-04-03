@@ -17,8 +17,8 @@ const updateInvite = async (inviteId, updatedInvite) => {
   );
 };
 
-const deleteInvite = async (inviteId) => {
-  return AdminInviteModel.remove({ inviteId });
+const deleteInvite = async (inviteEmail) => {
+  return AdminInviteModel.deleteOne({ email: inviteEmail });
 };
 
 const createInvite = async (invite) => {

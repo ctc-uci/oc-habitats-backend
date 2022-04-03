@@ -1,7 +1,7 @@
 const UserModel = require('../models/user.schema');
 
 const getProfile = async (profileId) => {
-  return UserModel.findOne({ id: profileId });
+  return UserModel.findOne({ firebaseId: profileId });
 };
 
 const getProfileByEmail = async (profileEmail) => {
@@ -14,7 +14,7 @@ const getAllProfiles = async () => {
 
 const updateProfile = async (profileId, updatedProfile) => {
   return UserModel.updateOne(
-    { id: profileId },
+    { firebaseId: profileId },
     {
       $set: updatedProfile,
     },
@@ -22,7 +22,7 @@ const updateProfile = async (profileId, updatedProfile) => {
 };
 
 const deleteProfile = async (profileId) => {
-  return UserModel.remove({ profileId });
+  return UserModel.remove({ firebaseId: profileId });
 };
 
 const createProfile = async (user) => {

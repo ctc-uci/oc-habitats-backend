@@ -91,7 +91,21 @@ router.put('/update/:id', async (req, res) => {
   }
 });
 
-// create profile
+router.post('/firebase', async (req, res) => {
+  const { email, password } = req.body;
+  try {
+    const user = await admin.auth().createUser({
+      email,
+      emailVerified: true,
+      password,
+    });
+    res.status(200).send(user);
+  } catch (err) {
+    console.error(err);
+  }
+});
+
+// create profile in DB
 router.post('/', async (req, res) => {
   try {
     const profile = await userService.createProfile(req.body);
@@ -99,6 +113,14 @@ router.post('/', async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(400).json({ error: err.message });
+
+    const { email, password } = req.body;
+
+    await admin.auth().createUser({
+      email,
+      emailVerified: true,
+      password,
+    });
   }
 });
 
