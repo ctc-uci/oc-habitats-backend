@@ -1,8 +1,11 @@
-const { v4: uuid } = require('uuid');
 const UserModel = require('../models/user.schema');
 
 const getProfile = async (profileId) => {
-  return UserModel.findOne({ profileId });
+  return UserModel.findOne({ firebaseId: profileId });
+};
+
+const getProfileByEmail = async (profileEmail) => {
+  return UserModel.findOne({ email: profileEmail });
 };
 
 const getAllProfiles = async () => {
@@ -11,7 +14,7 @@ const getAllProfiles = async () => {
 
 const updateProfile = async (profileId, updatedProfile) => {
   return UserModel.updateOne(
-    { profileId },
+    { firebaseId: profileId },
     {
       $set: updatedProfile,
     },
@@ -19,31 +22,20 @@ const updateProfile = async (profileId, updatedProfile) => {
 };
 
 const deleteProfile = async (profileId) => {
-  return UserModel.remove({ profileId });
+  return UserModel.remove({ firebaseId: profileId });
 };
 
 const createProfile = async (user) => {
-  if (!user.firstName || !user.lastname || !user.email || !user.password) {
-    throw new Error('Arguments missing in lesson');
-  }
-  const createdProfile = new UserModel({
-    _id: uuid(),
-    firstName: user.firstName,
-    lastName: user.lastName,
-    email: user.email,
-    password: user.password,
-    isAdmin: user.isAdmin,
-    isSuperAdmin: user.isSuperAdmin,
-    isActive: user.isActive,
-    isTrainee: user.isTrainee,
-    profileImage: {},
-    segments: [],
-  });
+  // if (!user.userId || !user.firstName || !user.lastName || !user.email) {
+  //   throw new Error('Arguments missing in createUser');
+  // }
+  const createdProfile = new UserModel(user);
   return createdProfile.save();
 };
 
 module.exports = {
   getProfile,
+  getProfileByEmail,
   getAllProfiles,
   updateProfile,
   deleteProfile,
