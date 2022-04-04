@@ -6,8 +6,8 @@ const userSchema = new mongoose.Schema({
   lastName: String,
   email: String,
   role: String,
-  isActive: Boolean,
-  isTrainee: Boolean,
+  isActive: { type: Boolean, default: true },
+  isTrainee: { type: Boolean, default: false },
   registered: Boolean,
   profileImage: {
     data: Buffer,
