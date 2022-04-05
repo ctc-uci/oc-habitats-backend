@@ -15,4 +15,15 @@ router.get('/segments/:id', async (req, res) => {
   }
 });
 
+router.get('/recents/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    const foundRecents = await volunteerService.getRecentSubmissions(id);
+    res.status(200).send(foundRecents);
+  } catch (err) {
+    console.error(err);
+    res.send(400).json({ message: err.message });
+  }
+});
+
 module.exports = router;
