@@ -43,9 +43,9 @@ app.use('/test', [verifyToken, userRouter]);
 app.use(cookieParser());
 
 app.use('/users', userRouter);
+app.use('/auth', authRouter);
 // TODO remove
 app.use('/test', [verifyToken, userRouter]);
-app.use('/auth', authRouter);
 
 app.use(sectionSegmentRouter);
 app.use(monitorLogRouter);
