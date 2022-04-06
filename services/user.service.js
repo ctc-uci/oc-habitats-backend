@@ -1,7 +1,7 @@
 const UserModel = require('../models/user.schema');
 
 const getProfile = async (profileId) => {
-  return UserModel.findOne({ firebaseId: profileId });
+  return UserModel.findOne({ profileId }).populate({ path: 'segments', model: 'Segment' });
 };
 
 const getProfileByEmail = async (profileEmail) => {
@@ -9,7 +9,7 @@ const getProfileByEmail = async (profileEmail) => {
 };
 
 const getAllProfiles = async () => {
-  return UserModel.find({});
+  return UserModel.find({}).populate({ path: 'segments', model: 'Segment' });
 };
 
 const updateProfile = async (profileId, updatedProfile) => {
@@ -21,14 +21,25 @@ const updateProfile = async (profileId, updatedProfile) => {
   );
 };
 
+const assignSegment = async (profileId, segmentId) => {
+  return UserModel.findOneAndUpdate(
+    { _id: profileId },
+    {
+      $push: {
+        segments: segmentId,
+      },
+    },
+    {
+      new: true,
+    },
+  );
+};
+
 const deleteProfile = async (profileId) => {
   return UserModel.remove({ firebaseId: profileId });
 };
 
 const createProfile = async (user) => {
-  // if (!user.userId || !user.firstName || !user.lastName || !user.email) {
-  //   throw new Error('Arguments missing in createUser');
-  // }
   const createdProfile = new UserModel(user);
   return createdProfile.save();
 };
@@ -38,6 +49,7 @@ module.exports = {
   getProfileByEmail,
   getAllProfiles,
   updateProfile,
+  assignSegment,
   deleteProfile,
   createProfile,
 };

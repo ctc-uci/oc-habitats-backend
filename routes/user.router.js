@@ -5,13 +5,24 @@ const admin = require('../firebase');
 
 const router = express.Router();
 
-const isAlphaNumeric = (value) => {
-  if (!/^[0-9a-zA-Z]+$/.test(value)) {
-    throw new Error('User ID must be alphanumeric');
+// assign a segment to a user
+router.post('/assignSegment', async (req, res) => {
+  // TODO - add user to volunteer array of segments
+  try {
+    const { profileId, segmentId } = req.body;
+    const updatedProfile = await userService.assignSegment(profileId, segmentId);
+    if (updatedProfile.nModified === 0) {
+      res.status(400).json({ message: `Segment not assigned` });
+    } else {
+      res.status(200).send(updatedProfile);
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(400).json({ error: err.message });
   }
-};
+});
 
-// get profile by id
+// get profile
 router.get('/:id', async (req, res) => {
   const { id } = req.params;
   try {
@@ -58,7 +69,6 @@ router.get('/', async (req, res) => {
 router.delete('/:id', async (req, res) => {
   const { id } = req.params;
   try {
-    isAlphaNumeric(id); // ID must be alphanumeric
     // Firebase delete
     await admin.auth().deleteUser(id);
 
