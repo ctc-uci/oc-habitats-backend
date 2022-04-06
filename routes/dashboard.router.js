@@ -32,7 +32,7 @@ router.get('/recents/:id', async (req, res) => {
 });
 
 // get user's unsubmitted log drafts
-// returns [ {Submission}, {Submission} ]
+// returns [ { submissions: [Submission, Submission, ...] } ]
 router.get('/unsubmitted/:id', async (req, res) => {
   const { id } = req.params;
   try {
