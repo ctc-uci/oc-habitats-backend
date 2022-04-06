@@ -3,7 +3,7 @@ const UserModel = require('../models/user.schema');
 // TO-DO: filter so that only necessary fields are returned ?
 
 // get user's assigned segments
-// returns [{segment}, {segment}]
+// returns [ {Segment}, {Segment} ]
 const getAssignedSegments = async (firebaseId) => {
   return UserModel.aggregate([
     { $match: { firebaseId } },
@@ -25,10 +25,36 @@ const getAssignedSegments = async (firebaseId) => {
   ]);
 };
 
-// TO-DO: get unsubmitted monitor logs
+// get unsubmitted monitor logs
+// returns [ { drafts: [Submission, Submission, ...] } ]
+const getUnsubmittedDrafts = async (firebaseId) => {
+  return UserModel.aggregate([
+    { $match: { firebaseId } },
+    {
+      $lookup: {
+        from: 'submissions',
+        localField: 'firebaseId',
+        foreignField: 'submitter',
+        as: 'drafts',
+      },
+    },
+    {
+      $project: {
+        _id: 0,
+        drafts: {
+          $filter: {
+            input: '$drafts',
+            as: 'submissions_field',
+            cond: { $eq: ['$$submissions_field.submitted', false] },
+          },
+        },
+      },
+    },
+  ]);
+};
 
 // get recently submitted logs (6)
-// returns [{submission}, {submission}]
+// returns [ {Submission}, {Submission} ]
 const getRecentSubmissions = async (firebaseId) => {
   return UserModel.aggregate([
     { $match: { firebaseId } },
@@ -55,4 +81,5 @@ const getRecentSubmissions = async (firebaseId) => {
 module.exports = {
   getAssignedSegments,
   getRecentSubmissions,
+  getUnsubmittedDrafts,
 };

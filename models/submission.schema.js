@@ -50,6 +50,7 @@ const submissionSchema = new mongoose.Schema({
   predatorAdditionalFieldValues: [valueSchema],
   humanActivityAdditionalFieldValues: [valueSchema],
   submitter: String,
+  submitted: { type: Boolean, default: false },
   submittedAt: Date,
   lastEditedAt: Date,
   isSubmittedByTrainee: { type: Boolean, default: false },
