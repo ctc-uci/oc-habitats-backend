@@ -54,7 +54,7 @@ const getUnsubmittedDrafts = async (firebaseId) => {
 };
 
 // get recently submitted logs (6)
-// returns [ {Submission}, {Submission} ]
+// returns [ { submissions: [Submission, Submission, ...] } ]
 const getRecentSubmissions = async (firebaseId) => {
   return UserModel.aggregate([
     { $match: { firebaseId } },
@@ -63,16 +63,21 @@ const getRecentSubmissions = async (firebaseId) => {
         from: 'submissions',
         localField: 'firebaseId',
         foreignField: 'submitter',
-        as: 'submissions',
+        as: 'recents',
       },
     },
-    { $unwind: { path: '$submissions' } },
-    { $sort: { 'submissions.submittedAt': -1 } },
+    { $sort: { 'recents.submittedAt': -1 } },
     { $limit: 6 },
     {
       $project: {
         _id: 0,
-        submissions: 1,
+        submissions: {
+          $filter: {
+            input: '$recents',
+            as: 'recents_field',
+            cond: { $eq: ['$$recents_field.submitted', true] },
+          },
+        },
       },
     },
   ]);
