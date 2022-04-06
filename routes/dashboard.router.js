@@ -1,14 +1,16 @@
 const express = require('express');
-const volunteerService = require('../services/volunteer.service');
+const dashboardService = require('../services/dashboard.service');
 
 const router = express.Router();
+
+/* VOLUNTEER DASHBOARD ROUTES */
 
 // get user's assigned segments
 // returns [ {Segment}, {Segment} ]
 router.get('/segments/:id', async (req, res) => {
   const { id } = req.params;
   try {
-    const assignedSegments = await volunteerService.getAssignedSegments(id);
+    const assignedSegments = await dashboardService.getAssignedSegments(id);
     res.status(200).send(assignedSegments);
   } catch (err) {
     console.error(err);
@@ -21,7 +23,7 @@ router.get('/segments/:id', async (req, res) => {
 router.get('/recents/:id', async (req, res) => {
   const { id } = req.params;
   try {
-    const recentSubmissions = await volunteerService.getRecentSubmissions(id);
+    const recentSubmissions = await dashboardService.getRecentSubmissions(id);
     res.status(200).send(recentSubmissions);
   } catch (err) {
     console.error(err);
@@ -34,7 +36,7 @@ router.get('/recents/:id', async (req, res) => {
 router.get('/unsubmitted/:id', async (req, res) => {
   const { id } = req.params;
   try {
-    const unsubmittedDrafts = await volunteerService.getUnsubmittedDrafts(id);
+    const unsubmittedDrafts = await dashboardService.getUnsubmittedDrafts(id);
     res.status(200).send(unsubmittedDrafts);
   } catch (err) {
     console.error(err);

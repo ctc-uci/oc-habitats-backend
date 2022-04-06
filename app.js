@@ -8,7 +8,7 @@ const monitorLogRouter = require('./routes/monitorLog.router');
 const speciesRouter = require('./routes/species.router');
 const emailRouter = require('./routes/nodemailer.router');
 const adminInviteRouter = require('./routes/adminInvite.router');
-const volunteerRouter = require('./routes/volunteer.router');
+const dashboardRouter = require('./routes/dashboard.router');
 
 const userRouter = require('./routes/user.router');
 const { authRouter, verifyToken } = require('./routes/auth.router');
@@ -38,7 +38,7 @@ app.use(cookieParser());
 
 app.use('/users', userRouter);
 app.use('/auth', authRouter);
-app.use('/dashboard', volunteerRouter);
+app.use('/dashboard', dashboardRouter);
 // TODO remove
 app.use('/test', [verifyToken, userRouter]);
 

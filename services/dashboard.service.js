@@ -2,6 +2,8 @@ const UserModel = require('../models/user.schema');
 
 // TO-DO: filter so that only necessary fields are returned ?
 
+/* VOLUNTEER DASHBOARD SERVICES */
+
 // get user's assigned segments
 // returns [ {Segment}, {Segment} ]
 const getAssignedSegments = async (firebaseId) => {
