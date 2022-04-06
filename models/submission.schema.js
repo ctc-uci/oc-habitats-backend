@@ -13,7 +13,7 @@ const listedSpeciesSchema = new mongoose.Schema({
   map: Number,
   habitatDescription: String,
   gps: [{ longitude: Number, latitude: Number }],
-  crossStreet: String, // ????
+  crossStreet: String,
   bandsSexBehavior: [
     {
       topLeftBand: [String],
@@ -50,12 +50,16 @@ const submissionSchema = new mongoose.Schema({
   predatorAdditionalFieldValues: [valueSchema],
   humanActivityAdditionalFieldValues: [valueSchema],
   submitter: String,
-  submitted: { type: Boolean, default: false },
+  status: {
+    type: String,
+    enum: ['unsubmitted', 'underReview', 'approved', 'editsRequested'],
+    default: 'draft',
+  },
   submittedAt: Date,
   lastEditedAt: Date,
   isSubmittedByTrainee: { type: Boolean, default: false },
-  isApproved: { type: Boolean, default: false },
   sessionPartners: [String],
+  requestedEdits: String,
 });
 
 module.exports = mongoose.model('Submission', submissionSchema);

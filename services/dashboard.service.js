@@ -47,7 +47,7 @@ const getUnsubmittedDrafts = async (firebaseId) => {
           $filter: {
             input: '$drafts',
             as: 'submissions_field',
-            cond: { $eq: ['$$submissions_field.submitted', false] },
+            cond: { $eq: ['$$submissions_field.status', 'unsubmitted'] },
           },
         },
       },
@@ -77,7 +77,7 @@ const getRecentSubmissions = async (firebaseId) => {
           $filter: {
             input: '$recents',
             as: 'recents_field',
-            cond: { $eq: ['$$recents_field.submitted', true] },
+            cond: { $not: { $eq: ['$$recents_field.status', 'unsubmitted'] } },
           },
         },
       },
