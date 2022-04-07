@@ -1,5 +1,7 @@
 const express = require('express');
+const fs = require('fs');
 const userService = require('../services/user.service');
+const upload = require('../middleware/upload');
 
 const router = express.Router();
 
@@ -47,11 +49,27 @@ router.delete('/:id', async (req, res) => {
 });
 
 // update profile
-router.post('/:id', async (req, res) => {
+// eslint-disable-next-line no-unused-vars
+router.put('/:id', upload.single('profileImage'), async (req, res) => {
   const { id } = req.params;
+  const updatedUser = { ...req.body };
+  if (req.file) {
+    updatedUser.profileImage = {
+      data: fs.readFileSync(`${req.file.path}`),
+      contentType: `${req.file.mimetype}`,
+    };
+  }
+
   try {
-    const updatedProfile = await userService.updateProfile(id, req.body);
-    if (updatedProfile.nModified === 0) {
+    const updatedProfile = await userService.updateProfile(id, updatedUser);
+    fs.unlink(req.file.path, (err) => {
+      if (err) {
+        console.error(err);
+      }
+    });
+    if (updatedProfile.matchedCount === 0) {
+      res.status(400).json({ message: `Profile ${id} does not exists` });
+    } else if (updatedProfile.modifiedCount === 0 && updatedProfile.matchedCount === 1) {
       res.status(400).json({ message: `Profile ${id} not updated` });
     } else {
       res.status(200).send(updatedProfile);

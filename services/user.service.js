@@ -24,7 +24,7 @@ const deleteProfile = async (profileId) => {
 
 const createProfile = async (user) => {
   if (!user.firstName || !user.lastName || !user.email || !user.password) {
-    throw new Error('Arguments missing in lesson');
+    throw new Error('Arguments missing in user');
   }
   const createdProfile = new UserModel({
     _id: uuid(),
@@ -36,7 +36,7 @@ const createProfile = async (user) => {
     isSuperAdmin: user.isSuperAdmin,
     isActive: user.isActive,
     isTrainee: user.isTrainee,
-    profileImage: {},
+    profileImage: { data: null, contentType: null },
     segments: [],
   });
   return createdProfile.save();
