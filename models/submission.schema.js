@@ -59,7 +59,10 @@ const submissionSchema = new mongoose.Schema({
   lastEditedAt: Date,
   isSubmittedByTrainee: { type: Boolean, default: false },
   sessionPartners: [String],
-  requestedEdits: String,
+  requestedEdits: {
+    requests: String,
+    requestDate: Date,
+  },
 });
 
 module.exports = mongoose.model('Submission', submissionSchema);
