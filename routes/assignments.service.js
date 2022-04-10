@@ -3,8 +3,6 @@ const dashboardService = require('../services/assignments.service');
 
 const router = express.Router();
 
-/* VOLUNTEER DASHBOARD ROUTES */
-
 // get user's assigned segments
 // returns [ {Segment}, {Segment} ]
 router.get('/segments/:id', async (req, res) => {
@@ -18,8 +16,8 @@ router.get('/segments/:id', async (req, res) => {
   }
 });
 
-// get user's 6 recent monitor log submissions
-// returns [ { drafts: [Submission, Submission, ...] } ]
+// get all of user's submitted monitor logs
+// returns [ { userSubmissions: [Submission, Submission, ...] } ]
 router.get('/submissions/:id', async (req, res) => {
   const { id } = req.params;
   try {
