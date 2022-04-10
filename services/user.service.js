@@ -1,7 +1,10 @@
 const UserModel = require('../models/user.schema');
 
 const getProfile = async (profileId) => {
-  return UserModel.findOne({ firebaseId: profileId });
+  return UserModel.findOne({ firebaseId: profileId }).populate({
+    path: 'segments',
+    model: 'Segment',
+  });
 };
 
 const getProfileByEmail = async (profileEmail) => {
@@ -9,7 +12,7 @@ const getProfileByEmail = async (profileEmail) => {
 };
 
 const getAllProfiles = async () => {
-  return UserModel.find({});
+  return UserModel.find({}).populate({ path: 'segments', model: 'Segment' });
 };
 
 const updateProfile = async (profileId, updatedProfile) => {
@@ -17,6 +20,20 @@ const updateProfile = async (profileId, updatedProfile) => {
     { firebaseId: profileId },
     {
       $set: updatedProfile,
+    },
+  );
+};
+
+const assignSegment = async (userId, segmentId) => {
+  return UserModel.findOneAndUpdate(
+    { firebaseId: userId },
+    {
+      $addToSet: {
+        segments: segmentId,
+      },
+    },
+    {
+      new: true,
     },
   );
 };
@@ -38,6 +55,7 @@ module.exports = {
   getProfileByEmail,
   getAllProfiles,
   updateProfile,
+  assignSegment,
   deleteProfile,
   createProfile,
 };

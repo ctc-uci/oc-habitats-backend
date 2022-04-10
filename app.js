@@ -44,6 +44,7 @@ app.use(sectionSegmentRouter);
 app.use(monitorLogRouter);
 
 app.use('/species', speciesRouter);
+app.use('/users', userRouter);
 
 app.use('/adminInvite', adminInviteRouter);
 app.use('/nodemailer', emailRouter);

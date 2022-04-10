@@ -83,8 +83,18 @@ router.get('/segment/:id', async (req, res) => {
   }
 });
 
+// Get all segments
+router.get('/segments', async (req, res) => {
+  try {
+    const mongoResponse = await sectionSegmentService.getSegments();
+    res.status(200).send(mongoResponse);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
 // Get all unassigned segments
-router.get('/segment', async (req, res) => {
+router.get('/unassignedSegments', async (req, res) => {
   try {
     const mongoResponse = await sectionSegmentService.getUnassignedSegments();
     res.status(200).send(mongoResponse);
