@@ -24,11 +24,11 @@ const updateProfile = async (profileId, updatedProfile) => {
   );
 };
 
-const assignSegment = async (profileId, segmentId) => {
+const assignSegment = async (userId, segmentId) => {
   return UserModel.findOneAndUpdate(
-    { _id: profileId },
+    { firebaseId: userId },
     {
-      $push: {
+      $addToSet: {
         segments: segmentId,
       },
     },

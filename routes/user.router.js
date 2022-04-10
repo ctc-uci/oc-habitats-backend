@@ -16,8 +16,8 @@ const isAlphaNumeric = (value) => {
 router.post('/assignSegment', async (req, res) => {
   // TODO - add user to volunteer array of segments
   try {
-    const { profileId, segmentId } = req.body;
-    const updatedProfile = await userService.assignSegment(profileId, segmentId);
+    const { userId, segmentId } = req.body;
+    const updatedProfile = await userService.assignSegment(userId, segmentId);
     if (updatedProfile.nModified === 0) {
       res.status(400).json({ message: `Segment not assigned` });
     } else {
