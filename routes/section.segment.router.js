@@ -119,7 +119,7 @@ router.get('/section/:id/segments', async (req, res) => {
   const { id } = req.params;
   try {
     const segments = await sectionSegmentService.getSegmentsBySection(id);
-    res.status(200).send(segments);
+    res.status(200).send(segments[0]);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
