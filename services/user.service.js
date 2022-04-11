@@ -63,7 +63,6 @@ const getAssignedSegments = async (firebaseId) => {
         as: 'user_segments',
       },
     },
-    { $unwind: { path: '$user_segments' } },
     {
       $project: {
         _id: 0,
