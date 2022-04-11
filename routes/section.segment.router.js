@@ -114,4 +114,15 @@ router.get('/section/:id', async (req, res) => {
   }
 });
 
+// Get segments by section
+router.get('/section/:id/segments', async (req, res) => {
+  const { id } = req.params;
+  try {
+    const segments = await sectionSegmentService.getSegmentsBySection(id);
+    res.status(200).send(segments);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
 module.exports = router;
