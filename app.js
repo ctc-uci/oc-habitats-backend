@@ -27,12 +27,15 @@ app.use(
 app.use(
   express.urlencoded({ extended: true }),
   express.json(),
-  cors({ credentials: true, origin: true }),
+  cors({
+    origin: `${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}`,
+    credentials: true,
+  }),
 );
 
 app.use(sectionSegmentRouter);
 app.use(monitorLogRouter);
-app.use(usersRouter);
+app.use('/users', usersRouter);
 app.use('/species', speciesRouter);
 
 app.listen(PORT, () => {

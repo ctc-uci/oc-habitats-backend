@@ -11,23 +11,6 @@ const isAlphaNumeric = (value) => {
     throw new Error('User ID must be alphanumeric');
   }
 };
-
-// get profile
-router.get('/:id', async (req, res) => {
-  const { id } = req.params;
-  try {
-    const foundProfile = await userService.getProfile(id);
-    if (!foundProfile) {
-      res.status(400).json({ message: `Profile ${id} doesn't exist` });
-    } else {
-      res.status(200).send(foundProfile);
-    }
-  } catch (err) {
-    console.error(err);
-    res.status(400).json({ error: err });
-  }
-});
-
 // get profile by id
 router.get('/:id', async (req, res) => {
   const { id } = req.params;
