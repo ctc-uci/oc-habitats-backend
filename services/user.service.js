@@ -1,7 +1,6 @@
 const UserModel = require('../models/user.schema');
 
 const getProfile = async (profileId) => {
-  console.log('finding:', profileId);
   return UserModel.findOne({ firebaseId: profileId });
 };
 

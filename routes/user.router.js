@@ -121,7 +121,6 @@ router.post('/firebase', async (req, res) => {
   }
 });
 
-// create profile
 router.post('/', async (req, res) => {
   try {
     const requiredFields = ['firebaseId', 'firstName', 'lastName', 'email', 'role'];
