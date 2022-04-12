@@ -19,7 +19,7 @@ const fileFilter = (req, file, cb) => {
   ) {
     cb(null, true);
   } else {
-    cb(new Error('File uploaded not PNG or JPEG'), false);
+    cb(new Error('File uploaded not PNG, JPG, or JPEG'), false);
   }
 };
 

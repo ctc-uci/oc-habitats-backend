@@ -86,14 +86,15 @@ router.put('/update/:id', upload.single('profileImage'), async (req, res) => {
       contentType: `${req.file.mimetype}`,
     };
   }
-
   try {
     const updatedProfile = await userService.updateProfile(id, updatedUser);
-    fs.unlink(req.file.path, (err) => {
-      if (err) {
+    // if file uploaded remove it after calling mongo
+    if (req.file) {
+      fs.unlink(req.file.path, (err) => {
         console.error(err);
-      }
-    });
+      });
+    }
+
     if (updatedProfile.matchedCount === 0) {
       res.status(400).json({ message: `Profile ${id} does not exists` });
     } else if (updatedProfile.modifiedCount === 0 && updatedProfile.matchedCount === 1) {
