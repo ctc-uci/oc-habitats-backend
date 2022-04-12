@@ -24,7 +24,6 @@ const updateProfile = async (profileId, updatedProfile) => {
   );
 };
 
-
 const assignSegment = async (userId, segmentId) => {
   return UserModel.findOneAndUpdate(
     { firebaseId: userId },
