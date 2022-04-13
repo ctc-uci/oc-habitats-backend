@@ -1,7 +1,10 @@
 const UserModel = require('../models/user.schema');
 
 const getProfile = async (profileId) => {
-  return UserModel.findOne({ profileId }).populate({ path: 'segments', model: 'Segment' });
+  return UserModel.findOne({ firebaseId: profileId }).populate({
+    path: 'segments',
+    model: 'Segment',
+  });
 };
 
 const getProfileByEmail = async (profileEmail) => {
@@ -21,11 +24,11 @@ const updateProfile = async (profileId, updatedProfile) => {
   );
 };
 
-const assignSegment = async (profileId, segmentId) => {
+const assignSegment = async (userId, segmentId) => {
   return UserModel.findOneAndUpdate(
-    { _id: profileId },
+    { firebaseId: userId },
     {
-      $push: {
+      $addToSet: {
         segments: segmentId,
       },
     },
