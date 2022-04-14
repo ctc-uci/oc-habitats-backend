@@ -11,7 +11,6 @@ const adminInviteRouter = require('./routes/adminInvite.router');
 const userRouter = require('./routes/user.router');
 const { authRouter, verifyToken } = require('./routes/auth.router');
 
-
 require('dotenv').config();
 
 const app = express();
