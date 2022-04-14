@@ -43,9 +43,6 @@ const deleteProfile = async (profileId) => {
 };
 
 const createProfile = async (user) => {
-  // if (!user.userId || !user.firstName || !user.lastName || !user.email) {
-  //   throw new Error('Arguments missing in createUser');
-  // }
   const createdProfile = new UserModel(user);
   return createdProfile.save();
 };
