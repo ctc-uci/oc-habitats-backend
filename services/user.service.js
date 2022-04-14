@@ -47,10 +47,57 @@ const createProfile = async (user) => {
   return createdProfile.save();
 };
 
+// get user's assigned segments
+// returns [ { user_segments: [{Segment}, {Segment}, ...] } ]
+const getAssignedSegments = async (firebaseId) => {
+  return UserModel.aggregate([
+    { $match: { firebaseId } },
+    {
+      $lookup: {
+        from: 'segments',
+        localField: 'segments',
+        foreignField: '_id',
+        as: 'user_segments',
+      },
+    },
+    {
+      $project: {
+        _id: 0,
+        user_segments: 1,
+      },
+    },
+  ]);
+};
+
+// get a user's submitted logs
+// returns [ { submissions: [Submission, Submission, ...] } ]
+const getUserSubmissions = async (firebaseId) => {
+  return UserModel.aggregate([
+    { $match: { firebaseId } },
+    {
+      $lookup: {
+        from: 'submissions',
+        localField: 'firebaseId',
+        foreignField: 'submitter',
+        as: 'submissions',
+      },
+    },
+    { $sort: { 'submissions.submittedAt': -1 } },
+    {
+      $project: {
+        _id: 0,
+        submissions: 1,
+      },
+    },
+  ]);
+};
+
 module.exports = {
   getProfile,
   getProfileByEmail,
   getAllProfiles,
+  getAssignedSegments,
+  getUserSubmissions,
   updateProfile,
   assignSegment,
   deleteProfile,
