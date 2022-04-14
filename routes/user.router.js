@@ -84,7 +84,7 @@ router.get('/segments/:id', async (req, res) => {
   }
 });
 
-// get all of user's submitted monitor logs
+// get all of a user's monitor logs
 router.get('/submissions/:id', async (req, res) => {
   const { id } = req.params;
   try {

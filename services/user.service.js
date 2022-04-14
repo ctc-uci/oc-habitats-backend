@@ -51,7 +51,7 @@ const createProfile = async (user) => {
 };
 
 // get user's assigned segments
-// returns [ {Segment}, {Segment} ]
+// returns [ { user_segments: [{Segment}, {Segment}, ...] } ]
 const getAssignedSegments = async (firebaseId) => {
   return UserModel.aggregate([
     { $match: { firebaseId } },
