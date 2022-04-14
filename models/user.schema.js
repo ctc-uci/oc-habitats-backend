@@ -13,7 +13,7 @@ const userSchema = new mongoose.Schema(
   profileImage: {
     data: Buffer,
     contentType: String,
-  },
+    },
     segments: [
       {
         type: mongoose.Schema.Types.ObjectId,
