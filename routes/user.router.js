@@ -142,7 +142,6 @@ router.post('/firebase', async (req, res) => {
   }
 });
 
-
 // create profile in DB
 router.post('/', async (req, res) => {
   try {
