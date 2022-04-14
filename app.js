@@ -31,7 +31,6 @@ app.use(
   }),
 );
 
-
 app.use(cookieParser());
 
 app.use('/users', userRouter);
@@ -39,10 +38,8 @@ app.use('/auth', authRouter);
 // TODO remove
 app.use('/test', [verifyToken, userRouter]);
 
-
 app.use(sectionSegmentRouter);
 app.use(monitorLogRouter);
-app.use('/users', usersRouter);
 app.use('/species', speciesRouter);
 app.use('/users', userRouter);
 
