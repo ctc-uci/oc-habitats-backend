@@ -8,7 +8,7 @@ const monitorLogRouter = require('./routes/monitorLog.router');
 const speciesRouter = require('./routes/species.router');
 const emailRouter = require('./routes/nodemailer.router');
 const adminInviteRouter = require('./routes/adminInvite.router');
-
+const reportRouter = require('./routes/report.router');
 const userRouter = require('./routes/user.router');
 const { authRouter, verifyToken } = require('./routes/auth.router');
 
@@ -42,7 +42,7 @@ app.use('/test', [verifyToken, userRouter]);
 
 app.use(sectionSegmentRouter);
 app.use(monitorLogRouter);
-
+app.use(reportRouter);
 app.use('/species', speciesRouter);
 
 app.use('/adminInvite', adminInviteRouter);
