@@ -12,7 +12,7 @@ const userSchema = new mongoose.Schema(
   registered: Boolean,
   profileImage: {
     data: Buffer,
-    contentType: String,
+      contentType: String,
     },
     segments: [
       {
