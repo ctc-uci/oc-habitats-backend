@@ -9,7 +9,7 @@ const speciesRouter = require('./routes/species.router');
 const emailRouter = require('./routes/nodemailer.router');
 const adminInviteRouter = require('./routes/adminInvite.router');
 const userRouter = require('./routes/user.router');
-const { authRouter, verifyToken } = require('./routes/auth.router');
+const { authRouter } = require('./routes/auth.router');
 
 require('dotenv').config();
 
@@ -35,13 +35,15 @@ app.use(cookieParser());
 
 app.use('/users', userRouter);
 app.use('/auth', authRouter);
-// TODO remove
-app.use('/test', [verifyToken, userRouter]);
+
+app.use(cookieParser());
+
+app.use('/users', userRouter);
+app.use('/auth', authRouter);
 
 app.use(sectionSegmentRouter);
 app.use(monitorLogRouter);
 app.use('/species', speciesRouter);
-app.use('/users', userRouter);
 
 app.use('/adminInvite', adminInviteRouter);
 app.use('/nodemailer', emailRouter);
