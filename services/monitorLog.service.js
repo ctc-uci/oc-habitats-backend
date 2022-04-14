@@ -261,6 +261,15 @@ const getSubmissionsByMonth = async (query) => {
   ]);
 };
 
+const getSubmissionsByDates = async (startDate, endDate) => {
+  return Submission.find({
+    lastEditedAt: {
+      $gte: new Date(startDate),
+      $lt: new Date(endDate),
+    },
+  }).sort({ lastEditedAt: 'asc' });
+};
+
 const getSubmission = async (submissionId) => {
   return Submission.findOne({ _id: submissionId });
 };
@@ -344,5 +353,6 @@ module.exports = {
   getSubmissionsByMonth,
   getListedByMonth,
   getSubmissions,
+  getSubmissionsByDates,
   createSubmission,
 };

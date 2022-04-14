@@ -10,7 +10,7 @@ const notificationRouter = require('./routes/notification.router');
 const emailRouter = require('./routes/nodemailer.router');
 const adminInviteRouter = require('./routes/adminInvite.router');
 const numbersRouter = require('./routes/numbers.router');
-
+const reportRouter = require('./routes/report.router');
 const userRouter = require('./routes/user.router');
 const dashboardRouter = require('./routes/dashboard.router');
 const { authRouter } = require('./routes/auth.router');
@@ -44,6 +44,7 @@ app.use('/forms', formRouter);
 
 app.use(sectionSegmentRouter);
 app.use(monitorLogRouter);
+app.use(reportRouter);
 app.use('/species', speciesRouter);
 app.use('/notification', notificationRouter);
 
