@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-
 const userSchema = new mongoose.Schema({
   firebaseId: String,
   firstName: String,
@@ -14,12 +13,14 @@ const userSchema = new mongoose.Schema({
     data: Buffer,
     contentType: String,
   },
-  segments: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Segments',
-    },
-  ],
-});
+    segments: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Segments',
+      },
+    ],
+  },
+  { toJSON: { virtuals: true } },
+);
 
 module.exports = mongoose.model('User', userSchema);
