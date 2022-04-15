@@ -62,19 +62,21 @@ const formatDate = (date) => {
   return date.toISOString().split('T')[0];
 };
 
+// const convertToPascal = (text) => {
+//   return text.replace(/((?<!^)[A-Z](?![A-Z]))(?=\S)/g, ' $1').replace(/^./, (s) => s.toUpperCase());
+// };
+
 const convertToCSV = (submission) => {
-  let csv = 'General Information\r\n';
-  csv += `${generalHeaders.join(',')}\r\n`;
-  csv += `${submission.submitter}`;
-  Object.values(submission.generalFieldValues).forEach((field, index) => {
-    if (index !== 1) {
-      csv += `,${field}`;
-    } else {
-      csv += `,${formatDate(field)}`;
-    }
+  let csv = `General Information\r\n${generalHeaders.join(',')}\r\n${submission.submitter}`;
+  const gfv = submission.generalFieldValues;
+  const wind = `${gfv.windSpeed} ${gfv.windDirection}`;
+  delete gfv.windDirection;
+  gfv.windSpeed = wind;
+  gfv.date = formatDate(gfv.date);
+  Object.values(gfv).forEach((field) => {
+    csv += `,${field}`;
   });
-  csv += `,${submission.sessionPartners.toString()}\r\n\r\n`;
-  csv += `${listedAnimalHeaders.join(',')}\r\n`;
+  csv += `,${submission.sessionPartners.toString()}\r\n\r\n${listedAnimalHeaders.join(',')}\r\n`;
   submission.listedSpeciesEntries.forEach((entry) => {
     csv += `${entry.map},${entry.numAdults},${entry.numFledges},${entry.numChicks},${
       entry.habitatDescription
