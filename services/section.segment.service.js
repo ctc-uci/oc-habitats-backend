@@ -18,18 +18,18 @@ module.exports = {
   },
   getSegmentsBySection: async (id) => {
     return Section.aggregate([
-      { $match: { name: id } },
+      { $match: { _id: id } },
       {
         $lookup: {
           from: 'segments',
-          localField: 'segments.name',
-          foreignField: 'name',
+          localField: 'segments',
+          foreignField: 'segmentId',
           as: 'sectionSegments',
         },
       },
       {
         $project: {
-          _id: 0,
+          _id: 1,
           name: 1,
           sectionSegments: 1,
         },
