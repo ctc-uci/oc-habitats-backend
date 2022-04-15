@@ -8,7 +8,6 @@ const segmentSchema = new mongoose.Schema(
     mapLink: String,
     parking: String,
     deadline: { type: Date, default: null },
-    assigned: { type: Boolean, default: false },
     volunteers: [String],
   },
   { toJSON: { virtuals: true } },

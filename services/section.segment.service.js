@@ -13,9 +13,6 @@ module.exports = {
   getSegments: async () => {
     return Segment.find({});
   },
-  getUnassignedSegments: async () => {
-    return Segment.find({ assigned: false }).select('_id');
-  },
   getSegmentsBySection: async (id) => {
     return Section.aggregate([
       { $match: { _id: id } },
