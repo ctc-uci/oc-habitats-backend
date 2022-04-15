@@ -8,7 +8,7 @@ module.exports = {
     return Section.findById(id);
   },
   getSegment: async (id) => {
-    return Segment.findById(id);
+    return Segment.findOne({ segmentId: id });
   },
   getSegments: async () => {
     return Segment.find({});
