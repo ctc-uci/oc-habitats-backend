@@ -36,16 +36,19 @@ module.exports = {
       },
     ]);
   },
-  createSection: async (section, segmentName) => {
+  createSection: (section) => {
     const newSection = new Section(section);
-    const results = { section: null, segment: null };
-    results.section = await newSection.save();
-    results.segment = await Segment.findOneAndUpdate({ name: segmentName }, { assigned: true });
-    return results;
+    return newSection.save();
   },
-  createSegment: (segment) => {
+  createSegment: async (segment, section) => {
     const newSegment = new Segment(segment);
-    return newSegment.save();
+    const results = { section: null, segment: null };
+    results.segment = await newSegment.save();
+    results.section = await Section.findOneAndUpdate(
+      { _id: section },
+      { $push: { segments: newSegment.segmentId } },
+    );
+    return results;
   },
   updateSection: (id, updatedSection) => {
     return Section.findByIdAndUpdate(id, updatedSection, options);

@@ -6,12 +6,7 @@ const sectionSegmentService = require('../services/section.segment.service');
 // Create section
 router.post('/section', async (req, res) => {
   try {
-    const newSection = { ...req.body };
-    delete newSection.segmentName;
-    const mongoResponse = await sectionSegmentService.createSection(
-      newSection,
-      req.body.segmentName,
-    );
+    const mongoResponse = await sectionSegmentService.createSection(req.body);
     res.status(200).send(mongoResponse);
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -21,7 +16,9 @@ router.post('/section', async (req, res) => {
 // Create segments for section
 router.post('/segment', async (req, res) => {
   try {
-    const mongoResponse = await sectionSegmentService.createSegment(req.body);
+    const newSegment = { ...req.body };
+    delete newSegment.section;
+    const mongoResponse = await sectionSegmentService.createSegment(newSegment, req.body.section);
     res.status(200).send(mongoResponse);
   } catch (err) {
     res.status(500).json({ message: err.message });
