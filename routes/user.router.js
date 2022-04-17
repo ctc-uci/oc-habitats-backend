@@ -40,6 +40,22 @@ router.get('/me', verifyToken, async (req, res) => {
   }
 });
 
+// get own user
+router.get('/me', verifyToken, async (req, res) => {
+  const { firebaseId } = req;
+  try {
+    const foundProfile = await userService.getProfile(firebaseId);
+    if (!foundProfile) {
+      res.status(400).json({ message: `Profile ${firebaseId} doesn't exist` });
+    } else {
+      res.status(200).send(foundProfile);
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(400).json({ error: err });
+  }
+});
+
 // get profile by id
 router.get('/:id', async (req, res) => {
   const { id } = req.params;
