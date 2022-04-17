@@ -62,7 +62,7 @@ router.delete('/section/:id', async (req, res) => {
 router.delete('/segment/:id', async (req, res) => {
   const { id } = req.params;
   try {
-    const mongoResponse = await sectionSegmentService.deleteSegment(id, req.body.sectionName);
+    const mongoResponse = await sectionSegmentService.deleteSegment(id, req.body.sectionId);
     res.status(200).send(mongoResponse);
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -85,6 +85,16 @@ router.get('/segments', async (_, res) => {
   try {
     const mongoResponse = await sectionSegmentService.getSegments();
     res.status(200).send(mongoResponse);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// Get all sections
+router.get('/sections', async (_, res) => {
+  try {
+    const sections = await sectionSegmentService.getSections();
+    res.status(200).send(sections);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }

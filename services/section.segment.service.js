@@ -13,6 +13,9 @@ module.exports = {
   getSegments: async () => {
     return Segment.find({});
   },
+  getSections: async () => {
+    return Section.find({}).populate('segments');
+  },
   getSegmentsBySection: async (id) => {
     return Section.aggregate([
       { $match: { _id: id } },
@@ -43,7 +46,7 @@ module.exports = {
     results.segment = await newSegment.save();
     results.section = await Section.findOneAndUpdate(
       { _id: section },
-      { $push: { segments: newSegment.segmentId } },
+      { $push: { segments: newSegment } },
     );
     return results;
   },
@@ -51,19 +54,21 @@ module.exports = {
     return Section.findByIdAndUpdate(id, updatedSection, options);
   },
   updateSegment: (id, updatedSegment) => {
+    // TO-DO: update section if segments are moved to different section
     return Segment.findByIdAndUpdate(id, updatedSegment, options);
   },
   deleteSection: (id) => {
     return Section.findByIdAndDelete(id);
   },
-  deleteSegment: async (segmentID, sectionName) => {
+  deleteSegment: async (segmentID, sectionId) => {
+    // delete form user array
     const results = { section: null, segment: null };
     results.segment = await Segment.findByIdAndDelete(segmentID);
     results.section = await Section.findOneAndUpdate(
-      { name: sectionName },
+      { _id: sectionId },
       {
         $pull: {
-          segments: { name: segmentID },
+          segments: { segmentID },
         },
       },
     );
