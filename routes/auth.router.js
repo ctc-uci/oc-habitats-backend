@@ -20,6 +20,7 @@ const verifyToken = async (req, res, next) => {
     if (!decodedToken) {
       return res.status(400).send('Empty token from firebase');
     }
+    req.firebaseId = decodedToken.uid;
     return next();
   } catch (err) {
     return res.status(400).send('@verifyToken no access token');
