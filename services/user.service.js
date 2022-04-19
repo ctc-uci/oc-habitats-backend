@@ -1,7 +1,7 @@
 const UserModel = require('../models/user.schema');
 
 const getProfile = async (profileId) => {
-  return UserModel.findOne({ firebaseId: profileId }).populate({
+  return UserModel.findOne({ _id: profileId }).populate({
     path: 'segments',
     model: 'Segment',
   });
@@ -16,12 +16,12 @@ const getAllProfiles = async () => {
 };
 
 const getAllReducedProfiles = async () => {
-  return UserModel.find({}, { firebaseId: 1, firstName: 1, lastName: 1, email: 1, _id: 0 });
+  return UserModel.find({}, { firstName: 1, lastName: 1, email: 1, _id: 1 });
 };
 
 const updateProfile = async (profileId, updatedProfile) => {
   return UserModel.updateOne(
-    { firebaseId: profileId },
+    { _id: profileId },
     {
       $set: updatedProfile,
     },
@@ -30,7 +30,7 @@ const updateProfile = async (profileId, updatedProfile) => {
 
 const assignSegment = async (userId, segmentId) => {
   return UserModel.findOneAndUpdate(
-    { firebaseId: userId },
+    { _id: userId },
     {
       $addToSet: {
         segments: segmentId,
@@ -43,7 +43,7 @@ const assignSegment = async (userId, segmentId) => {
 };
 
 const deleteProfile = async (profileId) => {
-  return UserModel.remove({ firebaseId: profileId });
+  return UserModel.remove({ _id: profileId });
 };
 
 const createProfile = async (user) => {
@@ -55,7 +55,7 @@ const createProfile = async (user) => {
 // returns [ { user_segments: [{Segment}, {Segment}, ...] } ]
 const getAssignedSegments = async (firebaseId) => {
   return UserModel.aggregate([
-    { $match: { firebaseId } },
+    { $match: { _id: firebaseId } },
     {
       $lookup: {
         from: 'segments',
@@ -77,11 +77,11 @@ const getAssignedSegments = async (firebaseId) => {
 // returns [ { submissions: [Submission, Submission, ...] } ]
 const getUserSubmissions = async (firebaseId) => {
   return UserModel.aggregate([
-    { $match: { firebaseId } },
+    { $match: { _id: firebaseId } },
     {
       $lookup: {
         from: 'submissions',
-        localField: 'firebaseId',
+        localField: '_id',
         foreignField: 'submitter',
         as: 'submissions',
       },
