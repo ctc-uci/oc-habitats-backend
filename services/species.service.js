@@ -19,6 +19,7 @@ const addNewSpecies = async (species) => {
     code: species.code,
     isListed: species.isListed,
     isPredator: species.isPredator,
+    isNeither: species.isNeither,
   });
   return newSpecies.save();
 };
