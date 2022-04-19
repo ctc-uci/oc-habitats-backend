@@ -2,16 +2,27 @@
 const express = require('express');
 const userService = require('../services/user.service');
 const admin = require('../firebase');
+const { verifyToken } = require('./auth.router');
 
 const router = express.Router();
 
-const isAlphaNumeric = (value) => {
-  if (!/^[0-9a-zA-Z]+$/.test(value)) {
-    throw new Error('User ID must be alphanumeric');
+// assign a segment to a user
+router.post('/assignSegment', async (req, res) => {
+  // TODO - add user to volunteer array of segments
+  try {
+    const { profileId, segmentId } = req.body;
+    const updatedProfile = await userService.assignSegment(profileId, segmentId);
+    if (updatedProfile.nModified === 0) {
+      res.status(400).json({ message: `Segment not assigned` });
+    } else {
+      res.status(200).send(updatedProfile);
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(400).json({ error: err.message });
   }
-};
+});
 
-// get profile by id
 // assign a segment to a user
 router.post('/assignSegment', async (req, res) => {
   // TODO - add user to volunteer array of segments
@@ -29,7 +40,23 @@ router.post('/assignSegment', async (req, res) => {
   }
 });
 
-// get profile
+// get own user
+router.get('/me', verifyToken, async (req, res) => {
+  const { firebaseId } = req;
+  try {
+    const foundProfile = await userService.getProfile(firebaseId);
+    if (!foundProfile) {
+      res.status(400).json({ message: `Profile ${firebaseId} doesn't exist` });
+    } else {
+      res.status(200).send(foundProfile);
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(400).json({ error: err });
+  }
+});
+
+// get profile by id
 router.get('/:id', async (req, res) => {
   const { id } = req.params;
   try {
@@ -72,11 +99,34 @@ router.get('/', async (req, res) => {
   }
 });
 
+// get user's assigned segments
+router.get('/segments/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    const assignedSegments = await userService.getAssignedSegments(id);
+    res.status(200).send(assignedSegments[0]);
+  } catch (err) {
+    console.error(err);
+    res.send(400).json({ message: err.message });
+  }
+});
+
+// get all of a user's monitor logs
+router.get('/submissions/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    const userSubmissions = await userService.getUserSubmissions(id);
+    res.status(200).send(userSubmissions[0]);
+  } catch (err) {
+    console.error(err);
+    res.send(400).json({ message: err.message });
+  }
+});
+
 // delete profile
 router.delete('/:id', async (req, res) => {
   const { id } = req.params;
   try {
-    isAlphaNumeric(id); // ID must be alphanumeric
     // Firebase delete
     await admin.auth().deleteUser(id);
 
@@ -140,6 +190,14 @@ router.post('/', async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(400).json({ error: err.message });
+
+    const { email, password } = req.body;
+
+    await admin.auth().createUser({
+      email,
+      emailVerified: true,
+      password,
+    });
   }
 });
 
