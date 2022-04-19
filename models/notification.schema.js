@@ -2,7 +2,6 @@ const mongoose = require('mongoose');
 
 const notificationSchema = new mongoose.Schema({
   _id: String,
-  isNew: Boolean,
   message: String,
   userId: {
     type: mongoose.Schema.Types.ObjectId,
