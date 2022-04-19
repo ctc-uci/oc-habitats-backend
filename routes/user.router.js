@@ -56,6 +56,18 @@ router.get('/me', verifyToken, async (req, res) => {
   }
 });
 
+// get other users' name and email
+router.get('/monitorPartners', verifyToken, async (req, res) => {
+  const { firebaseId } = req;
+  try {
+    const profiles = await userService.getAllReducedProfiles();
+    res.status(200).json(profiles.filter((profile) => profile.firebaseId !== firebaseId));
+  } catch (err) {
+    console.error(err);
+    res.status(400).json({ error: err });
+  }
+});
+
 // get profile by id
 router.get('/:id', async (req, res) => {
   const { id } = req.params;
