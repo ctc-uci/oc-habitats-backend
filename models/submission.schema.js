@@ -5,33 +5,48 @@ const valueSchema = new mongoose.Schema({
 });
 
 const listedSpeciesSchema = new mongoose.Schema({
-  speciesId: String,
-  numAdults: Number,
-  numFledges: Number,
-  numChicks: Number,
-  timeObserved: String,
+  species: { type: mongoose.Types.ObjectId, ref: 'Species' },
+  totalAdults: Number,
+  totalFledges: Number,
+  totalChicks: Number,
+  time: String,
   map: Number,
   habitatDescription: String,
   gps: [{ longitude: Number, latitude: Number }],
   crossStreet: String,
-  bandsSexBehavior: [
+  bandTabs: [
     {
-      topLeftBand: [String],
-      topRightBand: [String],
-      bottonLeftBand: [String],
-      bottomRightBand: [String],
-      bandingCode: String,
-      sex: String,
-      nestAndEggs: [String],
-      behaviors: [String],
+      bands: [
+        {
+          colors: [
+            {
+              type: String,
+              enum: ['A', 'B', 'G', 'K', 'L', 'N', 'O', 'P', 'R', 'S', 'V', 'W', 'Y'],
+            },
+          ],
+          alphanumeric: String,
+          flag: Boolean,
+          verticalPosition: { type: String, enum: ['ABOVE', 'BELOW'] },
+        },
+      ],
+      code: String,
     },
   ],
+  sex: [Number],
+  nesting: [String],
+  behaviors: [String],
   additionalNotes: String,
+});
+
+const additionalSpeciesSchema = new mongoose.Schema({
+  species: { type: mongoose.Types.ObjectId, ref: 'Species' },
+  total: Number,
+  notes: String,
 });
 
 const submissionSchema = new mongoose.Schema({
   generalFieldValues: {
-    surveySegment: { type: String, ref: 'Segment' },
+    segment: { type: mongoose.Types.ObjectId, ref: 'Segment' },
     date: Date,
     startTime: String,
     endTime: String,
@@ -42,14 +57,14 @@ const submissionSchema = new mongoose.Schema({
     windDirection: String,
     tides: Number,
     habitatType: String,
-    habitatWidth: Number,
+    habitatWidth: String,
   },
   generalAdditionalFieldValues: [valueSchema],
   listedSpeciesEntries: [listedSpeciesSchema],
-  additionalSpeciesEntries: [valueSchema],
-  predatorAdditionalFieldValues: [valueSchema],
-  humanActivityAdditionalFieldValues: [valueSchema],
-  submitter: String,
+  additionalSpeciesEntries: [additionalSpeciesSchema],
+  predatorFieldValues: [valueSchema],
+  humanActivityFieldValues: [valueSchema],
+  submitter: { type: mongoose.Types.ObjectId, ref: 'User' },
   status: {
     type: String,
     enum: ['UNSUBMITTED', 'UNDER_REVIEW', 'APPROVED', 'EDITS_REQUESTED'],
@@ -58,10 +73,13 @@ const submissionSchema = new mongoose.Schema({
   submittedAt: Date,
   lastEditedAt: Date,
   isSubmittedByTrainee: { type: Boolean, default: false },
-  sessionPartners: [String],
+  sessionPartners: [{ type: mongoose.Types.ObjectId, ref: 'User' }],
   requestedEdits: {
-    requests: String,
-    requestDate: Date,
+    type: {
+      requests: String,
+      requestDate: Date,
+    },
+    default: null,
   },
 });
 
