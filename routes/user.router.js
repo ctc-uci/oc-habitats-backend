@@ -206,14 +206,11 @@ router.post('/firebase', async (req, res) => {
 router.post('/', async (req, res) => {
   try {
     const requiredFields = ['firebaseId', 'firstName', 'lastName', 'email', 'role'];
-    if (
-      !requiredFields.all((field) => {
-        Object.prototype.hasOwnProperty.call(req.body, field);
-      })
-    ) {
+    if (!requiredFields.every((field) => Object.prototype.hasOwnProperty.call(req.body, field))) {
       throw new Error('Missing required field');
     }
-
+    req.body._id = req.body.firebaseId;
+    delete req.body.firebaseId;
     const profile = await userService.createProfile(req.body);
     res.status(200).send(profile);
   } catch (err) {

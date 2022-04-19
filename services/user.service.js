@@ -2,7 +2,7 @@ const UserModel = require('../models/user.schema');
 const Segment = require('../models/segment.schema');
 
 const getProfile = async (profileId) => {
-  return UserModel.findOne({ firebaseId: profileId }).populate('segments');
+  return UserModel.findOne({ _id: profileId }).populate('segments');
 };
 
 const getProfileByEmail = async (profileEmail) => {
@@ -14,12 +14,12 @@ const getAllProfiles = async () => {
 };
 
 const getAllReducedProfiles = async () => {
-  return UserModel.find({}, { firebaseId: 1, firstName: 1, lastName: 1, email: 1, _id: 0 });
+  return UserModel.find({}, { firstName: 1, lastName: 1, email: 1, _id: 1 });
 };
 
 const updateProfile = async (profileId, updatedProfile) => {
   return UserModel.updateOne(
-    { firebaseId: profileId },
+    { _id: profileId },
     {
       $set: updatedProfile,
     },
@@ -29,7 +29,7 @@ const updateProfile = async (profileId, updatedProfile) => {
 const assignSegment = async (userId, segmentId) => {
   const results = { user: null, segment: null };
   results.user = await UserModel.findOneAndUpdate(
-    { firebaseId: userId },
+    { _id: userId },
     {
       $addToSet: {
         segments: segmentId,
@@ -54,7 +54,7 @@ const assignSegment = async (userId, segmentId) => {
 };
 
 const deleteProfile = async (profileId) => {
-  return UserModel.remove({ firebaseId: profileId });
+  return UserModel.remove({ _id: profileId });
 };
 
 const createProfile = async (user) => {
@@ -67,18 +67,18 @@ const createProfile = async (user) => {
 
 // get user's assigned segments
 const getAssignedSegments = async (firebaseId) => {
-  return UserModel.findOne({ firebaseId }, { _id: 0, segments: 1 }).populate('segments');
+  return UserModel.findOne({ _id: firebaseId }, { _id: 0, segments: 1 }).populate('segments');
 };
 
 // get a user's submitted logs
 // returns [ { submissions: [Submission, Submission, ...] } ]
 const getUserSubmissions = async (firebaseId) => {
   return UserModel.aggregate([
-    { $match: { firebaseId } },
+    { $match: { _id: firebaseId } },
     {
       $lookup: {
         from: 'submissions',
-        localField: 'firebaseId',
+        localField: '_id',
         foreignField: 'submitter',
         as: 'submissions',
       },
