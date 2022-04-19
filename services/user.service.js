@@ -13,6 +13,10 @@ const getAllProfiles = async () => {
   return UserModel.find({}).populate('segments');
 };
 
+const getAllReducedProfiles = async () => {
+  return UserModel.find({}, { firebaseId: 1, firstName: 1, lastName: 1, email: 1, _id: 0 });
+};
+
 const updateProfile = async (profileId, updatedProfile) => {
   return UserModel.updateOne(
     { firebaseId: profileId },
@@ -93,6 +97,7 @@ module.exports = {
   getProfile,
   getProfileByEmail,
   getAllProfiles,
+  getAllReducedProfiles,
   getAssignedSegments,
   getUserSubmissions,
   updateProfile,
