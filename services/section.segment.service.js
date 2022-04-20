@@ -49,7 +49,7 @@ module.exports = {
         { $addToSet: { segments: id } },
       );
     }
-    results.segment = await Segment.updateOne({ _id: id }, { $set: updatedSegment });
+    results.segment = await Segment.findByIdAndUpdate(id, updatedSegment, options);
     return results;
   },
   deleteSection: (id) => {
