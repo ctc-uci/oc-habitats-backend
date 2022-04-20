@@ -1,4 +1,5 @@
 const UserModel = require('../models/user.schema');
+const Segment = require('../models/segment.schema');
 
 const getProfile = async (profileId) => {
   return UserModel.findOne({ firebaseId: profileId }).populate({
@@ -25,7 +26,8 @@ const updateProfile = async (profileId, updatedProfile) => {
 };
 
 const assignSegment = async (userId, segmentId) => {
-  return UserModel.findOneAndUpdate(
+  const results = { user: null, segment: null };
+  results.user = await UserModel.findOneAndUpdate(
     { firebaseId: userId },
     {
       $addToSet: {
@@ -36,6 +38,18 @@ const assignSegment = async (userId, segmentId) => {
       new: true,
     },
   );
+
+  results.segment = await Segment.findOneAndUpdate(
+    { _id: segmentId },
+    {
+      $addToSet: {
+        volunteers: segmentId,
+      },
+    },
+    { new: true },
+  );
+
+  return results;
 };
 
 const deleteProfile = async (profileId) => {
