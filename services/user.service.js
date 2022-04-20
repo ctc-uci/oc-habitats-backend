@@ -43,7 +43,7 @@ const assignSegment = async (userId, segmentId) => {
     { _id: segmentId },
     {
       $addToSet: {
-        volunteers: segmentId,
+        volunteers: userId,
       },
     },
     { new: true },

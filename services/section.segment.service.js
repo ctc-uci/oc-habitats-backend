@@ -1,5 +1,6 @@
 const Segment = require('../models/segment.schema');
 const Section = require('../models/section.schema');
+const User = require('../models/user.schema');
 
 const options = { new: true };
 
@@ -61,16 +62,22 @@ module.exports = {
     return Section.findByIdAndDelete(id);
   },
   deleteSegment: async (segmentID, sectionId) => {
-    // delete form user array
-    const results = { section: null, segment: null };
+    console.log(sectionId);
+    const results = { section: null, segment: null, volunteers: null };
     results.segment = await Segment.findByIdAndDelete(segmentID);
+    // delete from Section
     results.section = await Section.findOneAndUpdate(
       { _id: sectionId },
       {
         $pull: {
-          segments: { segmentID },
+          segments: segmentID,
         },
       },
+    );
+    // delete form Users that are assigned this segment (TO-DO: fix)
+    results.volunteers = await User.updateMany(
+      { firebaseId: { $in: results.segment.volunteers } },
+      { $pull: { segments: segmentID } },
     );
     return results;
   },
