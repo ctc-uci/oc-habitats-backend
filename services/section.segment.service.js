@@ -6,7 +6,7 @@ const options = { new: true };
 
 module.exports = {
   getSection: async (id) => {
-    return Section.findById(id);
+    return Section.findById(id).populate('segments');
   },
   getSegment: async (id) => {
     return Segment.findOne({ segmentId: id });
@@ -16,26 +16,6 @@ module.exports = {
   },
   getSections: async () => {
     return Section.find({}).populate('segments');
-  },
-  getSegmentsBySection: async (id) => {
-    return Section.aggregate([
-      { $match: { _id: id } },
-      {
-        $lookup: {
-          from: 'segments',
-          localField: 'segments',
-          foreignField: 'segmentId',
-          as: 'sectionSegments',
-        },
-      },
-      {
-        $project: {
-          _id: 1,
-          name: 1,
-          sectionSegments: 1,
-        },
-      },
-    ]);
   },
   createSection: (section) => {
     const newSection = new Section(section);
