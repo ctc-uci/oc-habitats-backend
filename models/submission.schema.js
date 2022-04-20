@@ -1,34 +1,32 @@
 const mongoose = require('mongoose');
 
-const valueSchema = new mongoose.Schema({
-  value: Object,
+const bandTabSchema = new mongoose.Schema({
+  colors: [
+    {
+      type: String,
+      enum: ['A', 'B', 'G', 'K', 'L', 'N', 'O', 'P', 'R', 'S', 'V', 'W', 'Y'],
+    },
+  ],
+  alphanumeric: String,
+  flag: Boolean,
+  verticalPosition: { type: String, enum: ['ABOVE', 'BELOW', ''] },
 });
 
 const listedSpeciesSchema = new mongoose.Schema({
-  species: { type: mongoose.Types.ObjectId, ref: 'Species' },
   totalAdults: Number,
   totalFledges: Number,
   totalChicks: Number,
   time: String,
   map: Number,
   habitatDescription: String,
-  gps: [{ longitude: Number, latitude: Number }],
+  gps: [{ longitude: String, latitude: String }],
   crossStreet: String,
   bandTabs: [
     {
-      bands: [
-        {
-          colors: [
-            {
-              type: String,
-              enum: ['A', 'B', 'G', 'K', 'L', 'N', 'O', 'P', 'R', 'S', 'V', 'W', 'Y'],
-            },
-          ],
-          alphanumeric: String,
-          flag: Boolean,
-          verticalPosition: { type: String, enum: ['ABOVE', 'BELOW'] },
-        },
-      ],
+      topLeft: bandTabSchema,
+      topRight: bandTabSchema,
+      bottomLeft: bandTabSchema,
+      bottomRight: bandTabSchema,
       code: String,
     },
   ],
@@ -39,39 +37,55 @@ const listedSpeciesSchema = new mongoose.Schema({
 });
 
 const additionalSpeciesSchema = new mongoose.Schema({
-  species: { type: mongoose.Types.ObjectId, ref: 'Species' },
-  total: Number,
+  count: Number,
   notes: String,
 });
 
+const predatorSchema = new mongoose.Schema({
+  species: { type: mongoose.Types.ObjectId, ref: 'Species' },
+  count: Number,
+});
+
 const submissionSchema = new mongoose.Schema({
-  generalFieldValues: {
-    segment: { type: mongoose.Types.ObjectId, ref: 'Segment' },
-    date: Date,
-    startTime: String,
-    endTime: String,
-    temperature: Number,
-    cloudCover: Number,
-    precipitation: String,
-    windSpeed: Number,
-    windDirection: String,
-    tides: Number,
-    habitatType: String,
-    habitatWidth: String,
-  },
-  generalAdditionalFieldValues: [valueSchema],
-  listedSpeciesEntries: [listedSpeciesSchema],
-  additionalSpeciesEntries: [additionalSpeciesSchema],
-  predatorFieldValues: [valueSchema],
-  humanActivityFieldValues: [valueSchema],
-  submitter: { type: mongoose.Types.ObjectId, ref: 'User' },
+  segment: { type: mongoose.Types.ObjectId, ref: 'Segment' },
+  date: Date,
+  startTime: String,
+  endTime: String,
+  temperature: Number,
+  cloudCover: Number,
+  precipitation: String,
+  windSpeed: Number,
+  windDirection: String,
+  tides: Number,
+  habitatType: String,
+  habitatWidth: String,
+  listedSpecies: [
+    {
+      species: { type: mongoose.Types.ObjectId, ref: 'Species' },
+      entries: [listedSpeciesSchema],
+      injuredCount: Number,
+    },
+  ],
+  additionalSpecies: [
+    {
+      species: { type: mongoose.Types.ObjectId, ref: 'Species' },
+      entries: [additionalSpeciesSchema],
+      injuredCount: Number,
+      beachCast: Number,
+    },
+  ],
+  generalAdditionalFieldValues: [Object],
+  predators: [predatorSchema],
+  predatorsOther: String,
+  humanActivityFieldValues: [Object],
+  submitter: { type: String, ref: 'User' },
+  submittedAt: Date,
+  lastEditedAt: Date,
   status: {
     type: String,
     enum: ['UNSUBMITTED', 'UNDER_REVIEW', 'APPROVED', 'EDITS_REQUESTED'],
     default: 'UNSUBMITTED',
   },
-  submittedAt: Date,
-  lastEditedAt: Date,
   isSubmittedByTrainee: { type: Boolean, default: false },
   sessionPartners: [{ type: mongoose.Types.ObjectId, ref: 'User' }],
   requestedEdits: {

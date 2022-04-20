@@ -36,11 +36,9 @@ const deleteSubmission = async (submissionId) => {
 };
 
 const createSubmission = async (submission, user) => {
-  if (!submission.generalFieldValues) {
-    throw new Error('Arguments missing in submission');
-  }
   const createdSubmission = new Submission({
     ...submission,
+    segment: submission.segment || null,
     submitter: user,
     submittedAt: new Date(),
     lastEditedAt: new Date(),

@@ -68,6 +68,7 @@ router.post('/submission/:id', async (req, res) => {
 // create submission
 router.post('/submission', verifyToken, async (req, res) => {
   try {
+    console.log(JSON.stringify(req.body, null, 4));
     const submission = await monitorLogService.createSubmission(req.body, req.firebaseId);
     res.status(200).send(submission);
   } catch (err) {
