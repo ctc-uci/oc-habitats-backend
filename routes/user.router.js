@@ -87,7 +87,7 @@ router.get('/segments/:id', async (req, res) => {
   const { id } = req.params;
   try {
     const assignedSegments = await userService.getAssignedSegments(id);
-    res.status(200).send(assignedSegments[0]);
+    res.status(200).send(assignedSegments);
   } catch (err) {
     console.error(err);
     res.send(400).json({ message: err.message });
