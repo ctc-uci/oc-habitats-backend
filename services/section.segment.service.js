@@ -54,15 +54,29 @@ module.exports = {
   updateSection: (id, updatedSection) => {
     return Section.findByIdAndUpdate(id, updatedSection, options);
   },
-  updateSegment: (id, updatedSegment) => {
-    // TO-DO: update section if segments are moved to different section
-    return Segment.findByIdAndUpdate(id, updatedSegment, options);
+  updateSegment: async (id, updatedSegment, section) => {
+    const results = { oldSection: null, newSection: null, segment: null };
+    // get the section the segment is currently in
+    const currentSection = await Section.findOne({ segments: id }, { _id: 1 });
+    // eslint-disable-next-line no-underscore-dangle
+    if (currentSection._id !== section) {
+      results.oldSection = await Section.updateOne(
+        { _id: currentSection },
+        { $pull: { segments: id } },
+      );
+      results.newSection = await Section.updateOne(
+        { _id: section },
+        { $addToSet: { segments: id } },
+      );
+    }
+    results.segment = await Segment.updateOne({ _id: id }, { $set: updatedSegment });
+    return results;
   },
   deleteSection: (id) => {
+    // TO-DO: What happens to the segments in the section
     return Section.findByIdAndDelete(id);
   },
   deleteSegment: async (segmentID, sectionId) => {
-    console.log(sectionId);
     const results = { section: null, segment: null, volunteers: null };
     results.segment = await Segment.findByIdAndDelete(segmentID);
     // delete from Section
@@ -74,7 +88,7 @@ module.exports = {
         },
       },
     );
-    // delete form Users that are assigned this segment (TO-DO: fix)
+    // delete form Users that are assigned this segment
     results.volunteers = await User.updateMany(
       { firebaseId: { $in: results.segment.volunteers } },
       { $pull: { segments: segmentID } },

@@ -36,11 +36,17 @@ router.put('/section/:id', async (req, res) => {
   }
 });
 
-// Update segment
+// Update segment; include section in body
 router.put('/segment/:id', async (req, res) => {
   const { id } = req.params;
+  const updatedSegment = { ...req.body };
+  delete updatedSegment.section;
   try {
-    const mongoResponse = await sectionSegmentService.updateSegment(id, req.body);
+    const mongoResponse = await sectionSegmentService.updateSegment(
+      id,
+      updatedSegment,
+      req.body.section,
+    );
     res.status(200).send(mongoResponse);
   } catch (err) {
     res.status(500).json({ message: err.message });
