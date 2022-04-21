@@ -13,6 +13,12 @@ module.exports = {
     return Segment.findOne({ segmentId: id });
   },
 
+  getSegNames: async () => {
+    return Segment.find({}, { _id: 0, segmentId: 1 });
+  },
+  getUnassignedSegments: async () => {
+    return Segment.find({ assigned: false }).select('_id');
+
   getSegments: async () => {
     return Segment.find({});
   },
