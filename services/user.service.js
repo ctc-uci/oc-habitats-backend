@@ -54,7 +54,10 @@ const deleteProfile = async (profileId) => {
 };
 
 const createProfile = async (user) => {
-  const createdProfile = new UserModel(user);
+  const createdProfile = new UserModel({
+    ...user,
+    profileImage: { data: null, contentType: null },
+  });
   return createdProfile.save();
 };
 

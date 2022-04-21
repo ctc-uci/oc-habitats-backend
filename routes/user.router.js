@@ -1,6 +1,8 @@
 /* eslint-disable no-console */
 const express = require('express');
+const fs = require('fs');
 const userService = require('../services/user.service');
+const upload = require('../middleware/upload');
 const admin = require('../firebase');
 const { verifyToken } = require('./auth.router');
 
@@ -55,7 +57,8 @@ router.get('/:id', async (req, res) => {
 });
 
 // get profile by email
-router.get('/email/:email', async (req, res) => {
+
+router.get('email/:email', async (req, res) => {
   const { email } = req.params;
   try {
     const foundProfile = await userService.getProfileByEmail(email);
@@ -126,11 +129,27 @@ router.delete('/:id', async (req, res) => {
 });
 
 // update profile
-router.put('/update/:id', async (req, res) => {
+router.put('/update/:id', upload.single('profileImage'), async (req, res) => {
   const { id } = req.params;
+  const updatedUser = { ...req.body };
+  if (req.file) {
+    updatedUser.profileImage = {
+      data: fs.readFileSync(`${req.file.path}`),
+      contentType: `${req.file.mimetype}`,
+    };
+  }
   try {
-    const updatedProfile = await userService.updateProfile(id, req.body);
-    if (updatedProfile.nModified === 0) {
+    const updatedProfile = await userService.updateProfile(id, updatedUser);
+    // if file uploaded remove it after calling mongo
+    if (req.file) {
+      fs.unlink(req.file.path, (err) => {
+        console.error(err);
+      });
+    }
+
+    if (updatedProfile.matchedCount === 0) {
+      res.status(400).json({ message: `Profile ${id} does not exists` });
+    } else if (updatedProfile.modifiedCount === 0 && updatedProfile.matchedCount === 1) {
       res.status(400).json({ message: `Profile ${id} not updated` });
     } else {
       res.status(200).send(updatedProfile);
