@@ -1,10 +1,8 @@
 const UserModel = require('../models/user.schema');
+const Segment = require('../models/segment.schema');
 
 const getProfile = async (profileId) => {
-  return UserModel.findOne({ firebaseId: profileId }).populate({
-    path: 'segments',
-    model: 'Segment',
-  });
+  return UserModel.findOne({ firebaseId: profileId }).populate('segments');
 };
 
 const getProfileByEmail = async (profileEmail) => {
@@ -12,7 +10,7 @@ const getProfileByEmail = async (profileEmail) => {
 };
 
 const getAllProfiles = async () => {
-  return UserModel.find({}).populate({ path: 'segments', model: 'Segment' });
+  return UserModel.find({}).populate('segments');
 };
 
 const updateProfile = async (profileId, updatedProfile) => {
@@ -25,7 +23,8 @@ const updateProfile = async (profileId, updatedProfile) => {
 };
 
 const assignSegment = async (userId, segmentId) => {
-  return UserModel.findOneAndUpdate(
+  const results = { user: null, segment: null };
+  results.user = await UserModel.findOneAndUpdate(
     { firebaseId: userId },
     {
       $addToSet: {
@@ -36,6 +35,18 @@ const assignSegment = async (userId, segmentId) => {
       new: true,
     },
   );
+
+  results.segment = await Segment.findOneAndUpdate(
+    { _id: segmentId },
+    {
+      $addToSet: {
+        volunteers: userId,
+      },
+    },
+    { new: true },
+  );
+
+  return results;
 };
 
 const deleteProfile = async (profileId) => {
@@ -48,25 +59,8 @@ const createProfile = async (user) => {
 };
 
 // get user's assigned segments
-// returns [ { user_segments: [{Segment}, {Segment}, ...] } ]
 const getAssignedSegments = async (firebaseId) => {
-  return UserModel.aggregate([
-    { $match: { firebaseId } },
-    {
-      $lookup: {
-        from: 'segments',
-        localField: 'segments',
-        foreignField: '_id',
-        as: 'user_segments',
-      },
-    },
-    {
-      $project: {
-        _id: 0,
-        user_segments: 1,
-      },
-    },
-  ]);
+  return UserModel.findOne({ firebaseId }, { _id: 0, segments: 1 }).populate('segments');
 };
 
 // get a user's submitted logs
