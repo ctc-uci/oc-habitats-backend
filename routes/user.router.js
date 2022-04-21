@@ -10,7 +10,7 @@ const router = express.Router();
 router.post('/assignSegment', async (req, res) => {
   try {
     const { profileId, segmentId } = req.body;
-    const updatedProfile = await userService.assingSegment(profileId, segmentId);
+    const updatedProfile = await userService.assignSegment(profileId, segmentId);
     if (updatedProfile.nModified === 0) {
       res.status(400).json({ message: `Segment not assigned` });
     } else {
