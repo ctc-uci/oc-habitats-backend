@@ -2,6 +2,7 @@
 const express = require('express');
 const userService = require('../services/user.service');
 const admin = require('../firebase');
+const { verifyToken } = require('./auth.router');
 
 const router = express.Router();
 
@@ -18,6 +19,22 @@ router.post('/assignSegment', async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(400).json({ error: err.message });
+  }
+});
+
+// get own user
+router.get('/me', verifyToken, async (req, res) => {
+  const { firebaseId } = req;
+  try {
+    const foundProfile = await userService.getProfile(firebaseId);
+    if (!foundProfile) {
+      res.status(400).json({ message: `Profile ${firebaseId} doesn't exist` });
+    } else {
+      res.status(200).send(foundProfile);
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(400).json({ error: err });
   }
 });
 
