@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const segmentSchema = new mongoose.Schema(
   {
     segmentId: { type: String, required: true, unique: true },
-    name: { type: String, required: true, unique: true },
+    name: { type: String, required: true },
     streets: { type: String },
     mapLink: String,
     parking: String,

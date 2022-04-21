@@ -8,20 +8,50 @@ module.exports = {
   getSection: async (id) => {
     return Section.findById(id).populate('segments');
   },
+
   getSegment: async (id) => {
     return Segment.findOne({ segmentId: id });
   },
+
   getSegments: async () => {
     return Segment.find({});
   },
+
   getSections: async () => {
     return Section.find({}).populate('segments');
   },
-  createSection: (section) => {
+
+  createSection: async (section) => {
+    // eslint-disable-next-line no-underscore-dangle
+    if (!section._id || !section.name || !section.map) {
+      throw new Error('Arguments missing in section');
+    }
+    // eslint-disable-next-line no-underscore-dangle
+    const sectionExists = await Section.findOne({ _id: section._id });
+    if (sectionExists) {
+      throw new Error('This section already exists');
+    }
     const newSection = new Section(section);
     return newSection.save();
   },
+
   createSegment: async (segment, section) => {
+    if (
+      !segment.segmentId ||
+      !segment.name ||
+      !segment.mapLink ||
+      !segment.parking ||
+      !segment.streets
+    ) {
+      throw new Error('Arguments missing in segment');
+    }
+    if (!section) {
+      throw new Error('Missing section argument');
+    }
+    const segmentExists = await Segment.findOne({ segmentId: segment.segmentId });
+    if (segmentExists) {
+      throw new Error('This segment already exists');
+    }
     const newSegment = new Segment(segment);
     const results = { section: null, segment: null };
     results.segment = await newSegment.save();
@@ -31,9 +61,11 @@ module.exports = {
     );
     return results;
   },
+
   updateSection: (id, updatedSection) => {
     return Section.findByIdAndUpdate(id, updatedSection, options);
   },
+
   updateSegment: async (id, updatedSegment, section) => {
     const results = { oldSection: null, newSection: null, segment: null };
     // get the section the segment is currently in
@@ -52,10 +84,12 @@ module.exports = {
     results.segment = await Segment.findByIdAndUpdate(id, updatedSegment, options);
     return results;
   },
+
   deleteSection: (id) => {
     // TO-DO: What happens to the segments in the section
     return Section.findByIdAndDelete(id);
   },
+
   deleteSegment: async (segmentID, sectionId) => {
     const results = { section: null, segment: null, volunteers: null };
     results.segment = await Segment.findByIdAndDelete(segmentID);
