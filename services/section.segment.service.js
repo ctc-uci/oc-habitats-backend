@@ -67,6 +67,11 @@ module.exports = {
   },
 
   updateSegment: async (id, updatedSegment, section) => {
+    const sectionExists = await Section.findById(section);
+    if (!sectionExists) {
+      throw new Error('This section does not exist');
+    }
+
     const results = { oldSection: null, newSection: null, segment: null };
     // get the section the segment is currently in
     const currentSection = await Section.findOne({ segments: id }, { _id: 1 });
