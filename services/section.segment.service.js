@@ -26,6 +26,14 @@ module.exports = {
     });
   },
 
+  getUnassignedSegments: async () => {
+    return Segment.find({ assigned: false }).select('_id');
+  },
+
+  getSegNames: async () => {
+    return Segment.find({}, { _id: 0, segmentId: 1 });
+  },
+
   getSections: async (populateVolunteers = false) => {
     return populateVolunteers
       ? Section.find({}).populate({ path: 'segments', populate: { path: 'volunteerData' } })
@@ -143,3 +151,5 @@ module.exports = {
     return results;
   },
 };
+  getUnassignedSegments: async () => {
+    return Segment.find({ assigned: false }).select('_id');

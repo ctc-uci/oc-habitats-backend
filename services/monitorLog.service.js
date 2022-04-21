@@ -267,6 +267,7 @@ const getSubmissionsByDates = async (startDate, endDate) => {
       $gte: new Date(startDate),
       $lt: new Date(endDate),
     },
+    status: 'APPROVED',
   }).sort({ lastEditedAt: 'asc' });
 };
 
