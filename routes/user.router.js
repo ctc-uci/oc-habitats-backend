@@ -4,12 +4,12 @@ const fs = require('fs');
 const userService = require('../services/user.service');
 const upload = require('../middleware/upload');
 const admin = require('../firebase');
+const { verifyToken } = require('./auth.router');
 
 const router = express.Router();
 
 // assign a segment to a user
 router.post('/assignSegment', async (req, res) => {
-  // TODO - add user to volunteer array of segments
   try {
     const { profileId, segmentId } = req.body;
     const updatedProfile = await userService.assignSegment(profileId, segmentId);
@@ -24,20 +24,19 @@ router.post('/assignSegment', async (req, res) => {
   }
 });
 
-// assign a segment to a user
-router.post('/assignSegment', async (req, res) => {
-  // TODO - add user to volunteer array of segments
+// get own user
+router.get('/me', verifyToken, async (req, res) => {
+  const { firebaseId } = req;
   try {
-    const { userId, segmentId } = req.body;
-    const updatedProfile = await userService.assignSegment(userId, segmentId);
-    if (updatedProfile.nModified === 0) {
-      res.status(400).json({ message: `Segment not assigned` });
+    const foundProfile = await userService.getProfile(firebaseId);
+    if (!foundProfile) {
+      res.status(400).json({ message: `Profile ${firebaseId} doesn't exist` });
     } else {
-      res.status(200).send(updatedProfile);
+      res.status(200).send(foundProfile);
     }
   } catch (err) {
     console.error(err);
-    res.status(400).json({ error: err.message });
+    res.status(400).json({ error: err });
   }
 });
 
@@ -82,6 +81,30 @@ router.get('/', async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(400).json({ message: err.message });
+  }
+});
+
+// get user's assigned segments
+router.get('/segments/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    const assignedSegments = await userService.getAssignedSegments(id);
+    res.status(200).send(assignedSegments);
+  } catch (err) {
+    console.error(err);
+    res.send(400).json({ message: err.message });
+  }
+});
+
+// get all of a user's monitor logs
+router.get('/submissions/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    const userSubmissions = await userService.getUserSubmissions(id);
+    res.status(200).send(userSubmissions[0]);
+  } catch (err) {
+    console.error(err);
+    res.send(400).json({ message: err.message });
   }
 });
 

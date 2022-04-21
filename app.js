@@ -36,11 +36,6 @@ app.use(cookieParser());
 app.use('/users', userRouter);
 app.use('/auth', authRouter);
 
-app.use(cookieParser());
-
-app.use('/users', userRouter);
-app.use('/auth', authRouter);
-
 app.use(sectionSegmentRouter);
 app.use(monitorLogRouter);
 app.use('/species', speciesRouter);

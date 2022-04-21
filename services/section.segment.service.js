@@ -1,85 +1,116 @@
 const Segment = require('../models/segment.schema');
 const Section = require('../models/section.schema');
+const User = require('../models/user.schema');
 
 const options = { new: true };
 
 module.exports = {
   getSection: async (id) => {
-    return Section.findById(id);
+    return Section.findById(id).populate('segments');
   },
+
   getSegment: async (id) => {
-    return Segment.findById(id);
+    return Segment.findOne({ segmentId: id });
   },
+
   getSegments: async () => {
     return Segment.find({});
   },
-  getUnassignedSegments: async () => {
-    return Segment.find({ assigned: false }).select('_id');
+
+  getSections: async () => {
+    return Section.find({}).populate('segments');
   },
-  getSegmentsBySection: async (id) => {
-    return Section.aggregate([
-      { $match: { name: id } },
-      {
-        $lookup: {
-          from: 'segments',
-          localField: 'segments.name',
-          foreignField: 'name',
-          as: 'sectionSegments',
-        },
-      },
-      {
-        $project: {
-          _id: 0,
-          name: 1,
-          sectionSegments: 1,
-        },
-      },
-    ]);
-  },
-  createSection: async (section, segmentName) => {
+
+  createSection: async (section) => {
+    // eslint-disable-next-line no-underscore-dangle
+    if (!section._id || !section.name || !section.map) {
+      throw new Error('Arguments missing in section');
+    }
+    // eslint-disable-next-line no-underscore-dangle
+    const sectionExists = await Section.findOne({ _id: section._id });
+    if (sectionExists) {
+      throw new Error('This section already exists');
+    }
     const newSection = new Section(section);
+    return newSection.save();
+  },
+
+  createSegment: async (segment, section) => {
+    if (
+      !segment.segmentId ||
+      !segment.name ||
+      !segment.mapLink ||
+      !segment.parking ||
+      !segment.streets
+    ) {
+      throw new Error('Arguments missing in segment');
+    }
+    if (!section) {
+      throw new Error('Missing section argument');
+    }
+    const segmentExists = await Segment.findOne({ segmentId: segment.segmentId });
+    if (segmentExists) {
+      throw new Error('This segment already exists');
+    }
+    const newSegment = new Segment(segment);
     const results = { section: null, segment: null };
-    results.section = await newSection.save();
-    results.segment = await Segment.findOneAndUpdate({ name: segmentName }, { assigned: true });
+    results.segment = await newSegment.save();
+    results.section = await Section.findOneAndUpdate(
+      { _id: section },
+      { $push: { segments: newSegment } },
+    );
     return results;
   },
-  createSegment: (segment) => {
-    const newSegment = new Segment(segment);
-    return newSegment.save();
-  },
+
   updateSection: (id, updatedSection) => {
     return Section.findByIdAndUpdate(id, updatedSection, options);
   },
-  updateSegment: (id, updatedSegment) => {
-    return Segment.findByIdAndUpdate(id, updatedSegment, options);
-  },
-  deleteSection: async (id) => {
-    const results = { section: null, segment: null };
-    const res = await Section.findById(id);
-    const segList = res.segments.map((seg) => {
-      return seg.name;
-    });
 
-    results.segment = Promise.all(
-      segList.forEach(async (seg) => {
-        await Segment.findByIdAndUpdate(seg, { assigned: false });
-      }),
-    ).catch((err) => {
-      return err;
-    });
-    results.section = await Section.findByIdAndDelete(id);
+  updateSegment: async (id, updatedSegment, section) => {
+    const sectionExists = await Section.findById(section);
+    if (!sectionExists) {
+      throw new Error('This section does not exist');
+    }
+
+    const results = { oldSection: null, newSection: null, segment: null };
+    // get the section the segment is currently in
+    const currentSection = await Section.findOne({ segments: id }, { _id: 1 });
+    // eslint-disable-next-line no-underscore-dangle
+    if (currentSection._id !== section) {
+      results.oldSection = await Section.updateOne(
+        { _id: currentSection },
+        { $pull: { segments: id } },
+      );
+      results.newSection = await Section.updateOne(
+        { _id: section },
+        { $addToSet: { segments: id } },
+      );
+    }
+    results.segment = await Segment.findByIdAndUpdate(id, updatedSegment, options);
     return results;
   },
-  deleteSegment: async (segmentID, sectionName) => {
-    const results = { section: null, segment: null };
+
+  deleteSection: (id) => {
+    // TO-DO: What happens to the segments in the section
+    return Section.findByIdAndDelete(id);
+  },
+
+  deleteSegment: async (segmentID, sectionId) => {
+    const results = { section: null, segment: null, volunteers: null };
     results.segment = await Segment.findByIdAndDelete(segmentID);
+    // delete from Section
     results.section = await Section.findOneAndUpdate(
-      { name: sectionName },
+      { _id: sectionId },
       {
         $pull: {
-          segments: { name: segmentID },
+          segments: segmentID,
         },
       },
+    );
+    // delete form Users that are assigned this segment
+    results.volunteers = await User.updateMany(
+      { firebaseId: { $in: results.segment.volunteers } },
+      { $pull: { segments: segmentID } },
     );
     return results;
   },
