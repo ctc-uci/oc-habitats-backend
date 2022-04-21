@@ -3,13 +3,14 @@ const mongoose = require('mongoose');
 const notificationSchema = new mongoose.Schema({
   _id: String,
   message: String,
+  title: String,
   userId: {
-    type: mongoose.Schema.Types.ObjectId,
+    type: String,
     ref: 'User',
   },
   type: {
     type: String,
-    enum: ['MonitorLogApproved', 'ChangesRequested'],
+    enum: ['MONITOR_LOG_APPROVED', 'CHANGES_REQUESTED'],
   },
 });
 
