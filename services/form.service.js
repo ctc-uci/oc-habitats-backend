@@ -16,6 +16,7 @@ const getFormByType = async (formType) => {
       return form.data.humanActivityAdditionalFields;
       break;
     default:
+      return form.data.generalAdditionalFields;
       break;
   }
 };
