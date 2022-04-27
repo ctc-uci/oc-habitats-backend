@@ -21,6 +21,10 @@ module.exports = {
     return Section.find({}).populate('segments');
   },
 
+  getUnassigned: async () => {
+    return Segment.find({ volunteers: { $size: 0 } }, { _id: 0, segmentId: 1 });
+  },
+
   createSection: async (section) => {
     // eslint-disable-next-line no-underscore-dangle
     if (!section._id || !section.name || !section.map) {
