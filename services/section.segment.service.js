@@ -22,7 +22,7 @@ module.exports = {
   },
 
   getUnassigned: async () => {
-    return Segment.find({ volunteers: { $size: 0 } }, { _id: 0, segmentId: 1 });
+    return Segment.find({ volunteers: { $size: 0 } }, { _id: 0, segmentId: 1, volunteers: 1 });
   },
 
   createSection: async (section) => {
