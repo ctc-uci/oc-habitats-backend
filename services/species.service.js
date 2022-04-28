@@ -1,11 +1,13 @@
 const SpeciesModel = require('../models/species.schema');
 
+const options = { new: true };
+
 const getAllSpecies = async () => {
   return SpeciesModel.find({});
 };
 
 const changeListing = async (speciesId, newListing) => {
-  return SpeciesModel.findByIdAndUpdate(speciesId, { isEndangered: newListing });
+  return SpeciesModel.findByIdAndUpdate(speciesId, { isListed: newListing });
 };
 
 const addNewSpecies = async (species) => {
@@ -15,10 +17,15 @@ const addNewSpecies = async (species) => {
   const newSpecies = new SpeciesModel({
     name: species.name,
     code: species.code,
-    isEndangered: species.isEndangered,
-    isAssigned: species.isAssigned,
+    isListed: species.isListed,
+    isPredator: species.isPredator,
+    isNeither: species.isNeither,
   });
   return newSpecies.save();
+};
+
+const updateSpecies = async (speciesId, updatedSpecies) => {
+  return SpeciesModel.findByIdAndUpdate(speciesId, updatedSpecies, options);
 };
 
 const deleteSpecies = async (speciesId) => {
@@ -29,5 +36,6 @@ module.exports = {
   getAllSpecies,
   changeListing,
   addNewSpecies,
+  updateSpecies,
   deleteSpecies,
 };
