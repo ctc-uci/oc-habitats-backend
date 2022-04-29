@@ -61,7 +61,7 @@ router.get('/monitorPartners', verifyToken, async (req, res) => {
   const { firebaseId } = req;
   try {
     const profiles = await userService.getAllReducedProfiles();
-    res.status(200).json(profiles.filter((profile) => profile.firebaseId !== firebaseId));
+    res.status(200).json(profiles.filter((profile) => profile._id !== firebaseId));
   } catch (err) {
     console.error(err);
     res.status(400).json({ error: err });
