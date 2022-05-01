@@ -27,6 +27,28 @@ const getSubmissions = async () => {
   return Submission.find();
 };
 
+const getSubmissionsByDates = async (startDate, endDate, status) => {
+  if (status) {
+    return Submission.find({
+      lastEditedAt: {
+        $gte: new Date(startDate),
+        $lt: new Date(endDate),
+      },
+      status: 'APPROVED',
+    }).sort({ lastEditedAt: 'asc' });
+
+    // Not completed - UNSUBMITTED
+    // Completed - APPROVED
+  }
+
+  return Submission.find({
+    lastEditedAt: {
+      $gte: new Date(startDate),
+      $lt: new Date(endDate),
+    },
+  }).sort({ lastEditedAt: 'asc' });
+};
+
 const getSubmission = async (submissionId) => {
   return Submission.findOne({ _id: submissionId });
 };
@@ -49,6 +71,7 @@ module.exports = {
   updateSubmission,
   deleteSubmission,
   getSubmission,
+  getSubmissionsByDates,
   getSubmissions,
   createSubmission,
 };
