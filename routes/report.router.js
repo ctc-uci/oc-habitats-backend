@@ -1,3 +1,4 @@
+/* eslint-disable no-underscore-dangle */
 const express = require('express');
 const fs = require('fs');
 const AdmZip = require('adm-zip');
@@ -40,41 +41,31 @@ const listedAnimalHeaders = [
   'Nest & Eggs',
   'Behaviors Observed',
   'Banding Code',
+  'Accuracy Confidence',
   'Additional Notes',
 ];
 
 const nonListedHeaders = ['Species', 'Total', 'Notes'];
 
-const predatorHeaders = [
-  'Corvid: American Crow',
-  'Corvid: Common Rave',
-  'Raptors',
-  'Horse',
-  'Coyote',
-  'Fox',
-  'Cat',
-  'Other Predator(s)',
-];
-
-const humanHeaders = [
-  'Beach Activity',
-  'Water Activity',
-  'Airborne Activity',
-  '[Speeding] Motorized Vehicles',
-  '[Non-Speeding] Motorized Vehicles',
-  '[Off Leash] Domestic Animals',
-  '[On Leash] Domestic Animals',
-  'Outreach',
-  'Other Notes',
-];
+// const humanHeaders = [
+//   'Beach Activity',
+//   'Water Activity',
+//   'Airborne Activity',
+//   '[Speeding] Motorized Vehicles',
+//   '[Non-Speeding] Motorized Vehicles',
+//   '[Off Leash] Domestic Animals',
+//   '[On Leash] Domestic Animals',
+//   'Outreach',
+//   'Other Notes',
+// ];
 
 const disclaimer =
   'OC Habtiats strives to survey as many of the segments as possible each month. Some segments may not have been surveyed due to volunteer cancellation (due to illness, weather, or some other reason). Some segments are regularly not getting surveyed due to access issues (parking or land structures).  Some segments get more attention than others since we are aware the SNPL use these segments more often or there are issues with these segments that need more regular attention. ';
 
 const reportsDirectory = `${__dirname}\\..\\reports`;
-const formatDate = (date) => {
-  return date.toISOString().split('T')[0];
-};
+// const formatDate = (date) => {
+//   return date.toISOString().split('T')[0];
+// };
 
 // const convertToPascal = (text) => {
 //   return text.replace(/((?<!^)[A-Z](?![A-Z]))(?=\S)/g, ' $1').replace(/^./, (s) => s.toUpperCase());
@@ -82,26 +73,27 @@ const formatDate = (date) => {
 
 const joinValues = (valuesList) => {
   let row = '';
-  // let size;
-  // if (Array.isArray(valuesList)) {
-  //   valuesList.forEach((value) => {
-  //     size = Object.values(value).length;
-  //     Object.values(value).forEach((entry, index) => {
-  //       if (index === size - 2) row += `${entry}\r\n`;
-  //       else if (index !== size - 1) {
-  //         row += `${entry},`;
-  //       }
-  //     });
-  //   });
-  // } else {
-  const size = Object.values(valuesList).length;
-  Object.values(valuesList).forEach((entry, index) => {
-    if (index === size - 2) row += `${entry}\r\n`;
-    else if (index !== size - 1) {
-      row += `${entry},`;
-    }
-  });
-  // }
+  let size;
+  if (Array.isArray(valuesList)) {
+    valuesList.forEach((value) => {
+      size = Object.values(value).length;
+      Object.values(value).forEach((entry, index) => {
+        if (index === size - 2) row += `${entry}\r\n`;
+        else if (index !== size - 1) {
+          row += `${entry},`;
+        }
+      });
+    });
+  } else {
+    // const size = Object.values(valuesList).length;
+    size = Object.values(valuesList).length;
+    Object.values(valuesList).forEach((entry, index) => {
+      if (index === size - 2) row += `${entry}\r\n`;
+      else if (index !== size - 1) {
+        row += `${entry},`;
+      }
+    });
+  }
 
   return row;
 };
@@ -131,6 +123,10 @@ const joinKeys = (keysList) => {
   return row;
 };
 
+const formatArray = (ar) => {
+  return `"${ar}"`;
+};
+
 const convertToCSV = (submission) => {
   // Append General Information Headers
   let csv = `General Information\r\n${generalHeaders.join(',')}`;
@@ -138,89 +134,90 @@ const convertToCSV = (submission) => {
 
   // Append Additional General Information Headers
   if (submission.generalAdditionalFieldValues) {
-    csv += joinKeys(submission.generalAdditionalFieldValues.toJSON());
-    additionalString = joinValues(submission.generalAdditionalFieldValues.toJSON());
+    csv += joinKeys(submission.generalAdditionalFieldValues);
+    additionalString = joinValues(submission.generalAdditionalFieldValues);
   }
 
-  // Format + Append General Information Fields
-  csv += `\r\n${submission.submitter}`;
-  const gfv = submission.generalFieldValues;
-  const wind = `${gfv.windSpeed} ${gfv.windDirection}`;
-  delete gfv.windDirection;
-  gfv.windSpeed = wind;
-  gfv.date = formatDate(gfv.date);
-  Object.values(gfv).forEach((field) => {
-    csv += `,${field}`;
-  });
+  // Append General Information Fields
+  csv += `\r\n${submission.submitter.firstName} ${submission.submitter.lastName},${
+    submission.segment.segmentId
+  },${submission.date},${submission.startTime},${submission.endTime},${submission.temperature},${
+    submission.cloudCover
+  },${submission.precipitation},${submission.windSpeed} ${submission.windDirection},${
+    submission.tides
+  },${submission.habitatType},${
+    submission.habitatWidth
+  },"${submission.sessionPartners.toString()}"`;
 
-  // Append Additional General Information Fields + Listed Species Headers
-  csv += `,"${submission.sessionPartners.toString()}",${additionalString}\r\n\r\n`;
+  // Append ADDITIONAL General Information Fields
+  csv += `,${additionalString}\r\n\r\n`;
   additionalString = '';
 
-  // Append Listed Species Title, Header, and Fields
-  submission.listedSpeciesEntries.forEach((entry) => {
-    csv += `${entry.speciesId}\r\n${listedAnimalHeaders.join(',')}\r\n`;
-    const gpsIndex = 6;
-    const nestAndEggsIndex = 14;
-    const entryValues = Object.values(entry.toJSON());
-    for (let i = 0; i < nestAndEggsIndex; i += 1) {
-      if (i === gpsIndex) {
-        // eslint-disable-next-line no-loop-func
-        entryValues[i].forEach((set) => {
-          const temp = set;
-          // eslint-disable-next-line no-underscore-dangle
-          delete temp._id;
-          csv += `"${JSON.stringify(temp).replace(/"([^"]+)":/g, '$1:')}"`;
-        });
-        csv += ',';
-      } else {
-        csv += `${entryValues[i]},`;
-      }
-    }
-    csv += `"${entry.bandsSexBehavior[0].nestAndEggs}",${entry.bandsSexBehavior[0].bandingCode},${entry.accuracyConfidence},${entry.additionalNotes}`;
+  // Append Listed Species, Header, and Fields
+  submission.listedSpecies.forEach((entry) => {
+    csv += `${entry.species.name}\r\n${listedAnimalHeaders.join(',')}\r\n`;
+    entry.entries.forEach((input) => {
+      const formattedInput = { ...input.toJSON() };
+      delete formattedInput._id;
+      let formattedGps = '';
+      formattedInput.gps.forEach((set) => {
+        const temp = { ...set };
+        delete temp._id;
+        formattedGps += `${JSON.stringify(temp).replace(/"([^"]+)":/g, '$1:')} `;
+      });
 
-    csv += `\r\n\r\nInjured ${entry.speciesId}\r\n${entry.injured}\r\n`;
+      formattedInput.gps = formatArray(formattedGps);
+      const codesAr = [];
+
+      formattedInput.bandTabs.forEach((band) => {
+        codesAr.push(band.code);
+      });
+
+      formattedInput.nesting = formatArray(formattedInput.nesting);
+      formattedInput.sex = formattedInput.sex.toString();
+      formattedInput.bandTabs = formatArray(codesAr);
+      formattedInput.behaviors = formatArray(formattedInput.behaviors);
+      csv += joinValues(formattedInput);
+    });
+
+    csv += `\r\nInjured ${entry.species.name}\r\n${entry.injuredCount}\r\n`;
   });
-
-  // TODO: Additional Spcies Entries?
 
   // Append Non Listed Species Title, Headers, and Fields
   csv += `\r\nNon-Listed Species\r\n${nonListedHeaders.join(',')}\r\n`;
-  submission.nonListedSpeciesEntries.forEach((entries) => {
-    entries.species.forEach((specie) => {
-      csv += `${specie.name},${specie.total},${specie.additionalNotes}\r\n`;
-    });
+  submission.additionalSpecies.entries.forEach((addSpecie) => {
+    csv += `${addSpecie.species.name},${addSpecie.count},${addSpecie.notes}\r\n`;
   });
-  csv += `\r\nInjured Terrestrial Wildlife\r\n${submission.nonListedSpeciesEntries[0].injured}\r\n`;
 
-  // Append Predator Title + Headers
-  csv += `\r\nPredators\r\n${predatorHeaders.join(',')}`;
-  // Append Additional Predator Headers
+  // submission.nonListedSpeciesEntries.forEach((entries) => {
+  //   entries.species.forEach((specie) => {
+  //     csv += `${specie.name},${specie.total},${specie.additionalNotes}\r\n`;
+  //   });
+  // });
+  csv += `\r\nInjured Terrestrial Wildlife\r\n${submission.additionalSpecies.injuredCount}\r\n`;
 
-  if (submission.predatorAdditionalFieldValues) {
-    csv += joinKeys(submission.predatorAdditionalFieldValues.toJSON());
-    additionalString = joinValues(submission.predatorAdditionalFieldValues.toJSON());
-  }
-  // Append Predator Fields
-  csv += '\r\n';
-  csv += joinValues(submission.predatorEntries.toJSON());
-  // Append Additional Predator Fields
-  csv += additionalString;
-  additionalString = '';
+  // // Append Predator Title + Headers
+  const predatorHeaders = [];
+  const predatorCount = [];
+  submission.predators.forEach((predator) => {
+    predatorHeaders.push(predator.species.name);
+    predatorCount.push(predator.count);
+  });
+  csv += `"${predatorHeaders}",Other predators(s)\r\n`;
+  csv += `"${predatorCount}",${submission.predatorOthers}\r\n\r\n`;
 
-  // Append Human Activity Title + Headers
-  csv += `\r\nHuman Activity\r\n${humanHeaders.join(',')}`;
-  // Append Additional Human Activity Headers
-  if (submission.humanActivityAdditionalFieldValues) {
-    csv += joinKeys(submission.humanActivityAdditionalFieldValues.toJSON());
-    additionalString = joinValues(submission.humanActivityAdditionalFieldValues.toJSON());
-  }
-  // Append Human Activity Fields
-  csv += '\r\n';
-  csv += joinValues(submission.humanActivityEntries.toJSON());
-  // Append Additional Human Activity Fields
-  csv += additionalString;
-  additionalString = '';
+  // // Append Human Activity Title + Headers
+  // csv += `\r\nHuman Activity\r\n${humanHeaders.join(',')}`;
+  // // Append Additional Human Activity Headers
+  // if (submission.humanActivityAdditionalFieldValues) {
+  //   csv += joinKeys(submission.humanActivityAdditionalFieldValues.toJSON());
+  //   additionalString = joinValues(submission.humanActivityAdditionalFieldValues.toJSON());
+  // }
+  // // Append Human Activity Fields
+  // csv += '\r\n';
+  // csv += joinValues(submission.humanActivityEntries.toJSON());
+  // // Append Additional Human Activity Fields
+  // csv += additionalString;
 
   csv += '\r\n\r\nSegment Totals\r\n';
 
@@ -241,8 +238,8 @@ const getSegmentRow = async (submissions) => {
   const segments = await getSegmentNames();
   const segmentDictionary = Object.assign({}, ...segments.map((segment) => ({ [segment]: 0 })));
   submissions.forEach((submission) => {
-    if (submission.generalFieldValues.surveySegment in segmentDictionary) {
-      segmentDictionary[submission.generalFieldValues.surveySegment] += 1;
+    if (submission.segment.segmentId in segmentDictionary) {
+      segmentDictionary[submission.segment.segmentId] += 1;
     }
   });
   segmentString += joinKeys(segmentDictionary);
@@ -282,14 +279,15 @@ router.get('/report', async (req, res) => {
       const zipFileContents = zip.toBuffer();
       res.end(zipFileContents);
     }
-    //   zip.addLocalFile(`${__dirname}\\..\\reports\\monitorReport0.csv`);
-    //   const zipFileContents = zip.toBuffer();
-    //   res.writeHead(200, {
-    //     'Content-Disposition': `attachment; filename="report.zip"`,
-    //     'Content-Type': 'application/zip',
-    //   });
-    //   res.end(zipFileContents);
+    // zip.addLocalFile(`${__dirname}\\..\\reports\\monitorReport0.csv`);
+    // const zipFileContents = zip.toBuffer();
+    // res.writeHead(200, {
+    //   'Content-Disposition': `attachment; filename="report.zip"`,
+    //   'Content-Type': 'application/zip',
+    // });
+    // res.end(zipFileContents);
     // }
+    // res.status(200).send('gppd');
   } catch (err) {
     console.error(err);
     res.status(400).json({ error: err });

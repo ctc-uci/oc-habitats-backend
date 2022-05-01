@@ -268,7 +268,13 @@ const getSubmissionsByDates = async (startDate, endDate) => {
       $lt: new Date(endDate),
     },
     status: 'APPROVED',
-  }).sort({ lastEditedAt: 'asc' });
+  })
+    .populate('submitter', 'firstName lastName -_id')
+    .populate('segment', '-_id segmentId')
+    .populate('sessionPartners', 'firstName lastName -_id')
+    .populate('listedSpecies.species', 'name -_id')
+    .populate('additionalSpecies.species', 'name -_id')
+    .sort({ lastEditedAt: 'asc' });
 };
 
 const getSubmission = async (submissionId) => {
