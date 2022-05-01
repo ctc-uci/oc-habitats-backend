@@ -199,6 +199,7 @@ router.post('/firebase', async (req, res) => {
     res.status(200).send(user);
   } catch (err) {
     console.error(err);
+    res.status(400).send(err.message);
   }
 });
 
@@ -216,14 +217,6 @@ router.post('/', async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(400).json({ error: err.message });
-
-    const { email, password } = req.body;
-
-    await admin.auth().createUser({
-      email,
-      emailVerified: true,
-      password,
-    });
   }
 });
 
