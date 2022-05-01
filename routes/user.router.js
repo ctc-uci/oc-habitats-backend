@@ -40,6 +40,34 @@ router.get('/me', verifyToken, async (req, res) => {
   }
 });
 
+// get own user
+router.get('/me', verifyToken, async (req, res) => {
+  const { firebaseId } = req;
+  try {
+    const foundProfile = await userService.getProfile(firebaseId);
+    if (!foundProfile) {
+      res.status(400).json({ message: `Profile ${firebaseId} doesn't exist` });
+    } else {
+      res.status(200).send(foundProfile);
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(400).json({ error: err });
+  }
+});
+
+// get other users' name and email
+router.get('/monitorPartners', verifyToken, async (req, res) => {
+  const { firebaseId } = req;
+  try {
+    const profiles = await userService.getAllReducedProfiles();
+    res.status(200).json(profiles.filter((profile) => profile._id !== firebaseId));
+  } catch (err) {
+    console.error(err);
+    res.status(400).json({ error: err });
+  }
+});
+
 // get profile by id
 router.get('/:id', async (req, res) => {
   const { id } = req.params;
@@ -178,14 +206,11 @@ router.post('/firebase', async (req, res) => {
 router.post('/', async (req, res) => {
   try {
     const requiredFields = ['firebaseId', 'firstName', 'lastName', 'email', 'role'];
-    if (
-      !requiredFields.all((field) => {
-        Object.prototype.hasOwnProperty.call(req.body, field);
-      })
-    ) {
+    if (!requiredFields.every((field) => Object.prototype.hasOwnProperty.call(req.body, field))) {
       throw new Error('Missing required field');
     }
-
+    req.body._id = req.body.firebaseId;
+    delete req.body.firebaseId;
     const profile = await userService.createProfile(req.body);
     res.status(200).send(profile);
   } catch (err) {

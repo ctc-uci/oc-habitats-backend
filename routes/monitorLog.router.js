@@ -1,5 +1,6 @@
 const express = require('express');
 const monitorLogService = require('../services/monitorLog.service');
+const { verifyToken } = require('./auth.router');
 
 const router = express.Router();
 
@@ -65,9 +66,10 @@ router.post('/submission/:id', async (req, res) => {
 });
 
 // create submission
-router.post('/submission', async (req, res) => {
+router.post('/submission', verifyToken, async (req, res) => {
   try {
-    const submission = await monitorLogService.createSubmission(req.body);
+    console.log(JSON.stringify(req.body, null, 4));
+    const submission = await monitorLogService.createSubmission(req.body, req.firebaseId);
     res.status(200).send(submission);
   } catch (err) {
     console.error(err);
@@ -93,12 +95,11 @@ router.get('/form', async (_, res) => {
 });
 
 // update form
-router.post('/form/:id', async (req, res) => {
-  const { id } = req.params;
+router.post('/form', async (req, res) => {
   try {
-    const updatedForm = await monitorLogService.updateForm(id, req.body);
+    const updatedForm = await monitorLogService.updateForm(req.body);
     if (updatedForm.nModified === 0) {
-      res.status(400).json({ message: `Form ${id} not updated` });
+      res.status(400).json({ message: `Form not updated` });
     } else {
       res.status(200).send(updatedForm);
     }
