@@ -10,11 +10,17 @@ module.exports = {
   },
 
   getSegment: async (id) => {
-    return Segment.findOne({ segmentId: id });
+    return Segment.findOne({ segmentId: id }).populate({
+      path: 'volunteerData',
+      select: 'id segments firebaseId firstName lastName email role isActive isTrainee',
+    });
   },
 
   getSegments: async () => {
-    return Segment.find({});
+    return Segment.find({}).populate({
+      path: 'volunteerData',
+      select: 'id segments firebaseId firstName lastName email role isActive isTrainee',
+    });
   },
 
   getSections: async () => {
