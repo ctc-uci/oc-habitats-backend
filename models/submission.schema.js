@@ -37,6 +37,7 @@ const listedSpeciesSchema = new mongoose.Schema({
 });
 
 const additionalSpeciesSchema = new mongoose.Schema({
+  species: { type: mongoose.Types.ObjectId, ref: 'Species' },
   count: Number,
   notes: String,
 });
@@ -66,18 +67,15 @@ const submissionSchema = new mongoose.Schema({
       injuredCount: Number,
     },
   ],
-  additionalSpecies: [
-    {
-      species: { type: mongoose.Types.ObjectId, ref: 'Species' },
-      entries: [additionalSpeciesSchema],
-      injuredCount: Number,
-      beachCast: Number,
-    },
-  ],
+  additionalSpecies: {
+    entries: [additionalSpeciesSchema],
+    injuredCount: Number,
+    beachCast: Number,
+  },
   generalAdditionalFieldValues: [Object],
   predators: [predatorSchema],
   predatorsOther: String,
-  humanActivityFieldValues: [Object],
+  humanActivity: [Object],
   submitter: { type: String, ref: 'User' },
   submittedAt: Date,
   lastEditedAt: Date,
