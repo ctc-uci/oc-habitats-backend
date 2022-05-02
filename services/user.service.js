@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 
 const UserModel = require('../models/user.schema');
 const Segment = require('../models/segment.schema');
+const Submissions = require('../models/submission.schema');
 
 const getProfile = async (profileId) => {
   return UserModel.findOne({ _id: profileId }).populate('segments');
@@ -101,24 +102,7 @@ const getAssignedSegments = async (firebaseId) => {
 // get a user's submitted logs
 // returns [ { submissions: [Submission, Submission, ...] } ]
 const getUserSubmissions = async (firebaseId) => {
-  return UserModel.aggregate([
-    { $match: { _id: firebaseId } },
-    {
-      $lookup: {
-        from: 'submissions',
-        localField: '_id',
-        foreignField: 'submitter',
-        as: 'submissions',
-      },
-    },
-    { $sort: { 'submissions.submittedAt': -1 } },
-    {
-      $project: {
-        _id: 0,
-        submissions: 1,
-      },
-    },
-  ]);
+  return Submissions.find({ submitter: firebaseId }).populate('segment');
 };
 
 module.exports = {
