@@ -9,7 +9,7 @@ const { verifyToken } = require('./auth.router');
 const router = express.Router();
 
 // sets segment assignments for a user to segmentIds array
-router.post('/setSegmentAssignments', async (req, res) => {
+router.put('/setSegmentAssignments', async (req, res) => {
   try {
     const { profileId, segmentIds } = req.body;
     const updatedProfile = await userService.setSegmentAssignments(profileId, segmentIds);
