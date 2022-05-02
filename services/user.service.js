@@ -26,28 +26,41 @@ const updateProfile = async (profileId, updatedProfile) => {
   );
 };
 
-const assignSegment = async (userId, segmentId) => {
-  const results = { user: null, segment: null };
-  results.user = await UserModel.findOneAndUpdate(
-    { _id: userId },
+const setSegmentAssignments = async (userId, segmentIds) => {
+  const results = { user: null, segments: null };
+
+  // Remove userId from all currently assigned segments
+  await Segment.updateMany(
+    { volunteers: userId },
     {
-      $addToSet: {
-        segments: segmentId,
+      $pull: {
+        volunteers: userId,
       },
-    },
-    {
-      new: true,
     },
   );
 
-  results.segment = await Segment.findOneAndUpdate(
-    { _id: segmentId },
+  // Add userId to all segments in segmentIds
+  await Segment.updateMany(
+    { _id: { $in: segmentIds } },
     {
       $addToSet: {
         volunteers: userId,
       },
     },
-    { new: true },
+  );
+
+  // Fetch updated segments, as updateMany does not return
+  // modified documents
+  results.segments = await Segment.find({ _id: { $in: segmentIds } });
+
+  // Overwrite UserModel.segments with new value
+  results.user = await UserModel.findOneAndUpdate(
+    { _id: userId },
+    {
+      $set: {
+        segments: segmentIds,
+      },
+    },
   );
 
   return results;
@@ -101,7 +114,7 @@ module.exports = {
   getAssignedSegments,
   getUserSubmissions,
   updateProfile,
-  assignSegment,
+  setSegmentAssignments,
   deleteProfile,
   createProfile,
 };
