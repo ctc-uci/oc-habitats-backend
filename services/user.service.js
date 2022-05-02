@@ -1,3 +1,5 @@
+const mongoose = require('mongoose');
+
 const UserModel = require('../models/user.schema');
 const Segment = require('../models/segment.schema');
 
@@ -29,39 +31,52 @@ const updateProfile = async (profileId, updatedProfile) => {
 const setSegmentAssignments = async (userId, segmentIds) => {
   const results = { user: null, segments: null };
 
-  // Remove userId from all currently assigned segments
-  await Segment.updateMany(
-    { volunteers: userId },
-    {
-      $pull: {
-        volunteers: userId,
-      },
-    },
-  );
+  // Perform queries in transaction so changes are not made if
+  // an error occurs
+  const session = await mongoose.startSession();
+  try {
+    await session.withTransaction(async () => {
+      // Check that all segments exist and there are no duplicates
+      const validSegments = await Segment.count({ _id: { $in: segmentIds } });
+      if (validSegments !== segmentIds.length) throw new Error('Invalid segmentIds');
 
-  // Add userId to all segments in segmentIds
-  await Segment.updateMany(
-    { _id: { $in: segmentIds } },
-    {
-      $addToSet: {
-        volunteers: userId,
-      },
-    },
-  );
+      // Remove userId from all currently assigned segments
+      await Segment.updateMany(
+        { volunteers: userId },
+        {
+          $pull: {
+            volunteers: userId,
+          },
+        },
+      );
 
-  // Fetch updated segments, as updateMany does not return
-  // modified documents
+      // Add userId to all segments in segmentIds
+      await Segment.updateMany(
+        { _id: { $in: segmentIds } },
+        {
+          $addToSet: {
+            volunteers: userId,
+          },
+        },
+      );
+
+      // Overwrite UserModel.segments with new value
+      results.user = await UserModel.findOneAndUpdate(
+        { _id: userId },
+        {
+          $set: {
+            segments: segmentIds,
+          },
+        },
+        { new: true },
+      );
+    });
+  } finally {
+    session.endSession();
+  }
+
+  // Fetch updated segments, as updateMany does not return modified documents
   results.segments = await Segment.find({ _id: { $in: segmentIds } });
-
-  // Overwrite UserModel.segments with new value
-  results.user = await UserModel.findOneAndUpdate(
-    { _id: userId },
-    {
-      $set: {
-        segments: segmentIds,
-      },
-    },
-  );
 
   return results;
 };
