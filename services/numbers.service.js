@@ -5,15 +5,24 @@ const getAllNumbers = async () => {
 };
 
 const addNewNumber = async (number) => {
-  if (!number.name || !number.number) {
-    throw new Error('Arguments missing in species');
-  }
-  const newNumber = new NumbersModel({
-    name: number.name,
-    number: number.number,
-    note: number.note,
+  NumbersModel.findOne({ name: number.name }, function (err) {
+    if (err) throw new Error('The name for this number already exists');
   });
-  return newNumber.save();
+
+  NumbersModel.findOne({ number: number.number }, function (err) {
+    if (err) throw new Error('This number already exists');
+  });
+
+  if (!number.name || !number.number) {
+    throw new Error('Arguments missing for Number');
+  } else {
+    const newNumber = new NumbersModel({
+      name: number.name,
+      number: number.number,
+      note: number.note,
+    });
+    return newNumber.save();
+  }
 };
 
 const deleteNumber = async (numberId) => {
@@ -21,6 +30,14 @@ const deleteNumber = async (numberId) => {
 };
 
 const updateNumber = async (numberId, updatedNumber) => {
+  NumbersModel.findOne({ name: updatedNumber.name }, function (err) {
+    if (err) throw new Error('The name for this number already exists');
+  });
+
+  NumbersModel.findOne({ number: updatedNumber.number }, function (err) {
+    if (err) throw new Error('This number already exists');
+  });
+
   return NumbersModel.updateOne(
     { id: numberId },
     {

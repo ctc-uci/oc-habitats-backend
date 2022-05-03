@@ -42,7 +42,7 @@ router.delete('/:id', async (req, res) => {
 });
 
 // update number
-router.put('/update/:id', async (req, res) => {
+router.put('/:id', async (req, res) => {
   const { id } = req.params;
   try {
     const updatedNumber = await numbersService.updateNumber(id, req.body);
