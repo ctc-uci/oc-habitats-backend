@@ -100,7 +100,6 @@ const getAssignedSegments = async (firebaseId) => {
 };
 
 // get a user's submitted logs
-// returns [ { submissions: [Submission, Submission, ...] } ]
 const getUserSubmissions = async (firebaseId) => {
   return Submissions.find({ submitter: firebaseId }).populate('segment');
 };

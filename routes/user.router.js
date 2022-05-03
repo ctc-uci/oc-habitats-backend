@@ -68,7 +68,7 @@ router.get('/monitorPartners', verifyToken, async (req, res) => {
   }
 });
 
-// get a user's submittions
+// get a user's submissions
 router.get('/userSubmissions', verifyToken, async (req, res) => {
   const { firebaseId } = req;
   try {
