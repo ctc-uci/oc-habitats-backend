@@ -4,12 +4,12 @@ const getFormByType = async (formType) => {
   return FormModel.findOne({ formType });
 };
 
-const updateForm = async (formType, formFields) => {
-  return FormModel.updateOne(
-    { formType },
+const updateForm = async (formType, newField) => {
+  return FormModel.updateMany(
+    { FormType: formType },
     {
-      $set: {
-        additionalFields: formFields,
+      $push: {
+        additionalFields: newField,
       },
     },
   );

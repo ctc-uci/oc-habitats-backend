@@ -48,9 +48,9 @@ router.delete('/:type', async (req, res) => {
 // update form
 router.put('/update/:type', async (req, res) => {
   const { type } = req.params;
-  const { formFields } = req.body;
+  const { newField } = req.body;
   try {
-    const updatedForm = await formService.updateForm(type, formFields);
+    const updatedForm = await formService.updateForm(type, newField);
     if (updatedForm.nModified === 0) {
       res.status(400).json({ message: `Form type ${type} not updated` });
     } else {
@@ -63,10 +63,11 @@ router.put('/update/:type', async (req, res) => {
 });
 
 // create form
-router.post('/', async (req, res) => {
-  const { formType, additionalFields } = req.body;
+router.post('/:type', async (req, res) => {
+  const { type } = req.params;
+  const { additionalFields } = req.body;
   try {
-    const form = await formService.createForm(formType, additionalFields);
+    const form = await formService.createForm(type, additionalFields);
     res.status(200).send(form);
   } catch (err) {
     console.error(err);

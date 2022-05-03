@@ -18,7 +18,6 @@ const fieldSchema = new mongoose.Schema({
 const FORM_TYPES = {
   GENERAL_TYPE: 'general',
   LISTED_SPECIES_TYPE: 'listedSpecies',
-  PREDATOR_TYPE: 'predator',
   HUMAN_ACTIVITY_TYPE: 'humanActivity',
 };
 
