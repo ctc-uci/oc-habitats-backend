@@ -68,6 +68,18 @@ router.get('/monitorPartners', verifyToken, async (req, res) => {
   }
 });
 
+// get a user's submissions
+router.get('/userSubmissions', verifyToken, async (req, res) => {
+  const { firebaseId } = req;
+  try {
+    const submissions = await userService.getUserSubmissions(firebaseId);
+    res.status(200).send(submissions);
+  } catch (err) {
+    console.error(err);
+    res.status(400).json({ error: err });
+  }
+});
+
 // get profile by id
 router.get('/:id', async (req, res) => {
   const { id } = req.params;
@@ -118,18 +130,6 @@ router.get('/segments/:id', async (req, res) => {
   try {
     const assignedSegments = await userService.getAssignedSegments(id);
     res.status(200).send(assignedSegments);
-  } catch (err) {
-    console.error(err);
-    res.send(400).json({ message: err.message });
-  }
-});
-
-// get all of a user's monitor logs
-router.get('/submissions/:id', async (req, res) => {
-  const { id } = req.params;
-  try {
-    const userSubmissions = await userService.getUserSubmissions(id);
-    res.status(200).send(userSubmissions[0]);
   } catch (err) {
     console.error(err);
     res.send(400).json({ message: err.message });
