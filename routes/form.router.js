@@ -28,6 +28,17 @@ router.get('/:type', async (req, res) => {
   }
 });
 
+// delete form field by id
+router.delete('/delete/field', async (req, res) => {
+  const { formType, fieldId } = req.body;
+  const newForm = await formService.deleteFormFieldById(formType, fieldId);
+  if (newForm.nModified === 0) {
+    res.status(400).send(`Field in ${formType} from with id ${fieldId} not deleted`);
+  } else {
+    res.status(200).send(`Field in ${formType} from with id ${fieldId} successfully deleted`);
+  }
+});
+
 // delete form
 router.delete('/:type', async (req, res) => {
   const { type } = req.params;

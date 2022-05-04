@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 const FormModel = require('../models/form.schema');
 
 const getFormByType = async (formType) => {
@@ -15,8 +16,25 @@ const updateForm = async (formType, newField) => {
   );
 };
 
+const updateFormFieldById = async (formType, fieldId, fieldBody) => {
+  console.log(formType, fieldId, fieldBody);
+};
+
 const deleteForm = async (formType) => {
   return FormModel.deleteOne({ formType });
+};
+
+const deleteFormFieldById = async (formType, fieldId) => {
+  FormModel.findOneAndUpdate(
+    { formType },
+    { $pull: { additionalFields: fieldId } },
+    (err, data) => {
+      if (err) {
+        console.log(err);
+      }
+      return data;
+    },
+  );
 };
 
 const createForm = async (formType, additionalFields) => {
@@ -42,6 +60,8 @@ const createForm = async (formType, additionalFields) => {
 module.exports = {
   getFormByType,
   updateForm,
+  updateFormFieldById,
   deleteForm,
+  deleteFormFieldById,
   createForm,
 };
