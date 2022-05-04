@@ -56,6 +56,19 @@ router.delete('/:type', async (req, res) => {
   }
 });
 
+// update form field by id
+router.put('/update/field', async (req, res) => {
+  const { formType, fieldId, fieldBody } = req.body;
+  console.log('/update/field route hit');
+  try {
+    await formService.updateFormFieldById(formType, fieldId, fieldBody);
+    res.status(200).send('field successfully updated');
+  } catch (err) {
+    console.error(err);
+    res.status(400).json({ error: err.message });
+  }
+});
+
 // update form
 router.put('/update/:type', async (req, res) => {
   const { type } = req.params;
@@ -73,17 +86,17 @@ router.put('/update/:type', async (req, res) => {
   }
 });
 
-// create form
-router.post('/:type', async (req, res) => {
-  const { type } = req.params;
-  const { additionalFields } = req.body;
-  try {
-    const form = await formService.createForm(type, additionalFields);
-    res.status(200).send(form);
-  } catch (err) {
-    console.error(err);
-    res.status(400).json({ error: err.message });
-  }
-});
+// // create form
+// router.post('/:type', async (req, res) => {
+//   const { type } = req.params;
+//   const { additionalFields } = req.body;
+//   try {
+//     const form = await formService.createForm(type, additionalFields);
+//     res.status(200).send(form);
+//   } catch (err) {
+//     console.error(err);
+//     res.status(400).json({ error: err.message });
+//   }
+// });
 
 module.exports = router;

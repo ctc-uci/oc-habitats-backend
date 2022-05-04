@@ -17,7 +17,26 @@ const updateForm = async (formType, newField) => {
 };
 
 const updateFormFieldById = async (formType, fieldId, fieldBody) => {
-  console.log(formType, fieldId, fieldBody);
+  const { fieldTitle, fieldType, fieldTooltip } = fieldBody;
+  FormModel.updateOne(
+    {
+      $and: [{ formType }, { 'additionalFields._id': fieldId }],
+    },
+    {
+      $set: {
+        'additionalFields.$.title': fieldTitle,
+        'additionalFields.$.fieldType': fieldType,
+        'additionalFields.$.tooltip': fieldTooltip,
+      },
+    },
+    (err, field) => {
+      if (err) {
+        console.log(err);
+        throw new Error(err);
+      }
+      return field;
+    },
+  );
 };
 
 const deleteForm = async (formType) => {
