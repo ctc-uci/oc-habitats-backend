@@ -1,13 +1,23 @@
 const mongoose = require('mongoose');
 
-const segmentSchema = new mongoose.Schema({
-  _id: String,
-  name: { type: String, required: true, unique: true },
-  description: { type: String, default: null },
-  geofence_area: { type: String, default: null },
-  deadline: { type: Date, default: null },
-  assigned: { type: Boolean, default: false },
-  volunteers: [String],
+const segmentSchema = new mongoose.Schema(
+  {
+    segmentId: { type: String, required: true, unique: true },
+    name: { type: String, required: true },
+    streets: { type: String },
+    mapLink: String,
+    parking: String,
+    deadline: { type: Date, default: null },
+    volunteers: [String],
+  },
+  { toJSON: { virtuals: true }, toObject: { virtuals: true } },
+);
+
+// Virtual property to get data for users assigned to this segment
+segmentSchema.virtual('volunteerData', {
+  ref: 'User',
+  localField: '_id',
+  foreignField: 'segments',
 });
 
 module.exports = mongoose.model('Segment', segmentSchema);

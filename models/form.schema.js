@@ -18,7 +18,7 @@ const fieldSchema = new mongoose.Schema({
 const formSchema = new mongoose.Schema({
   _id: Number,
   generalAdditionalFields: [fieldSchema],
-  listedSpeciesAdditonalFields: [fieldSchema],
+  listedSpeciesAdditionalFields: [fieldSchema],
   predatorAdditionalFields: [fieldSchema],
   humanActivityAdditionalFields: [fieldSchema],
 });
