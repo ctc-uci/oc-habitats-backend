@@ -10,6 +10,7 @@ const emailRouter = require('./routes/nodemailer.router');
 const adminInviteRouter = require('./routes/adminInvite.router');
 const userRouter = require('./routes/user.router');
 const { authRouter } = require('./routes/auth.router');
+const formRouter = require('./routes/form.router');
 
 require('dotenv').config();
 
@@ -35,6 +36,7 @@ app.use(cookieParser());
 
 app.use('/users', userRouter);
 app.use('/auth', authRouter);
+app.use('/forms', formRouter);
 
 app.use(sectionSegmentRouter);
 app.use(monitorLogRouter);
