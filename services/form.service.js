@@ -25,16 +25,17 @@ const deleteForm = async (formType) => {
 };
 
 const deleteFormFieldById = async (formType, fieldId) => {
-  FormModel.findOneAndUpdate(
-    { formType },
-    { $pull: { additionalFields: fieldId } },
-    (err, data) => {
-      if (err) {
-        console.log(err);
-      }
-      return data;
-    },
-  );
+  console.log(`Processing request for form type ${formType} and title ${fieldId}`);
+  const foundForm = await FormModel.findOne({ formType });
+  console.log(foundForm);
+  foundForm.additionalFields.pull({ _id: fieldId });
+  foundForm.save((err, newDoc) => {
+    if (err) {
+      throw new Error('Error deleting field in document');
+    } else {
+      return newDoc;
+    }
+  });
 };
 
 const createForm = async (formType, additionalFields) => {

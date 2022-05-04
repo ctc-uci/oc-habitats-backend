@@ -1,7 +1,10 @@
 const mongoose = require('mongoose');
 
 const fieldSchema = new mongoose.Schema({
-  title: String,
+  title: {
+    type: String,
+    required: true,
+  },
   fieldType: {
     type: String,
     enum: ['NUMBER', 'TEXT', 'CUSTOM'],
@@ -11,16 +14,15 @@ const fieldSchema = new mongoose.Schema({
     type: Boolean,
     required: true,
   },
-  tooltip: String,
-  deleted: Boolean,
+  tooltip: {
+    type: String,
+    required: true,
+  },
 });
 
 const formSchema = new mongoose.Schema({
-  _id: Number,
-  generalAdditionalFields: [fieldSchema],
-  listedSpeciesAdditionalFields: [fieldSchema],
-  predatorAdditionalFields: [fieldSchema],
-  humanActivityAdditionalFields: [fieldSchema],
+  formType: String,
+  additionalFields: [fieldSchema],
 });
 
 module.exports = mongoose.model('Form', formSchema);
