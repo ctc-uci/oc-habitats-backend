@@ -16,27 +16,75 @@ const updateForm = async (formType, newField) => {
   );
 };
 
-const updateFormFieldById = async (formType, fieldId, fieldBody) => {
-  const { fieldTitle, fieldType, fieldTooltip } = fieldBody;
-  FormModel.updateOne(
-    {
-      $and: [{ formType }, { 'additionalFields._id': fieldId }],
-    },
+const updateFormFieldById = async (type, fieldId, fieldBody) => {
+  const { title, fieldType, tooltip } = fieldBody;
+  FormModel.findOneAndUpdate(
+    { formType: type, 'additionalFields._id': fieldId },
     {
       $set: {
-        'additionalFields.$.title': fieldTitle,
-        'additionalFields.$.fieldType': fieldType,
-        'additionalFields.$.tooltip': fieldTooltip,
+        'additionalFields.$': {
+          title,
+          fieldType,
+          tooltip,
+        },
       },
     },
-    (err, field) => {
+    (err, doc) => {
       if (err) {
         console.log(err);
-        throw new Error(err);
+      } else {
+        console.log('NEW DOC: ---------------');
+        console.log(doc);
       }
-      return field;
     },
   );
+  // const field = form.additionalFields.id('6272ce79061f2899fb78d86c');
+  // form.addtionalFields.indexOf(field) = {
+  //   title: 'hi',
+  //   fieldType: 'hi',
+  //   static: true,
+  //   tooltip: 'hi',
+  // };
+  // form.save((err, newForm) => {
+  //   if (err) {
+  //     throw new Error(err.message);
+  //   }
+  //   else {
+  //     console.log(newForm);
+  //     return newForm;
+  //   }
+  // });
+  // field.title = 'hi';
+  // field.fieldType = 'hi';
+  // field.tooltip = 'hi';
+  // field.save((err, savedField) => {
+  //   if (err) {
+  //     throw new Error(err);
+  //   } else {
+  //     console.log(savedField);
+  //   }
+  // });
+  // FormModel.updateOne(
+  //   { formType: 'general', 'additionalFields._id': '6272ce79061f2899fb78d86c' },
+  //   {
+  //     $set: {
+  //       'additionalFields.$.title': 'hi',
+  //       'additionalFields.$.fieldType': 'hi',
+  //       'additionalFields.$.tooltip': 'hi',
+  //     },
+  //   },
+  // );
+  // FormModel.updateOne({ formType: 'general', 'additionalFields._id': '6272ce79061f2899fb78d86c'}, $set: {
+  //   'additionalFields.$.title': 'hi',
+  //   'additionalFields.$.fieldType': 'hi',
+  //   'additionalFields.$.tooltip': 'hi',
+  // });
+  //   console.log(fieldId, fieldBody);
+  //   // const { fieldTitle, fieldType, fieldTooltip } = fieldBody;
+  // const form = await FormModel.findOne({ formType: 'general' });
+  //   const fields = await form.additionalFields.;
+  //   console.log('FIELD: ------------------');
+  //   console.log(field);
 };
 
 const deleteForm = async (formType) => {
