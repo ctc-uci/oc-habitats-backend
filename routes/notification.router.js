@@ -4,9 +4,9 @@ const notificationService = require('../services/notification.service');
 const router = express.Router();
 
 router.get('/', async (req, res) => {
-  const { userId } = req;
+  const { firebaseId } = req;
   try {
-    const userNotifications = await notificationService.getAllUserNotifications(userId);
+    const userNotifications = await notificationService.getAllUserNotifications(firebaseId);
     res.status(200).send(userNotifications);
   } catch (err) {
     console.error(err);
