@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const userSchema = new mongoose.Schema(
   {
-    firebaseId: String,
+    _id: String,
     firstName: String,
     lastName: String,
     email: String,
@@ -17,7 +17,7 @@ const userSchema = new mongoose.Schema(
     segments: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Segments',
+        ref: 'Segment',
       },
     ],
   },

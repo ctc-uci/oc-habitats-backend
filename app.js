@@ -11,7 +11,7 @@ const adminInviteRouter = require('./routes/adminInvite.router');
 const numbersRouter = require('./routes/numbers.router');
 
 const userRouter = require('./routes/user.router');
-const { authRouter, verifyToken } = require('./routes/auth.router');
+const { authRouter } = require('./routes/auth.router');
 
 require('dotenv').config();
 
@@ -20,7 +20,6 @@ const app = express();
 const PORT = process.env.PORT || 3001;
 
 mongoose.connect(process.env.MONGO_URI, {
-  // useCreateIndex: true,
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });
@@ -38,14 +37,10 @@ app.use(cookieParser());
 
 app.use('/users', userRouter);
 app.use('/auth', authRouter);
-// TODO remove
-app.use('/test', [verifyToken, userRouter]);
 
 app.use(sectionSegmentRouter);
 app.use(monitorLogRouter);
-
 app.use('/species', speciesRouter);
-app.use('/users', userRouter);
 
 app.use('/adminInvite', adminInviteRouter);
 app.use('/nodemailer', emailRouter);
