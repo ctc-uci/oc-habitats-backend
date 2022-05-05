@@ -23,8 +23,10 @@ module.exports = {
     });
   },
 
-  getSections: async () => {
-    return Section.find({}).populate('segments');
+  getSections: async (populateVolunteers = false) => {
+    return populateVolunteers
+      ? Section.find({}).populate({ path: 'segments', populate: { path: 'volunteerData' } })
+      : Section.find({}).populate('segments');
   },
 
   createSection: async (section) => {
