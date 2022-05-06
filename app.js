@@ -29,7 +29,7 @@ app.use(
   express.json(),
   cors({
     origin: `${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}`,
-    // credentials: true,
+    credentials: true,
   }),
 );
 
