@@ -10,6 +10,19 @@ const router = express.Router();
 //   }
 // };
 
+// create form
+router.post('/create/field', async (req, res) => {
+  const { formType, fieldBody } = req.body;
+  try {
+    await formService.createFieldInForm(formType, fieldBody);
+    res.send(
+      `successfully added ${fieldBody.title} field of type ${fieldBody.fieldType} with tooltip ${fieldBody.tooltip} to ${formType} form`,
+    );
+  } catch (err) {
+    res.json({ error: err.message });
+  }
+});
+
 // get form by type
 router.get('/:type', async (req, res) => {
   const { type } = req.params;
