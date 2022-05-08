@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 
 const fieldSchema = new mongoose.Schema({
+  _id: mongoose.Types.ObjectId,
   title: {
     type: String,
     required: true,

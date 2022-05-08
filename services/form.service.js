@@ -1,10 +1,50 @@
 /* eslint-disable no-console */
+const mongoose = require('mongoose');
 const FormModel = require('../models/form.schema');
 
+/*
+ORDER:
+CREATE (POST) SERVICES
+READ (GET) SERVICES
+UPDATE (PUT) SERVICES
+DELETE (DELETE) SERVICES
+*/
+
+// create form
+const createForm = async (formType, additionalFields) => {
+  const createdForm = new FormModel({
+    formType,
+    additionalFields,
+  });
+  return createdForm.save();
+};
+
+// create field
+const createFieldInForm = async (formType, fieldBody) => {
+  const { title, /* fieldType, */ tooltip } = fieldBody;
+  const updatedForm = await FormModel.updateOne(
+    { formType },
+    {
+      $push: {
+        additionalFields: {
+          _id: mongoose.Types.ObjectId(),
+          title,
+          formType,
+          static: false,
+          tooltip,
+        },
+      },
+    },
+  );
+  return updatedForm;
+};
+
+// read form
 const getFormByType = async (formType) => {
   return FormModel.findOne({ formType });
 };
 
+// update form
 const updateForm = async (formType, newField) => {
   return FormModel.updateMany(
     { FormType: formType },
@@ -16,6 +56,7 @@ const updateForm = async (formType, newField) => {
   );
 };
 
+// update field
 const updateFormFieldById = async (type, fieldId, fieldBody) => {
   const { title, fieldType, tooltip } = fieldBody;
   FormModel.findOneAndUpdate(
@@ -87,10 +128,12 @@ const updateFormFieldById = async (type, fieldId, fieldBody) => {
   //   console.log(field);
 };
 
+// delete form
 const deleteForm = async (formType) => {
   return FormModel.deleteOne({ formType });
 };
 
+// delete field
 const deleteFormFieldById = async (formType, fieldId) => {
   console.log(`Processing request for form type ${formType} and title ${fieldId}`);
   const foundForm = await FormModel.findOne({ formType });
@@ -103,24 +146,6 @@ const deleteFormFieldById = async (formType, fieldId) => {
       return newDoc;
     }
   });
-};
-
-const createForm = async (formType, additionalFields) => {
-  const createdForm = new FormModel({
-    formType,
-    additionalFields,
-  });
-  return createdForm.save();
-};
-
-const createFieldInForm = async (formType, fieldBody) => {
-  const { title, /* fieldType, */ tooltip } = fieldBody;
-  const updatedForm = await FormModel.updateOne(
-    { formType },
-    { $push: { additionalFields: { title, formType, static: false, tooltip } } },
-  );
-
-  return updatedForm;
 };
 
 // const createForm = async (invite) => {
