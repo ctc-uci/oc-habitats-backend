@@ -80,17 +80,6 @@ router.put('/update/field', async (req, res) => {
     res.status(200).send(`field in ${type} form with id ${fieldId} successfully updated`);
   } catch (err) {
     console.error(err);
-    res.status(400).send(`error: ${err.message}`);
-  }
-});
-
-// delete form field by id
-router.delete('/delete/field', async (req, res) => {
-  const { formType, fieldId } = req.body;
-  try {
-    await formService.deleteFormFieldById(formType, fieldId);
-    res.status(200).send(`Successfully deleted field in ${formType} form with id ${fieldId}`);
-  } catch (err) {
     res.status(400).json({ error: err.message });
   }
 });
