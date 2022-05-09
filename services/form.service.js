@@ -113,6 +113,16 @@ const createForm = async (formType, additionalFields) => {
   return createdForm.save();
 };
 
+const createFieldInForm = async (formType, fieldBody) => {
+  const { title, /* fieldType, */ tooltip } = fieldBody;
+  const updatedForm = await FormModel.updateOne(
+    { formType },
+    { $push: { additionalFields: { title, formType, static: false, tooltip } } },
+  );
+
+  return updatedForm;
+};
+
 // const createForm = async (invite) => {
 //   // work in progress
 
@@ -132,4 +142,5 @@ module.exports = {
   deleteForm,
   deleteFormFieldById,
   createForm,
+  createFieldInForm,
 };
