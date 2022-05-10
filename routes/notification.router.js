@@ -1,9 +1,10 @@
 const express = require('express');
 const notificationService = require('../services/notification.service');
+const { verifyToken } = require('./auth.router');
 
 const router = express.Router();
 
-router.get('/', async (req, res) => {
+router.get('/', verifyToken, async (req, res) => {
   const { firebaseId } = req;
   try {
     const userNotifications = await notificationService.getAllUserNotifications(firebaseId);
@@ -32,6 +33,8 @@ router.delete('/:id', async (req, res) => {
 // create notification
 router.post('/', async (req, res) => {
   try {
+    req.body.userId = req.body.firebaseId;
+    delete req.body.firebaseId;
     const notification = await notificationService.createNotification(req.body);
     res.status(200).send(notification);
   } catch (err) {
