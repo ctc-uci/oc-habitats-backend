@@ -80,10 +80,10 @@ router.get('/:type', async (req, res) => {
 // update form field by id
 router.put('/update/field', async (req, res) => {
   console.log('/update/field route hit');
-  const { type, fieldId, fieldBody } = req.body;
+  const { formType, fieldId, fieldBody } = req.body;
   try {
-    await formService.updateFormFieldById(type, fieldId, fieldBody);
-    res.status(200).send(`field in ${type} form with id ${fieldId} successfully updated`);
+    await formService.updateFormFieldById(formType, fieldId, fieldBody);
+    res.status(200).send(`field in ${formType} form with id ${fieldId} successfully updated`);
   } catch (err) {
     console.error(err);
     res.status(400).json({ error: err.message });
