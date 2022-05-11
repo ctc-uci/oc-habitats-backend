@@ -1,8 +1,37 @@
 /* eslint-disable no-console */
+const mongoose = require('mongoose');
 const FormModel = require('../models/form.schema');
 
+const createForm = async (formType, additionalFields) => {
+  const createdForm = new FormModel({
+    formType,
+    additionalFields,
+  });
+  return createdForm.save();
+};
+
+const createFieldInForm = async (formType, fieldBody) => {
+  const { title, fieldType, tooltip } = fieldBody;
+  const updatedForm = await FormModel.updateOne(
+    { formType },
+    {
+      $push: {
+        additionalFields: {
+          _id: mongoose.Types.ObjectId(),
+          title,
+          fieldType,
+          static: false,
+          tooltip,
+        },
+      },
+    },
+  );
+
+  return updatedForm;
+};
+
 const getFormByType = async (formType) => {
-  return FormModel.findOne({ formType });
+  return FormModel.findOne({ formType }).populate('additionalFields');
 };
 
 const updateForm = async (formType, newField) => {
@@ -105,14 +134,6 @@ const deleteFormFieldById = async (formType, fieldId) => {
   });
 };
 
-const createForm = async (formType, additionalFields) => {
-  const createdForm = new FormModel({
-    formType,
-    additionalFields,
-  });
-  return createdForm.save();
-};
-
 // const createForm = async (invite) => {
 //   // work in progress
 
@@ -132,4 +153,5 @@ module.exports = {
   deleteForm,
   deleteFormFieldById,
   createForm,
+  createFieldInForm,
 };
