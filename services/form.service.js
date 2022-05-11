@@ -1,8 +1,9 @@
 /* eslint-disable no-console */
+const mongoose = require('mongoose');
 const FormModel = require('../models/form.schema');
 
 const getFormByType = async (formType) => {
-  return FormModel.findOne({ formType });
+  return FormModel.findOne({ formType }).populate('additionalFields');
 };
 
 const updateForm = async (formType, newField) => {
@@ -117,7 +118,17 @@ const createFieldInForm = async (formType, fieldBody) => {
   const { title, /* fieldType, */ tooltip } = fieldBody;
   const updatedForm = await FormModel.updateOne(
     { formType },
-    { $push: { additionalFields: { title, formType, static: false, tooltip } } },
+    {
+      $push: {
+        additionalFields: {
+          _id: mongoose.Types.ObjectId(),
+          title,
+          formType,
+          static: false,
+          tooltip,
+        },
+      },
+    },
   );
 
   return updatedForm;
