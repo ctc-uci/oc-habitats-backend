@@ -38,18 +38,55 @@ router.post('/create/field', async (req, res) => {
 // read form
 router.get('/:type', async (req, res) => {
   const { type } = req.params;
+  const { additionalFields } = req.body;
   try {
-    const foundForm = await formService.getFormByType(type);
-    if (!foundForm) {
-      res.status(400).json({ message: `Form type ${type} doesn't exist` });
+    const form = await formService.createForm(type, additionalFields);
+    res.status(200).send(form);
+  } catch (err) {
+    console.error(err);
+    res.status(400).json({ error: err.message });
+  }
+});
+
+// create field
+router.post('/create/field', async (req, res) => {
+  const { formType, fieldBody } = req.body;
+  try {
+    await formService.createFieldInForm(formType, fieldBody);
+    res.send(
+      `successfully added ${fieldBody.title} field of type ${fieldBody.fieldType} with tooltip ${fieldBody.tooltip} to ${formType} form`,
+    );
+  } catch (err) {
+    res.json({ error: err.message });
+  }
+});
+
+// read form
+router.get('/:type', async (req, res) => {
+  const { type } = req.params;
+  try {
+    const deletedForm = await formService.deleteForm(type);
+    if (deletedForm.nModified === 0) {
+      res.status(400).json({ message: `Form with type ${type} not deleted` });
     } else {
-      console.log('GET /adminInvite/:type hit, foundForm looks like:');
-      console.log(foundForm);
-      res.status(200).send(foundForm);
+      res.status(200).send(`form with type ${type} deleted`);
     }
   } catch (err) {
     console.error(err);
     res.status(400).json({ error: err });
+  }
+});
+
+// update form field by id
+router.put('/update/field', async (req, res) => {
+  console.log('/update/field route hit');
+  const { type, fieldId, fieldBody } = req.body;
+  try {
+    await formService.updateFormFieldById(type, fieldId, fieldBody);
+    res.status(200).send(`field in ${type} form with id ${fieldId} successfully updated`);
+  } catch (err) {
+    console.error(err);
+    res.status(400).json({ error: err.message });
   }
 });
 
@@ -70,17 +107,6 @@ router.put('/update/:type', async (req, res) => {
   }
 });
 
-// delete form field by id
-router.delete('/delete/field', async (req, res) => {
-  const { formType, fieldId } = req.body;
-  try {
-    await formService.deleteFormFieldById(formType, fieldId);
-    res.status(200).send(`Successfully deleted field in ${formType} form with id ${fieldId}`);
-  } catch (err) {
-    res.status(400).json({ error: err.message });
-  }
-});
-
 // delete form
 router.delete('/:type', async (req, res) => {
   const { type } = req.params;
@@ -93,6 +119,17 @@ router.delete('/:type', async (req, res) => {
     }
   } catch (err) {
     console.error(err);
+    res.status(400).json({ error: err.message });
+  }
+});
+
+// delete form field by id
+router.delete('/delete/field', async (req, res) => {
+  const { formType, fieldId } = req.body;
+  try {
+    await formService.deleteFormFieldById(formType, fieldId);
+    res.status(200).send(`Successfully deleted field in ${formType} form with id ${fieldId}`);
+  } catch (err) {
     res.status(400).json({ error: err.message });
   }
 });

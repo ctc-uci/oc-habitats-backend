@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const fieldSchema = new mongoose.Schema({
-  id: {
+  _id: {
     type: mongoose.Schema.Types.ObjectId,
     required: true,
   },
