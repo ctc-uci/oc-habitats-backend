@@ -184,11 +184,14 @@ const deleteSubmission = async (submissionId) => {
   return Submission.remove({ _id: submissionId });
 };
 
-const createSubmission = async (submission) => {
-  if (!submission.submitter || !submission.generalFieldValues || !submission.listedSpeciesEntries) {
-    throw new Error('Arguments missing in submission');
-  }
-  const createdSubmission = new Submission({ ...submission, submittedAt: new Date() });
+const createSubmission = async (submission, user) => {
+  const createdSubmission = new Submission({
+    ...submission,
+    segment: submission.segment || null,
+    submitter: user,
+    submittedAt: new Date(),
+    lastEditedAt: new Date(),
+  });
   return createdSubmission.save();
 };
 

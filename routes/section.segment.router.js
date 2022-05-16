@@ -106,6 +106,16 @@ router.get('/sections', async (_, res) => {
   }
 });
 
+// Get all sections, with volunteerData populated
+router.get('/populatedSections', async (_, res) => {
+  try {
+    const sections = await sectionSegmentService.getSections(true);
+    res.status(200).send(sections);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
 // Get specific section
 router.get('/section/:id', async (req, res) => {
   const { id } = req.params;

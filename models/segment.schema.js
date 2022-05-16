@@ -10,7 +10,14 @@ const segmentSchema = new mongoose.Schema(
     deadline: { type: Date, default: null },
     volunteers: [String],
   },
-  { toJSON: { virtuals: true } },
+  { toJSON: { virtuals: true }, toObject: { virtuals: true } },
 );
+
+// Virtual property to get data for users assigned to this segment
+segmentSchema.virtual('volunteerData', {
+  ref: 'User',
+  localField: '_id',
+  foreignField: 'segments',
+});
 
 module.exports = mongoose.model('Segment', segmentSchema);
