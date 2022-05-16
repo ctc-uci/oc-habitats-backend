@@ -1,29 +1,62 @@
-// TODO:
-// GET all submissions that are for the specific month
-// FOR each submission in that month filter out
-//            --- number of submissions that are considered completed - APPROVED
-//            --- number of submissions that are considered not completed - UNSUBMITED, under review, edit requests
-// Get number of unassigned segments
-// Get number of monitor logs UNDER_REVIEW
-// For each listed species, get count all the injured listed species
-// Get count for all additional species
-// Get count for all human activities
-// Get count for all segments the number of adults, fledges, and chicks for each listed specie.
-
+/* eslint-disable no-param-reassign */
 const express = require('express');
 
 const router = express.Router();
 const monitorLogService = require('../services/monitorLog.service');
-// const segmentService = require('../services/section.segment.service');
+const sectionSegmentService = require('../services/section.segment.service');
+
+const setRangeQuery = (startDate, endDate) => {
+  return {
+    submittedAt: {
+      $gte: new Date(startDate),
+      $lte: new Date(endDate),
+    },
+  };
+};
 
 // get own user
-router.get('/me', async (req, res) => {
+router.get('/dashboard', async (req, res) => {
   try {
-    const { startDate, endDate } = req.body;
-    const results = await monitorLogService.getSubmissionsByDates(startDate, endDate, null);
-    console.log(results);
+    let { startDate, endDate } = req.body;
+    startDate = new Date(startDate);
+    endDate = new Date(endDate);
+    startDate.setUTCHours(0, 0, 0, 0);
+    endDate.setUTCHours(23, 59, 59, 999);
+    const query = setRangeQuery(startDate, endDate);
+    const submissionsResults = await monitorLogService.getSubmissionsByMonth(query);
+    query.status = 'SUBMITTED';
+    const listedResults = await monitorLogService.getListedByMonth(query);
+    const unassignedResults = await sectionSegmentService.getUnassigned();
+    const adjustedResults = [...listedResults];
+    adjustedResults.forEach((result) => {
+      const dict = {};
+      result.info.forEach((submission) => {
+        if (submission.segment in dict) {
+          dict[submission.segment].totalAdults += submission.entries.totalAdults;
+          dict[submission.segment].totalFledges += submission.entries.totalFledges;
+          dict[submission.segment].totalChicks += submission.entries.totalChicks;
+        } else {
+          dict[submission.segment] = {
+            totalAdults: submission.entries.totalAdults,
+            totalFledges: submission.entries.totalFledges,
+            totalChicks: submission.entries.totalChicks,
+          };
+        }
+      });
+      result.segments = dict;
+      delete result.info;
+    });
+
+    const finalResult = {
+      listedSpeciesInfo: adjustedResults,
+      otherInfo: submissionsResults,
+      unassignedSegments: unassignedResults,
+    };
+    res.status(200).send(finalResult);
   } catch (err) {
     console.error(err);
     res.status(400).json({ error: err });
   }
 });
+
+module.exports = router;

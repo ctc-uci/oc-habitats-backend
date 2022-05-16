@@ -9,6 +9,7 @@ const speciesRouter = require('./routes/species.router');
 const emailRouter = require('./routes/nodemailer.router');
 const adminInviteRouter = require('./routes/adminInvite.router');
 const userRouter = require('./routes/user.router');
+const dashboardRouter = require('./routes/dashboard.router');
 const { authRouter } = require('./routes/auth.router');
 
 require('dotenv').config();
@@ -42,7 +43,7 @@ app.use('/species', speciesRouter);
 
 app.use('/adminInvite', adminInviteRouter);
 app.use('/nodemailer', emailRouter);
-
+app.use(dashboardRouter);
 app.listen(PORT, () => {
   console.log(`Server listening on ${PORT}`);
 });
