@@ -81,7 +81,7 @@ const submissionSchema = new mongoose.Schema({
   lastEditedAt: Date,
   status: {
     type: String,
-    enum: ['UNSUBMITTED', 'UNDER_REVIEW', 'APPROVED', 'EDITS_REQUESTED'],
+    enum: ['UNSUBMITTED', 'UNDER_REVIEW', 'APPROVED', 'EDITS_REQUESTED', 'RESUBMITTED'],
     default: 'UNSUBMITTED',
   },
   isSubmittedByTrainee: { type: Boolean, default: false },
