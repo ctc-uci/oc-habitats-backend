@@ -51,11 +51,9 @@ const updateFormFieldById = async (type, fieldId, fieldBody) => {
     { formType: type, 'additionalFields._id': fieldId },
     {
       $set: {
-        'additionalFields.$': {
-          title,
-          fieldType,
-          tooltip,
-        },
+        'additionalFields.$.title': title,
+        'additionalFields.$.fieldType': fieldType,
+        'additionalFields.$.tooltip': tooltip,
       },
     },
     (err, doc) => {
