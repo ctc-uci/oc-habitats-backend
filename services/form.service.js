@@ -47,6 +47,9 @@ const updateForm = async (formType, newField) => {
 
 const updateFormFieldById = async (type, fieldId, fieldBody) => {
   const { title, fieldType, tooltip } = fieldBody;
+  console.log(
+    `type: ${type}, fieldId: ${fieldId}, title: ${title}, fieldType: ${fieldType}, tooltip: ${tooltip}`,
+  );
   FormModel.findOneAndUpdate(
     { formType: type, 'additionalFields._id': fieldId },
     {
