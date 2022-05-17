@@ -31,7 +31,7 @@ const createFieldInForm = async (formType, fieldBody) => {
 };
 
 const getFormByType = async (formType) => {
-  return FormModel.findOne({ formType }).populate('additionalFields');
+  return FormModel.findOne({ formType });
 };
 
 const updateForm = async (formType, newField) => {

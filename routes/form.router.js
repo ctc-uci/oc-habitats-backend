@@ -35,8 +35,8 @@ router.post('/create/field', async (req, res) => {
   }
 });
 
-// read form
-router.get('/:type', async (req, res) => {
+// create form
+router.post('/:type', async (req, res) => {
   const { type } = req.params;
   const { additionalFields } = req.body;
   try {
@@ -65,11 +65,13 @@ router.post('/create/field', async (req, res) => {
 router.get('/:type', async (req, res) => {
   const { type } = req.params;
   try {
-    const deletedForm = await formService.deleteForm(type);
-    if (deletedForm.nModified === 0) {
-      res.status(400).json({ message: `Form with type ${type} not deleted` });
+    const foundForm = await formService.getFormByType(type);
+    if (!foundForm) {
+      res.status(400).json({ message: `Form type ${type} doesn't exist` });
     } else {
-      res.status(200).send(`form with type ${type} deleted`);
+      console.log('GET /forms/:type hit, foundForm looks like:');
+      console.log(foundForm);
+      res.status(200).send(foundForm);
     }
   } catch (err) {
     console.error(err);
