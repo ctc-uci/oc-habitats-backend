@@ -121,30 +121,19 @@ const deleteForm = async (formType) => {
 };
 
 const deleteFormFieldById = async (formType, fieldId) => {
-  console.log(`Processing request for form type ${formType} and title ${fieldId}`);
-  const foundForm = await FormModel.findOne({ formType });
+  console.log(`Processing request for form type ${formType} and id ${fieldId}`);
+  const foundForm = await FormModel.findOne({ formType }).populate('additionalFields');
+  console.log('foundForm --------------');
   console.log(foundForm);
-  foundForm.additionalFields.pull({ _id: fieldId });
+  foundForm.additionalFields.pull(fieldId);
   foundForm.save((err, newDoc) => {
     if (err) {
-      throw new Error('Error deleting field in document');
+      throw new Error(err);
     } else {
       return newDoc;
     }
   });
 };
-
-// const createForm = async (invite) => {
-//   // work in progress
-
-//   const createdInvite = new FormModel({
-//     id: invite.id,
-//     email: invite.email,
-//     role: invite.role,
-//     expireDate: invite.expireDate,
-//   });
-//   return createdInvite.save();
-// };
 
 module.exports = {
   getFormByType,
