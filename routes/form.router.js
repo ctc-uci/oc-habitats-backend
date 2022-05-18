@@ -127,6 +127,8 @@ router.delete('/:type', async (req, res) => {
 
 // delete form field by id
 router.delete('/delete/field', async (req, res) => {
+  console.log('/delete/field called');
+  console.log(req.body);
   const { formType, fieldId } = req.body;
   try {
     await formService.deleteFormFieldById(formType, fieldId);
