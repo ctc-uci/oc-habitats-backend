@@ -23,9 +23,10 @@ router.get('/submission/:id', async (req, res) => {
 });
 
 // get submissions
-router.get('/submissions', async (_, res) => {
+router.get('/submissions', async (req, res) => {
   try {
-    const allSubmissions = await monitorLogService.getSubmissions();
+    const filters = req.query;
+    const allSubmissions = await monitorLogService.getSubmissions(filters);
     res.status(200).send(allSubmissions);
   } catch (err) {
     console.error(err);
