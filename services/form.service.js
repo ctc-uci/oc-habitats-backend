@@ -12,6 +12,7 @@ const createForm = async (formType, additionalFields) => {
 
 const createFieldInForm = async (formType, fieldBody) => {
   const { title, fieldType, tooltip } = fieldBody;
+  const subtitle = fieldBody.subtitle ? fieldBody.subtitle : '';
   const updatedForm = await FormModel.updateOne(
     { formType },
     {
@@ -19,6 +20,7 @@ const createFieldInForm = async (formType, fieldBody) => {
         additionalFields: {
           _id: mongoose.Types.ObjectId(),
           title,
+          subtitle,
           fieldType,
           static: false,
           tooltip,

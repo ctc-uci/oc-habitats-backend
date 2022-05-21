@@ -9,10 +9,14 @@ const fieldSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  subtitle: {
+    type: String,
+    required: true,
+  },
   fieldType: {
     type: String,
     enum: ['NUMBER', 'TEXT', 'CUSTOM'],
-    required: true,
+    required: false,
   },
   static: {
     type: Boolean,
@@ -20,7 +24,7 @@ const fieldSchema = new mongoose.Schema({
   },
   tooltip: {
     type: String,
-    required: true,
+    required: false,
   },
 });
 
