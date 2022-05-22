@@ -17,9 +17,9 @@ const setRangeQuery = (startDate, endDate) => {
 // get own user
 router.get('/dashboard', async (req, res) => {
   try {
-    let { startDate, endDate } = req.body;
-    startDate = new Date(startDate);
-    endDate = new Date(endDate);
+    const now = new Date();
+    const startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+    const endDate = new Date(now.getFullYear(), now.getMonth() + 1, 0);
     startDate.setUTCHours(0, 0, 0, 0);
     endDate.setUTCHours(23, 59, 59, 999);
     const query = setRangeQuery(startDate, endDate);
@@ -54,7 +54,7 @@ router.get('/dashboard', async (req, res) => {
     };
     res.status(200).send(finalResult);
   } catch (err) {
-    console.error(err);
+    // console.log(err);
     res.status(400).json({ error: err });
   }
 });
