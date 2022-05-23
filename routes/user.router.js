@@ -97,8 +97,7 @@ router.get('/:id', async (req, res) => {
 });
 
 // get profile by email
-
-router.get('email/:email', async (req, res) => {
+router.get('/email/:email', async (req, res) => {
   const { email } = req.params;
   try {
     const foundProfile = await userService.getProfileByEmail(email);
