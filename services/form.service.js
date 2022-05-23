@@ -49,9 +49,9 @@ const updateForm = async (formType, newField) => {
 
 const updateFormFieldById = async (type, fieldId, fieldBody) => {
   const { title, fieldType, tooltip } = fieldBody;
-  console.log(
+  /* console.log(
     `type: ${type}, fieldId: ${fieldId}, title: ${title}, fieldType: ${fieldType}, tooltip: ${tooltip}`,
-  );
+  ); */
   FormModel.findOneAndUpdate(
     { formType: type, 'additionalFields._id': fieldId },
     {
@@ -122,10 +122,10 @@ const deleteForm = async (formType) => {
 };
 
 const deleteFormFieldById = async (formType, fieldId) => {
-  console.log(`Processing request for form type ${formType} and id ${fieldId}`);
+  // console.log(`Processing request for form type ${formType} and id ${fieldId}`);
   const foundForm = await FormModel.findOne({ formType }).populate('additionalFields');
-  console.log('foundForm --------------');
-  console.log(foundForm);
+  // console.log('foundForm --------------');
+  // console.log(foundForm);
   foundForm.additionalFields.pull(fieldId);
   foundForm.save((err, newDoc) => {
     if (err) {
