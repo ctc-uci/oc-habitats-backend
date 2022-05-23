@@ -63,11 +63,9 @@ const updateFormFieldById = async (type, fieldId, fieldBody) => {
     },
     (err, doc) => {
       if (err) {
-        console.log(err);
-      } else {
-        console.log('NEW DOC: ---------------');
-        console.log(doc);
+        return new Error(err);
       }
+      return doc;
     },
   );
   // const field = form.additionalFields.id('6272ce79061f2899fb78d86c');
