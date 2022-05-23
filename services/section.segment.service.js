@@ -6,7 +6,10 @@ const options = { new: true };
 
 module.exports = {
   getSection: async (id) => {
-    return Section.findById(id).populate('segments');
+    return Section.findById(id).populate({
+      path: 'segments',
+      options: { sort: { segmentId: 1 } },
+    });
   },
 
   getSegment: async (id) => {
@@ -26,7 +29,10 @@ module.exports = {
   getSections: async (populateVolunteers = false) => {
     return populateVolunteers
       ? Section.find({}).populate({ path: 'segments', populate: { path: 'volunteerData' } })
-      : Section.find({}).populate('segments');
+      : Section.find({}).populate({
+          path: 'segments',
+          options: { sort: { segmentId: 1 } },
+        });
   },
 
   createSection: async (section) => {
