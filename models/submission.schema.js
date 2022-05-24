@@ -47,6 +47,11 @@ const predatorSchema = new mongoose.Schema({
   count: Number,
 });
 
+const humanActivitySchema = new mongoose.Schema({
+  humanActivity: { type: mongoose.Types.ObjectId, ref: 'HumanActivity' },
+  count: Number,
+});
+
 const submissionSchema = new mongoose.Schema({
   segment: { type: mongoose.Types.ObjectId, ref: 'Segment' },
   date: Date,
@@ -75,7 +80,9 @@ const submissionSchema = new mongoose.Schema({
   generalAdditionalFieldValues: [Object],
   predators: [predatorSchema],
   predatorsOther: String,
-  humanActivity: [Object],
+  humanActivity: [humanActivitySchema],
+  humanActivityOutreach: String,
+  humanActivityOtherNotes: String,
   submitter: { type: String, ref: 'User' },
   submittedAt: Date,
   lastEditedAt: Date,
@@ -85,7 +92,7 @@ const submissionSchema = new mongoose.Schema({
     default: 'UNSUBMITTED',
   },
   isSubmittedByTrainee: { type: Boolean, default: false },
-  sessionPartners: [{ type: mongoose.Types.ObjectId, ref: 'User' }],
+  sessionPartners: [{ type: String, ref: 'User' }],
   requestedEdits: {
     type: {
       requests: String,
