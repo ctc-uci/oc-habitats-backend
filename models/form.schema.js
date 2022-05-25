@@ -11,7 +11,7 @@ const fieldSchema = new mongoose.Schema({
   },
   subtitle: {
     type: String,
-    required: true,
+    required: false,
   },
   fieldType: {
     type: String,
