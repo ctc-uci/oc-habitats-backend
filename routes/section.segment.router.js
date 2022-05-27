@@ -60,7 +60,6 @@ router.delete('/section/:id', async (req, res) => {
     const mongoResponse = await sectionSegmentService.deleteSection(id);
     res.status(200).send(mongoResponse);
   } catch (err) {
-    console.log(err.message);
     res.status(500).json({ message: err.message });
   }
 });
