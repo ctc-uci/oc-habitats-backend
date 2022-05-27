@@ -111,6 +111,8 @@ module.exports = {
 
   deleteSegment: async (segmentID, sectionId) => {
     const results = { section: null, segment: null, volunteers: null };
+    const volunteers = await Segment.findOne({ _id: segmentID }, { _id: 0, volunteers: 1 });
+
     results.segment = await Segment.findByIdAndDelete(segmentID);
     // delete from Section
     results.section = await Section.findOneAndUpdate(
@@ -121,11 +123,19 @@ module.exports = {
         },
       },
     );
+
     // delete form Users that are assigned this segment
-    results.volunteers = await User.updateMany(
-      { firebaseId: { $in: results.segment.volunteers } },
-      { $pull: { segments: segmentID } },
-    );
+    if (volunteers && volunteers.volunteers.length !== 0) {
+      try {
+        results.volunteers = await User.updateMany(
+          { firebaseId: { $in: volunteers.volunteers } },
+          { $pull: { segments: segmentID } },
+        );
+      } catch (err) {
+        console.log(err);
+      }
+    }
+
     return results;
   },
 };
