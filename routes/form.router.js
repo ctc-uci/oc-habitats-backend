@@ -69,8 +69,6 @@ router.get('/:type', async (req, res) => {
     if (!foundForm) {
       res.status(400).json({ message: `Form type ${type} doesn't exist` });
     } else {
-      // console.log('GET /forms/:type hit, foundForm looks like:');
-      // console.log(foundForm);
       res.status(200).send(foundForm);
     }
   } catch (err) {
@@ -81,7 +79,6 @@ router.get('/:type', async (req, res) => {
 
 // update form field by id
 router.put('/update/field', async (req, res) => {
-  // console.log('/update/field route hit');
   const { type, fieldId, fieldBody } = req.body;
   try {
     await formService.updateFormFieldById(type, fieldId, fieldBody);
@@ -127,8 +124,6 @@ router.delete('/:type', async (req, res) => {
 
 // delete form field by id
 router.delete('/delete/field', async (req, res) => {
-  // console.log('/delete/field called');
-  // console.log(req.body);
   const { formType, fieldId } = req.body;
   try {
     await formService.deleteFormFieldById(formType, fieldId);

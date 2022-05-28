@@ -6,8 +6,11 @@ const mongoose = require('mongoose');
 const sectionSegmentRouter = require('./routes/section.segment.router');
 const monitorLogRouter = require('./routes/monitorLog.router');
 const speciesRouter = require('./routes/species.router');
+const notificationRouter = require('./routes/notification.router');
 const emailRouter = require('./routes/nodemailer.router');
 const adminInviteRouter = require('./routes/adminInvite.router');
+const numbersRouter = require('./routes/numbers.router');
+
 const userRouter = require('./routes/user.router');
 const { authRouter } = require('./routes/auth.router');
 const formRouter = require('./routes/form.router');
@@ -41,9 +44,12 @@ app.use('/forms', formRouter);
 app.use(sectionSegmentRouter);
 app.use(monitorLogRouter);
 app.use('/species', speciesRouter);
+app.use('/notification', notificationRouter);
 
 app.use('/adminInvite', adminInviteRouter);
 app.use('/nodemailer', emailRouter);
+
+app.use('/numbers', numbersRouter);
 
 app.listen(PORT, () => {
   console.log(`Server listening on ${PORT}`);
