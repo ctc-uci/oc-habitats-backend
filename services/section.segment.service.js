@@ -6,7 +6,10 @@ const options = { new: true };
 
 module.exports = {
   getSection: async (id) => {
-    return Section.findById(id).populate('segments');
+    return Section.findById(id).populate({
+      path: 'segments',
+      options: { sort: { segmentId: 1 } },
+    });
   },
 
   getSegment: async (id) => {
@@ -26,7 +29,10 @@ module.exports = {
   getSections: async (populateVolunteers = false) => {
     return populateVolunteers
       ? Section.find({}).populate({ path: 'segments', populate: { path: 'volunteerData' } })
-      : Section.find({}).populate('segments');
+      : Section.find({}).populate({
+          path: 'segments',
+          options: { sort: { segmentId: 1 } },
+        });
   },
 
   createSection: async (section) => {
@@ -105,6 +111,8 @@ module.exports = {
 
   deleteSegment: async (segmentID, sectionId) => {
     const results = { section: null, segment: null, volunteers: null };
+    const volunteers = await Segment.findOne({ _id: segmentID }, { _id: 0, volunteers: 1 });
+
     results.segment = await Segment.findByIdAndDelete(segmentID);
     // delete from Section
     results.section = await Section.findOneAndUpdate(
@@ -115,11 +123,19 @@ module.exports = {
         },
       },
     );
+
     // delete form Users that are assigned this segment
-    results.volunteers = await User.updateMany(
-      { firebaseId: { $in: results.segment.volunteers } },
-      { $pull: { segments: segmentID } },
-    );
+    if (volunteers && volunteers.volunteers.length !== 0) {
+      try {
+        results.volunteers = await User.updateMany(
+          { firebaseId: { $in: volunteers.volunteers } },
+          { $pull: { segments: segmentID } },
+        );
+      } catch (err) {
+        console.log(err);
+      }
+    }
+
     return results;
   },
 };
