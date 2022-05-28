@@ -18,7 +18,7 @@ const createNotification = async (notification) => {
 };
 
 const deleteNotification = async (notificationId) => {
-  return NotificationModel.remove({ notificationId });
+  return NotificationModel.deleteOne({ notificationId });
 };
 
 module.exports = {
