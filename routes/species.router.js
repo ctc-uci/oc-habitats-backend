@@ -33,11 +33,22 @@ router.put('/:id/:newListing', async (req, res) => {
 // add new species
 router.post('/', async (req, res) => {
   try {
+    console.log(req.body);
     const species = await speciesService.addNewSpecies(req.body);
     res.status(200).send(species);
   } catch (err) {
     console.error(err);
     res.status(400).json({ error: err.message });
+  }
+});
+
+router.put('/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    const mongoResponse = await speciesService.updateSpecies(id, req.body);
+    res.status(200).send(mongoResponse);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
   }
 });
 
