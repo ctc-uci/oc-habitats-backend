@@ -7,7 +7,7 @@ const getAllSpecies = async () => {
 };
 
 const changeListing = async (speciesId, newListing) => {
-  return SpeciesModel.findByIdAndUpdate(speciesId, { isListed: newListing });
+  return SpeciesModel.findByIdAndUpdate(speciesId, { category: newListing });
 };
 
 const addNewSpecies = async (species) => {
@@ -17,9 +17,7 @@ const addNewSpecies = async (species) => {
   const newSpecies = new SpeciesModel({
     name: species.name,
     code: species.code,
-    isListed: species.isListed,
-    isPredator: species.isPredator,
-    isNeither: species.isNeither,
+    category: species.category,
   });
   return newSpecies.save();
 };
