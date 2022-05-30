@@ -113,7 +113,7 @@ const getSubmissions = async (filters) => {
     {
       $unwind: '$segment',
     },
-    // populate sessionPartners
+    // populate sessionPartners (don't unwind to preserve multiple partners)
     {
       $lookup: {
         from: 'users',
@@ -121,10 +121,6 @@ const getSubmissions = async (filters) => {
         foreignField: '_id',
         as: 'sessionPartners',
       },
-    },
-    // take sessionPartners out of array
-    {
-      $unwind: { path: '$sessionPartners', preserveNullAndEmptyArrays: true },
     },
     // remove unnecessary fields
     {
