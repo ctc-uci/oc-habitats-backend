@@ -124,7 +124,7 @@ const getSubmissions = async (filters) => {
     },
     // take sessionPartners out of array
     {
-      $unwind: '$sessionPartners',
+      $unwind: { path: '$sessionPartners', preserveNullAndEmptyArrays: true },
     },
     // remove unnecessary fields
     {
