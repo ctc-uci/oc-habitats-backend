@@ -113,15 +113,6 @@ const getSubmissions = async (filters) => {
     {
       $unwind: '$segment',
     },
-    // populate sessionPartners (don't unwind to preserve multiple partners)
-    {
-      $lookup: {
-        from: 'users',
-        localField: 'sessionPartners',
-        foreignField: '_id',
-        as: 'sessionPartners',
-      },
-    },
     // remove unnecessary fields
     {
       $project: {
@@ -135,11 +126,7 @@ const getSubmissions = async (filters) => {
         'segment.mapLink': 0,
         'segment.streets': 0,
         'segment.parking': 0,
-        'sessionPartners.profileImage': 0,
-        'sessionPartners.segments': 0,
-        'sessionPartners.isActive': 0,
-        'sessionPartners.isTrainee': 0,
-        'sessionPartners.role': 0,
+        'segment.name': 0,
       },
     },
     // match for submitter name/email and segment
