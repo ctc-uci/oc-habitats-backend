@@ -5,11 +5,11 @@ const getAllNumbers = async () => {
 };
 
 const addNewNumber = async (number) => {
-  NumbersModel.findOne({ name: number.name }, function (err) {
+  NumbersModel.findOne({ name: number.name }, (err) => {
     if (err) throw new Error('The name for this number already exists');
   });
 
-  NumbersModel.findOne({ number: number.number }, function (err) {
+  NumbersModel.findOne({ number: number.number }, (err) => {
     if (err) throw new Error('This number already exists');
   });
 
@@ -30,20 +30,7 @@ const deleteNumber = async (numberId) => {
 };
 
 const updateNumber = async (numberId, updatedNumber) => {
-  NumbersModel.findOne({ name: updatedNumber.name }, function (err) {
-    if (err) throw new Error('The name for this number already exists');
-  });
-
-  NumbersModel.findOne({ number: updatedNumber.number }, function (err) {
-    if (err) throw new Error('This number already exists');
-  });
-
-  return NumbersModel.updateOne(
-    { id: numberId },
-    {
-      $set: updatedNumber,
-    },
-  );
+  return NumbersModel.findByIdAndUpdate(numberId, updatedNumber);
 };
 
 module.exports = {
