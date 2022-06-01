@@ -9,7 +9,7 @@ const { verifyToken } = require('./auth.router');
 const router = express.Router();
 
 // sets segment assignments for a user to segmentIds array
-router.put('/setSegmentAssignments', async (req, res) => {
+router.put('/setSegmentAssignments', verifyToken, async (req, res) => {
   try {
     const { profileId, segmentIds } = req.body;
     const updatedProfile = await userService.setSegmentAssignments(profileId, segmentIds);
@@ -81,7 +81,7 @@ router.get('/userSubmissions', verifyToken, async (req, res) => {
 });
 
 // get profile by id
-router.get('/:id', async (req, res) => {
+router.get('/:id', verifyToken, async (req, res) => {
   const { id } = req.params;
   try {
     const foundProfile = await userService.getProfile(id);
@@ -96,7 +96,7 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-// get profile by email
+// get profile by email (used for forgot password)
 router.get('/email/:email', async (req, res) => {
   const { email } = req.params;
   try {
@@ -113,7 +113,7 @@ router.get('/email/:email', async (req, res) => {
 });
 
 // get profiles
-router.get('/', async (req, res) => {
+router.get('/', verifyToken, async (req, res) => {
   try {
     const allProfiles = await userService.getAllProfiles();
     res.status(200).send(allProfiles);
@@ -124,7 +124,7 @@ router.get('/', async (req, res) => {
 });
 
 // get user's assigned segments
-router.get('/segments/:id', async (req, res) => {
+router.get('/segments/:id', verifyToken, async (req, res) => {
   const { id } = req.params;
   try {
     const assignedSegments = await userService.getAssignedSegments(id);
@@ -136,7 +136,7 @@ router.get('/segments/:id', async (req, res) => {
 });
 
 // delete profile
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', verifyToken, async (req, res) => {
   const { id } = req.params;
   try {
     // Firebase delete
@@ -156,7 +156,7 @@ router.delete('/:id', async (req, res) => {
 });
 
 // update profile
-router.put('/update/:id', upload.single('profileImage'), async (req, res) => {
+router.put('/update/:id', verifyToken, upload.single('profileImage'), async (req, res) => {
   const { id } = req.params;
   const updatedUser = { ...req.body };
   if (req.file) {
