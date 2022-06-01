@@ -10,15 +10,23 @@ module.exports = {
   },
 
   getSegment: async (id) => {
-    return Segment.findOne({ segmentId: id });
+    return Segment.findOne({ segmentId: id }).populate({
+      path: 'volunteerData',
+      select: 'id segments firebaseId firstName lastName email role isActive isTrainee',
+    });
   },
 
   getSegments: async () => {
-    return Segment.find({});
+    return Segment.find({}).populate({
+      path: 'volunteerData',
+      select: 'id segments firebaseId firstName lastName email role isActive isTrainee',
+    });
   },
 
-  getSections: async () => {
-    return Section.find({}).populate('segments');
+  getSections: async (populateVolunteers = false) => {
+    return populateVolunteers
+      ? Section.find({}).populate({ path: 'segments', populate: { path: 'volunteerData' } })
+      : Section.find({}).populate('segments');
   },
 
   getUnassigned: async () => {

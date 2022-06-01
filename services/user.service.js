@@ -1,8 +1,11 @@
+const mongoose = require('mongoose');
+
 const UserModel = require('../models/user.schema');
 const Segment = require('../models/segment.schema');
+const Submissions = require('../models/submission.schema');
 
 const getProfile = async (profileId) => {
-  return UserModel.findOne({ firebaseId: profileId }).populate('segments');
+  return UserModel.findOne({ _id: profileId }).populate('segments');
 };
 
 const getProfileByEmail = async (profileEmail) => {
@@ -13,44 +16,74 @@ const getAllProfiles = async () => {
   return UserModel.find({}).populate('segments');
 };
 
+const getAllReducedProfiles = async () => {
+  return UserModel.find({}, { firstName: 1, lastName: 1, email: 1, _id: 1 });
+};
+
 const updateProfile = async (profileId, updatedProfile) => {
   return UserModel.updateOne(
-    { firebaseId: profileId },
+    { _id: profileId },
     {
       $set: updatedProfile,
     },
   );
 };
 
-const assignSegment = async (userId, segmentId) => {
-  const results = { user: null, segment: null };
-  results.user = await UserModel.findOneAndUpdate(
-    { firebaseId: userId },
-    {
-      $addToSet: {
-        segments: segmentId,
-      },
-    },
-    {
-      new: true,
-    },
-  );
+const setSegmentAssignments = async (userId, segmentIds) => {
+  const results = { user: null, segments: null };
 
-  results.segment = await Segment.findOneAndUpdate(
-    { _id: segmentId },
-    {
-      $addToSet: {
-        volunteers: userId,
-      },
-    },
-    { new: true },
-  );
+  // Perform queries in transaction so changes are not made if
+  // an error occurs
+  const session = await mongoose.startSession();
+  try {
+    await session.withTransaction(async () => {
+      // Check that all segments exist and there are no duplicates
+      const validSegments = await Segment.count({ _id: { $in: segmentIds } });
+      if (validSegments !== segmentIds.length) throw new Error('Invalid segmentIds');
+
+      // Remove userId from all currently assigned segments
+      await Segment.updateMany(
+        { volunteers: userId },
+        {
+          $pull: {
+            volunteers: userId,
+          },
+        },
+      );
+
+      // Add userId to all segments in segmentIds
+      await Segment.updateMany(
+        { _id: { $in: segmentIds } },
+        {
+          $addToSet: {
+            volunteers: userId,
+          },
+        },
+      );
+
+      // Overwrite UserModel.segments with new value
+      results.user = await UserModel.findOneAndUpdate(
+        { _id: userId },
+        {
+          $set: {
+            segments: segmentIds,
+          },
+        },
+        { new: true },
+      );
+    });
+  } finally {
+    session.endSession();
+  }
+
+  // Fetch updated segments, as updateMany does not return modified documents
+  results.segments = await Segment.find({ _id: { $in: segmentIds } });
 
   return results;
 };
 
 const deleteProfile = async (profileId) => {
-  return UserModel.remove({ firebaseId: profileId });
+  return UserModel.remove({ _id: profileId });
 };
 
 const createProfile = async (user) => {
@@ -63,40 +96,23 @@ const createProfile = async (user) => {
 
 // get user's assigned segments
 const getAssignedSegments = async (firebaseId) => {
-  return UserModel.findOne({ firebaseId }, { _id: 0, segments: 1 }).populate('segments');
+  return UserModel.findOne({ _id: firebaseId }, { _id: 0, segments: 1 }).populate('segments');
 };
 
 // get a user's submitted logs
-// returns [ { submissions: [Submission, Submission, ...] } ]
 const getUserSubmissions = async (firebaseId) => {
-  return UserModel.aggregate([
-    { $match: { firebaseId } },
-    {
-      $lookup: {
-        from: 'submissions',
-        localField: 'firebaseId',
-        foreignField: 'submitter',
-        as: 'submissions',
-      },
-    },
-    { $sort: { 'submissions.submittedAt': -1 } },
-    {
-      $project: {
-        _id: 0,
-        submissions: 1,
-      },
-    },
-  ]);
+  return Submissions.find({ submitter: firebaseId }).populate('segment');
 };
 
 module.exports = {
   getProfile,
   getProfileByEmail,
   getAllProfiles,
+  getAllReducedProfiles,
   getAssignedSegments,
   getUserSubmissions,
   updateProfile,
-  assignSegment,
+  setSegmentAssignments,
   deleteProfile,
   createProfile,
 };
