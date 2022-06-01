@@ -48,7 +48,7 @@ const predatorSchema = new mongoose.Schema({
 });
 
 const humanActivitySchema = new mongoose.Schema({
-  humanActivity: { type: mongoose.Types.ObjectId, ref: 'HumanActivity' },
+  humanActivity: mongoose.Types.ObjectId,
   count: Number,
 });
 
