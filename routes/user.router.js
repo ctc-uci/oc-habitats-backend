@@ -113,7 +113,7 @@ router.get('/email/:email', async (req, res) => {
 });
 
 // get profiles
-router.get('/', async (req, res) => {
+router.get('/', verifyToken, async (req, res) => {
   try {
     const allProfiles = await userService.getAllProfiles();
     res.status(200).send(allProfiles);

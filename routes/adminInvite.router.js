@@ -1,6 +1,7 @@
 /* eslint-disable no-console */
 const express = require('express');
 const adminInviteService = require('../services/adminInvite.service');
+const { verifyToken } = require('./auth.router');
 
 const router = express.Router();
 
@@ -29,7 +30,7 @@ router.get('/:id', async (req, res) => {
 });
 
 // get invites
-router.get('/', async (req, res) => {
+router.get('/', verifyToken, async (req, res) => {
   try {
     const allInvites = await adminInviteService.getAllInvites();
     res.status(200).send(allInvites);
@@ -40,7 +41,7 @@ router.get('/', async (req, res) => {
 });
 
 // delete invite
-router.delete('/:email', async (req, res) => {
+router.delete('/:email', verifyToken, async (req, res) => {
   const { email } = req.params;
   try {
     // NPO DB delete
@@ -57,7 +58,7 @@ router.delete('/:email', async (req, res) => {
 });
 
 // update invite
-router.put('/update/:id', async (req, res) => {
+router.put('/update/:id', verifyToken, async (req, res) => {
   const { id } = req.params;
   try {
     const updatedInvite = await adminInviteService.updateInvite(id, req.body);
