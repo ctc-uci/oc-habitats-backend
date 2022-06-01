@@ -25,7 +25,7 @@ router.get('/dashboard', async (req, res) => {
     const query = getDateQuery();
     // Get all the submissions for the month
     const submissionsResults = await monitorLogService.getSubmissionsByMonth(query);
-    // query.status = 'APPROVED';
+    query.status = 'APPROVED';
     // Get the listed species for submitted monitor logs
     const listedResults = await monitorLogService.getListedByMonth(query);
     // Get currently unassigned segments
@@ -52,7 +52,7 @@ router.get('/dashboard', async (req, res) => {
       delete result.info;
     });
 
-    let completedSubmissions = null;
+    let completedSubmissions = { submissions: [] };
     const emergentIssueData = {
       injuredTerrestrial: { title: 'Injured Terrestrial Wildlife', count: 0, segments: [] },
       speedingVehicles: { title: 'Injured Speeding Vehicles', count: 0, segments: [] },
@@ -100,16 +100,15 @@ router.get('/dashboard', async (req, res) => {
     // uncompletedSubmissions: includes all non-approved submissions, their segment + volunteer + submission info
     // unassignedSegments: includes segments that are unassigned currently
     const finalResult = {
-      listedSpeciesInfo: adjustedResults,
+      listedSpeciesInfo: adjustedResults || [],
       completedSubmissions,
-      uncompletedSubmissions: submissionsResults,
+      uncompletedSubmissions: submissionsResults || [],
       emergentIssueData,
       notCompletedCount,
       unassignedSegments: unassignedResults,
     };
     res.status(200).send(finalResult);
   } catch (err) {
-    // console.log(err);
     console.log('err', err);
     res.status(400).json({ error: err });
   }
