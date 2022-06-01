@@ -40,85 +40,91 @@ const getSubmissionsByMonth = async (query) => {
         _id: '$status',
         submissions: {
           $push: {
+            submissionId: '$_id',
+            date: '$date',
             segment: '$segment',
             submitter: '$submitter',
-            injuredAdditional: { $sum: '$additionalSpecies.injuredCount' },
+            injuredAdditional: '$additionalSpecies.injuredCount',
             speedingVehicles: { $sum: '$humanActivity.speedingVehicles' },
           },
         },
       },
     },
+    //
+    { $unwind: '$submissions' },
     // Stage 3 - Look up segment info
     {
       $lookup: {
         from: 'segments',
         localField: 'submissions.segment',
         foreignField: '_id',
-        as: 'segments',
+        as: 'submissions.segment',
       },
     },
-    // Stage 4 - prepare segments for lookup
-    { $unwind: '$segments' },
-    // Stage 4  Look up volunteers inside segments
+    { $unwind: '$submissions.segment' },
+    // { $unwind: '$submissions.segment.volunteers' },
+    // // Stage 4 - prepare segments for lookup
+    // { $unwind: '$segments' },
+    // Stage 5  Look up volunteers inside segments
     {
       $lookup: {
         from: 'users',
-        localField: 'segments.volunteers',
+        localField: 'submissions.segment.volunteers',
         foreignField: '_id',
-        as: 'segments.volunteers',
+        as: 'submissions.segment.volunteers',
       },
     },
-    // Stage 5 - Reformat data + get injured terrestrial count for each entry + speedingVehicle Count
-    {
-      $project: {
-        _id: 0,
-        category: '$_id',
-        id: '$segments._id',
-        segmentId: '$segments.segmentId',
-        assigned: '$segments.volunteers',
-        injuredTerrestrial: { $sum: '$submissions.injuredAdditional' },
-        speedingVehicles: { $sum: '$submissions.speedingVehicles' },
-      },
-    },
-    // Stage 6 - Group data by category
+    // { $unwind: '$submissions.segment.volunteers' },
+    // {
+    //   $group : {
+    //     _id:
+    //   }
+    // }
+    // Stage 6 - Reformat data + get injured terrestrial count for each entry + speedingVehicle Count
+    // {
+    //   $project: {
+    //     _id: 0,
+    //     category: '$_id',
+    //     id: '$segments._id',
+    //     segmentId: '$segments.segmentId',
+    //     assigned: '$segments.volunteers',
+    //     injuredTerrestrial: { $sum: '$submissions.injuredAdditional' },
+    //     speedingVehicles: { $sum: '$submissions.speedingVehicles' },
+    //   },
+    // },
+    // Stage 8 - Group data by category
     {
       $group: {
-        _id: '$category',
+        _id: '$_id',
         submissions: {
-          $push: {
-            id: '$id',
-            segmentId: '$segmentId',
-            assigned: '$assigned',
-            injuredTerrestrial: '$injuredTerrestrial',
-            speedingVehicles: '$speedingVehicles',
-          },
+          $push: '$submissions',
         },
       },
     },
-    // Stage 7 - get the first submission because contains total injured terrestial and speeding vehicle for that segment
+    // Stage 9 - get the first submission because contains total injured terrestial and speeding vehicle for that segment
     // (trying to flatten data)
-    {
-      $project: {
-        _id: 1,
-        submissions: 1,
-        counts: { $first: '$submissions' },
-      },
-    },
-    // Stage 8 - Flatten out count data
-    {
-      $project: {
-        _id: 1,
-        submissions: 1,
-        injuredTerrestrial: '$counts.injuredTerrestrial',
-        speedingVehicles: '$counts.speedingVehicles',
-      },
-    },
-    // Stage 9 - remove redundant data
-    { $unset: ['submissions.injuredTerrestrial', 'submissions.speedingVehicles'] },
-    // Stage 10 - Sort Objects containing array of submissions by their status
+    // {
+    //   $project: {
+    //     _id: 1,
+    //     submissions: 1,
+    //   },
+    // },
+    // // Stage 8 - Flatten out count data
+    // {
+    //   $project: {
+    //     category: '$_id',
+    //     submissions: 1,
+    //     injuredTerrestrial: '$counts.injuredTerrestrial',
+    //     speedingVehicles: '$counts.speedingVehicles',
+    //     _id: 0,
+    //   },
+    // },
+    // // Stage 9 - remove redundant data
+    // { $unset: ['submissions.injuredTerrestrial', 'submissions.speedingVehicles'] },
+    // // Stage 10 - Sort Objects containing array of submissions by their status
     {
       $sort: {
-        category: 1,
+        _id: 1,
       },
     },
   ]);
