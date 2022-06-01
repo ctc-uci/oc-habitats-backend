@@ -1,26 +1,36 @@
 const mongoose = require('mongoose');
 
 const fieldSchema = new mongoose.Schema({
-  title: String,
+  _id: {
+    type: mongoose.Schema.Types.ObjectId,
+    required: true,
+  },
+  title: {
+    type: String,
+    required: true,
+  },
+  subtitle: {
+    type: String,
+    required: false,
+  },
   fieldType: {
     type: String,
     enum: ['NUMBER', 'TEXT', 'CUSTOM'],
-    required: true,
+    required: false,
   },
   static: {
     type: Boolean,
     required: true,
   },
-  tooltip: String,
-  deleted: Boolean,
+  tooltip: {
+    type: String,
+    required: false,
+  },
 });
 
 const formSchema = new mongoose.Schema({
-  _id: Number,
-  generalAdditionalFields: [fieldSchema],
-  listedSpeciesAdditionalFields: [fieldSchema],
-  predatorAdditionalFields: [fieldSchema],
-  humanActivityAdditionalFields: [fieldSchema],
+  formType: String,
+  additionalFields: [fieldSchema],
 });
 
 module.exports = mongoose.model('Form', formSchema);
