@@ -88,7 +88,7 @@ router.get('/segment/:id', verifyToken, async (req, res) => {
 });
 
 // Get all segments
-router.get('/segments', verifyToken, async (_, res) => {
+router.get('/segments', async (_, res) => {
   try {
     const mongoResponse = await sectionSegmentService.getSegments();
     res.status(200).send(mongoResponse);
