@@ -47,7 +47,6 @@ app.use('/adminInvite', adminInviteRouter);
 app.use('/nodemailer', emailRouter);
 app.use(dashboardRouter);
 
-
 app.use('/numbers', numbersRouter);
 
 app.listen(PORT, () => {
