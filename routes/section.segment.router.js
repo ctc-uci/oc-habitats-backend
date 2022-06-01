@@ -2,9 +2,10 @@ const express = require('express');
 
 const router = express.Router();
 const sectionSegmentService = require('../services/section.segment.service');
+const { verifyToken } = require('./auth.router');
 
 // Create section
-router.post('/section', async (req, res) => {
+router.post('/section', verifyToken, async (req, res) => {
   try {
     const mongoResponse = await sectionSegmentService.createSection(req.body);
     res.status(200).send(mongoResponse);
@@ -14,7 +15,7 @@ router.post('/section', async (req, res) => {
 });
 
 // Create segments for section
-router.post('/segment', async (req, res) => {
+router.post('/segment', verifyToken, async (req, res) => {
   try {
     const newSegment = { ...req.body };
     delete newSegment.section;
@@ -26,7 +27,7 @@ router.post('/segment', async (req, res) => {
 });
 
 // Update section
-router.put('/section/:id', async (req, res) => {
+router.put('/section/:id', verifyToken, async (req, res) => {
   const { id } = req.params;
   try {
     const mongoResponse = await sectionSegmentService.updateSection(id, req.body);
@@ -37,7 +38,7 @@ router.put('/section/:id', async (req, res) => {
 });
 
 // Update segment; include section in body
-router.put('/segment/:id', async (req, res) => {
+router.put('/segment/:id', verifyToken, async (req, res) => {
   const { id } = req.params;
   const updatedSegment = { ...req.body };
   delete updatedSegment.section;
@@ -54,7 +55,7 @@ router.put('/segment/:id', async (req, res) => {
 });
 
 // Delete section
-router.delete('/section/:id', async (req, res) => {
+router.delete('/section/:id', verifyToken, async (req, res) => {
   const { id } = req.params;
   try {
     const mongoResponse = await sectionSegmentService.deleteSection(id);
@@ -65,7 +66,7 @@ router.delete('/section/:id', async (req, res) => {
 });
 
 // Delete segment
-router.delete('/segment/:id', async (req, res) => {
+router.delete('/segment/:id', verifyToken, async (req, res) => {
   const { id } = req.params;
   try {
     const mongoResponse = await sectionSegmentService.deleteSegment(id, req.body.sectionId);
@@ -76,7 +77,7 @@ router.delete('/segment/:id', async (req, res) => {
 });
 
 // Get specific segment
-router.get('/segment/:id', async (req, res) => {
+router.get('/segment/:id', verifyToken, async (req, res) => {
   const { id } = req.params;
   try {
     const mongoResponse = await sectionSegmentService.getSegment(id);
@@ -87,7 +88,7 @@ router.get('/segment/:id', async (req, res) => {
 });
 
 // Get all segments
-router.get('/segments', async (_, res) => {
+router.get('/segments', verifyToken, async (_, res) => {
   try {
     const mongoResponse = await sectionSegmentService.getSegments();
     res.status(200).send(mongoResponse);
@@ -97,7 +98,7 @@ router.get('/segments', async (_, res) => {
 });
 
 // Get all sections
-router.get('/sections', async (_, res) => {
+router.get('/sections', verifyToken, async (_, res) => {
   try {
     const sections = await sectionSegmentService.getSections();
     res.status(200).send(sections);
@@ -107,7 +108,7 @@ router.get('/sections', async (_, res) => {
 });
 
 // Get all sections, with volunteerData populated
-router.get('/populatedSections', async (_, res) => {
+router.get('/populatedSections', verifyToken, async (_, res) => {
   try {
     const sections = await sectionSegmentService.getSections(true);
     res.status(200).send(sections);
@@ -117,7 +118,7 @@ router.get('/populatedSections', async (_, res) => {
 });
 
 // Get specific section
-router.get('/section/:id', async (req, res) => {
+router.get('/section/:id', verifyToken, async (req, res) => {
   const { id } = req.params;
   try {
     const mongoResponse = await sectionSegmentService.getSection(id);
