@@ -261,6 +261,10 @@ const getSubmissionsByMonth = async (query) => {
   ]);
 };
 
+const getSubmission = async (submissionId) => {
+  return Submission.findOne({ _id: submissionId });
+};
+
 const getListedByMonth = async (query) => {
   return Submission.aggregate([
     // Stage 1 - Get all submissions within date range
@@ -336,7 +340,7 @@ module.exports = {
   updateForm,
   updateSubmission,
   deleteSubmission,
-  // getSubmission,
+  getSubmission,
   getSubmissionsByMonth,
   getListedByMonth,
   getSubmissions,
