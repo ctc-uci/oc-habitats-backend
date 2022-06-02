@@ -23,7 +23,7 @@ const updateSubmission = async (submissionId, updatedSubmission) => {
   return Submission.updateOne(
     { _id: submissionId },
     {
-      $set: updatedSubmission,
+      $set: { ...updatedSubmission, lastEditedAt: new Date() },
     },
   );
 };
@@ -211,7 +211,6 @@ const createSubmission = async (submission, user) => {
     ...submission,
     segment: submission.segment || null,
     submitter: user,
-    submittedAt: new Date(),
     lastEditedAt: new Date(),
   });
   return createdSubmission.save();
