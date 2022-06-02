@@ -34,17 +34,15 @@ const listedSpeciesSchema = new mongoose.Schema({
   nesting: [String],
   behaviors: [String],
   additionalNotes: String,
+  additionalQuestions: {
+    type: Map,
+    of: String,
+  },
 });
 
 const additionalSpeciesSchema = new mongoose.Schema({
-  species: { type: mongoose.Types.ObjectId, ref: 'Species' },
   count: Number,
   notes: String,
-});
-
-const predatorSchema = new mongoose.Schema({
-  species: { type: mongoose.Types.ObjectId, ref: 'Species' },
-  count: Number,
 });
 
 const submissionSchema = new mongoose.Schema({
@@ -60,22 +58,36 @@ const submissionSchema = new mongoose.Schema({
   tides: Number,
   habitatType: String,
   habitatWidth: String,
-  listedSpecies: [
-    {
-      species: { type: mongoose.Types.ObjectId, ref: 'Species' },
+  listedSpecies: {
+    type: Map,
+    of: {
       entries: [listedSpeciesSchema],
       injuredCount: Number,
     },
-  ],
+  },
   additionalSpecies: {
-    entries: [additionalSpeciesSchema],
+    entries: {
+      type: Map,
+      of: additionalSpeciesSchema,
+    },
     injuredCount: Number,
     beachCast: Number,
   },
-  generalAdditionalFieldValues: [Object],
-  predators: [predatorSchema],
+  generalAdditionalFields: {
+    type: Map,
+    of: String,
+  },
+  predators: {
+    type: Map,
+    of: Number,
+  },
   predatorsOther: String,
-  humanActivity: [Object],
+  humanActivity: {
+    type: Map,
+    of: Number,
+  },
+  humanActivityOutreach: String,
+  humanActivityOtherNotes: String,
   submitter: { type: String, ref: 'User' },
   submittedAt: Date,
   lastEditedAt: Date,
@@ -85,7 +97,7 @@ const submissionSchema = new mongoose.Schema({
     default: 'UNSUBMITTED',
   },
   isSubmittedByTrainee: { type: Boolean, default: false },
-  sessionPartners: [{ type: mongoose.Types.ObjectId, ref: 'User' }],
+  sessionPartners: [{ type: String, ref: 'User' }],
   requestedEdits: {
     type: {
       requests: String,
