@@ -12,6 +12,7 @@ const adminInviteRouter = require('./routes/adminInvite.router');
 const numbersRouter = require('./routes/numbers.router');
 
 const userRouter = require('./routes/user.router');
+const dashboardRouter = require('./routes/dashboard.router');
 const { authRouter } = require('./routes/auth.router');
 const formRouter = require('./routes/form.router');
 
@@ -48,6 +49,7 @@ app.use('/notification', notificationRouter);
 
 app.use('/adminInvite', adminInviteRouter);
 app.use('/nodemailer', emailRouter);
+app.use(dashboardRouter);
 
 app.use('/numbers', numbersRouter);
 
