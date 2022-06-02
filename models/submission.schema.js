@@ -19,11 +19,8 @@ const listedSpeciesSchema = new mongoose.Schema({
   totalChicks: Number,
   time: String,
   habitatDescription: String,
-  gps: [{ longitude: Number, latitude: Number }],
+  gps: [{ longitude: String, latitude: String }],
   crossStreet: String,
-  sex: [Number],
-  nesting: [String],
-  behaviors: [String],
   bandTabs: [
     {
       topLeft: bandTabSchema,
@@ -33,19 +30,21 @@ const listedSpeciesSchema = new mongoose.Schema({
       code: String,
     },
   ],
-  accuracyConfidence: String,
+  sex: [Number],
+  nesting: [String],
+  behaviors: [String],
   additionalNotes: String,
-});
-
-const predatorSchema = new mongoose.Schema({
-  species: { type: mongoose.Types.ObjectId, ref: 'Species' },
-  count: Number,
 });
 
 const additionalSpeciesSchema = new mongoose.Schema({
   species: { type: mongoose.Types.ObjectId, ref: 'Species' },
   count: Number,
   notes: String,
+});
+
+const predatorSchema = new mongoose.Schema({
+  species: { type: mongoose.Types.ObjectId, ref: 'Species' },
+  count: Number,
 });
 
 const submissionSchema = new mongoose.Schema({
@@ -76,19 +75,22 @@ const submissionSchema = new mongoose.Schema({
   generalAdditionalFieldValues: [Object],
   predators: [predatorSchema],
   predatorsOther: String,
-  humanActivityFieldValues: [Object],
+  humanActivity: [Object],
   submitter: { type: String, ref: 'User' },
-  status: {
-    type: String,
-    enum: ['UNSUBMITTED', 'UNDER_REVIEW', 'APPROVED', 'EDITS_REQUESTED'],
-    default: 'UNSUBMITTED',
-  },
   submittedAt: Date,
   lastEditedAt: Date,
+  status: {
+    type: String,
+    enum: ['UNSUBMITTED', 'UNDER_REVIEW', 'APPROVED', 'EDITS_REQUESTED', 'RESUBMITTED'],
+    default: 'UNSUBMITTED',
+  },
   isSubmittedByTrainee: { type: Boolean, default: false },
-  sessionPartners: [{ type: String, ref: 'User' }],
+  sessionPartners: [{ type: mongoose.Types.ObjectId, ref: 'User' }],
   requestedEdits: {
-    type: { requests: String, requestDate: Date },
+    type: {
+      requests: String,
+      requestDate: Date,
+    },
     default: null,
   },
 });

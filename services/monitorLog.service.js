@@ -29,9 +29,9 @@ const getSubmissions = async () => {
 
 const getSubmissionsByDates = async (startDate, endDate) => {
   return Submission.find({
-    lastEditedAt: {
+    date: {
       $gte: new Date(startDate),
-      $lt: new Date(endDate),
+      $lte: new Date(endDate),
     },
     status: 'APPROVED',
   })
@@ -39,8 +39,9 @@ const getSubmissionsByDates = async (startDate, endDate) => {
     .populate('segment', '-_id segmentId')
     .populate('sessionPartners', 'firstName lastName -_id')
     .populate('listedSpecies.species', 'name -_id')
-    .populate('additionalSpecies.species', 'name -_id')
-    .sort({ lastEditedAt: 'asc' });
+    .populate('additionalSpecies.entries.species', 'name -_id')
+    .populate('predators.species', '-_id')
+    .sort({ date: 'asc' });
 };
 
 const getSubmission = async (submissionId) => {
