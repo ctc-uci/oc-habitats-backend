@@ -27,11 +27,14 @@ mongoose.connect(process.env.MONGO_URI, {
   useUnifiedTopology: true,
 });
 
+const origin =
+  process.env.NODE_ENV === 'production' ? `${process.env.REACT_APP_HOST}` : 'http://localhost:3000';
+
 app.use(
   express.urlencoded({ extended: true }),
   express.json(),
   cors({
-    origin: `${process.env.REACT_APP_HOST}:${process.env.REACT_APP_PORT}`,
+    origin,
     credentials: true,
   }),
 );
