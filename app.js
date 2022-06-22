@@ -70,7 +70,7 @@ if (process.env.NODE_ENV === 'production') {
     key: fs.readFileSync('./key.pem'),
     cert: fs.readFileSync('./cert.pem'),
   };
-  https.createServer(options, app).listen(8080);
+  https.createServer(options, app).listen(443);
 } else {
   app.listen(PORT, () => {
     console.log(`Server listening on ${PORT}`);
