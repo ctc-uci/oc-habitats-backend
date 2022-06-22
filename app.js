@@ -3,6 +3,10 @@ const express = require('express');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const mongoose = require('mongoose');
+const https = require('https');
+const fs = require('fs');
+const helmet = require('helmet');
+
 const sectionSegmentRouter = require('./routes/section.segment.router');
 const monitorLogRouter = require('./routes/monitorLog.router');
 const speciesRouter = require('./routes/species.router');
@@ -56,6 +60,19 @@ app.use(dashboardRouter);
 
 app.use('/numbers', numbersRouter);
 
-app.listen(PORT, () => {
-  console.log(`Server listening on ${PORT}`);
-});
+// Adds SSL in production
+if (process.env.NODE_ENV === 'production') {
+  // Add Helmet middleware for HTTP Strict Transport Security
+  app.use(helmet.hsts());
+
+  // Set SSL certs
+  const options = {
+    key: fs.readFileSync('./key.pem'),
+    cert: fs.readFileSync('./cert.pem'),
+  };
+  https.createServer(options, app).listen(8080);
+} else {
+  app.listen(PORT, () => {
+    console.log(`Server listening on ${PORT}`);
+  });
+}

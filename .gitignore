@@ -107,3 +107,6 @@ dist
 
 # Firebase SDK
 firebase-adminsdk.json
+
+# SSL certs
+*.pem
