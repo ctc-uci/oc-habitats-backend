@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const bandTabSchema = new mongoose.Schema({
+const singleBandSchema = new mongoose.Schema({
   colors: [
     {
       type: String,
@@ -23,11 +23,12 @@ const listedSpeciesSchema = new mongoose.Schema({
   crossStreet: String,
   bandTabs: [
     {
-      topLeft: bandTabSchema,
-      topRight: bandTabSchema,
-      bottomLeft: bandTabSchema,
-      bottomRight: bandTabSchema,
+      topLeft: singleBandSchema,
+      topRight: singleBandSchema,
+      bottomLeft: singleBandSchema,
+      bottomRight: singleBandSchema,
       code: String,
+      manualCode: String,
     },
   ],
   sex: [Number],
