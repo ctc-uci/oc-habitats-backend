@@ -299,7 +299,7 @@ const getListedByMonth = async (query) => {
     },
     // Stage 7 - prepare each listed specie entry for look up
     {
-      $unwind: '$listedSpecies.entries',
+      $unwind: { path: '$listedSpecies.entries', preserveNullAndEmptyArrays: true },
     },
     // Stage 8 - Group listed species by name and get their injured count
     {
