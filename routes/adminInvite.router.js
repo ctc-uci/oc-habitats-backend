@@ -78,8 +78,7 @@ router.post('/', async (req, res) => {
     const invite = await adminInviteService.createInvite(req.body);
     res.status(200).send(invite);
   } catch (err) {
-    console.error(err);
-    res.status(400).json({ error: err.message });
+    res.status(400).json(err.message);
   }
 });
 

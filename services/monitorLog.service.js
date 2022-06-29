@@ -23,7 +23,7 @@ const updateSubmission = async (submissionId, updatedSubmission) => {
   return Submission.updateOne(
     { _id: submissionId },
     {
-      $set: updatedSubmission,
+      $set: { ...updatedSubmission, lastEditedAt: new Date() },
     },
   );
 };
@@ -113,6 +113,15 @@ const getSubmissions = async (filters) => {
     {
       $unwind: '$segment',
     },
+    // populate sessionPartners (don't unwind to preserve multiple partners)
+    {
+      $lookup: {
+        from: 'users',
+        localField: 'sessionPartners',
+        foreignField: '_id',
+        as: 'sessionPartners',
+      },
+    },
     // remove unnecessary fields
     {
       $project: {
@@ -126,7 +135,11 @@ const getSubmissions = async (filters) => {
         'segment.mapLink': 0,
         'segment.streets': 0,
         'segment.parking': 0,
-        'segment.name': 0,
+        'sessionPartners.profileImage': 0,
+        'sessionPartners.segments': 0,
+        'sessionPartners.isActive': 0,
+        'sessionPartners.isTrainee': 0,
+        'sessionPartners.role': 0,
       },
     },
     // match for submitter name/email and segment
@@ -185,8 +198,127 @@ const getSubmissions = async (filters) => {
   return res[0] || { results: [], total: 0 };
 };
 
+const getSubmissionsByMonth = async (query) => {
+  return Submission.aggregate([
+    // Stage 1 - Get all submissions within date range
+    {
+      $match: query,
+    },
+    // Stage 2 - Group all submissions by status and push submission info, injured Terrestrial Count, and speeding vehicles count
+    // into array separated by their status
+    {
+      $group: {
+        _id: '$status',
+        submissions: {
+          $push: {
+            submissionId: '$_id',
+            date: '$date',
+            segment: '$segment',
+            submitter: '$submitter',
+            injuredAdditional: '$additionalSpecies.injuredCount',
+            speedingVehicles: { $sum: '$humanActivity.speedingVehicles' },
+          },
+        },
+      },
+    },
+    // Stage 3 - Prepare segments for look up
+    { $unwind: '$submissions' },
+    // Stage 4 - Look up segment info
+    {
+      $lookup: {
+        from: 'segments',
+        localField: 'submissions.segment',
+        foreignField: '_id',
+        as: 'submissions.segment',
+      },
+    },
+    // Stage 5 - Convert segment from array to segement
+    { $unwind: '$submissions.segment' },
+    // Stage 6  Look up volunteers inside segments
+    {
+      $lookup: {
+        from: 'users',
+        localField: 'submissions.segment.volunteers',
+        foreignField: '_id',
+        as: 'submissions.segment.volunteers',
+      },
+    },
+    // Stage 8 - Group data by submission type via _id
+    {
+      $group: {
+        _id: '$_id',
+        submissions: {
+          $push: '$submissions',
+        },
+      },
+    },
+    // // Stage 9 - Sort Objects containing array of submissions by their status
+    {
+      $sort: {
+        _id: 1,
+      },
+    },
+  ]);
+};
+
 const getSubmission = async (submissionId) => {
   return Submission.findOne({ _id: submissionId });
+};
+
+const getListedByMonth = async (query) => {
+  return Submission.aggregate([
+    // Stage 1 - Get all submissions within date range
+    {
+      $match: query,
+    },
+    // Stage 2 - Get segment info
+    {
+      $lookup: {
+        from: 'segments',
+        localField: 'segment',
+        foreignField: '_id',
+        as: 'segment',
+      },
+    },
+    // Stage 3 - prepare segment for lookup
+    { $unwind: '$segment' },
+    // Stage 4 - prepare listedSpecies for lookup
+    { $unwind: '$listedSpecies' },
+    // Stage 5 - lookup each listed species info
+    {
+      $lookup: {
+        from: 'species',
+        localField: 'listedSpecies.species',
+        foreignField: '_id',
+        as: 'listedSpecies.species',
+      },
+    },
+    // Stage 6 - turn each listed specie as an object
+    {
+      $unwind: '$listedSpecies.species',
+    },
+    // Stage 7 - prepare each listed specie entry for look up
+    {
+      $unwind: '$listedSpecies.entries',
+    },
+    // Stage 8 - Group listed species by name and get their injured count
+    {
+      $group: {
+        _id: '$listedSpecies.species.name',
+        info: {
+          $push: {
+            entries: '$listedSpecies.entries',
+            segment: '$segment.segmentId',
+          },
+        },
+        injured: { $sum: '$listedSpecies.injuredCount' },
+      },
+    },
+    // Stage 9 - sort data by listed specie name
+    {
+      $sort: { _id: 1 },
+    },
+  ]);
 };
 
 const deleteSubmission = async (submissionId) => {
@@ -198,7 +330,6 @@ const createSubmission = async (submission, user) => {
     ...submission,
     segment: submission.segment || null,
     submitter: user,
-    submittedAt: new Date(),
     lastEditedAt: new Date(),
   });
   return createdSubmission.save();
@@ -210,6 +341,8 @@ module.exports = {
   updateSubmission,
   deleteSubmission,
   getSubmission,
+  getSubmissionsByMonth,
+  getListedByMonth,
   getSubmissions,
   createSubmission,
 };

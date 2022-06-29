@@ -12,7 +12,9 @@ const adminInviteRouter = require('./routes/adminInvite.router');
 const numbersRouter = require('./routes/numbers.router');
 
 const userRouter = require('./routes/user.router');
+const dashboardRouter = require('./routes/dashboard.router');
 const { authRouter } = require('./routes/auth.router');
+const formRouter = require('./routes/form.router');
 
 require('dotenv').config();
 
@@ -38,6 +40,7 @@ app.use(cookieParser());
 
 app.use('/users', userRouter);
 app.use('/auth', authRouter);
+app.use('/forms', formRouter);
 
 app.use(sectionSegmentRouter);
 app.use(monitorLogRouter);
@@ -46,6 +49,7 @@ app.use('/notification', notificationRouter);
 
 app.use('/adminInvite', adminInviteRouter);
 app.use('/nodemailer', emailRouter);
+app.use(dashboardRouter);
 
 app.use('/numbers', numbersRouter);
 

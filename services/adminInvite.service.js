@@ -1,4 +1,5 @@
 const AdminInviteModel = require('../models/adminInvite.schema');
+const UserModel = require('../models/user.schema');
 
 const getInvite = async (inviteId) => {
   return AdminInviteModel.findOne({ id: inviteId });
@@ -25,6 +26,12 @@ const createInvite = async (invite) => {
   if (!invite.id || !invite.email || !invite.role || !invite.expireDate) {
     throw new Error('Arguments missing in invite');
   }
+
+  const existingEmail = await UserModel.findOne({ email: invite.email });
+  if (existingEmail) {
+    throw new Error('This email is already associated with an account');
+  }
+
   const createdInvite = new AdminInviteModel({
     id: invite.id,
     email: invite.email,

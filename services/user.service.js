@@ -21,12 +21,13 @@ const getAllReducedProfiles = async () => {
 };
 
 const updateProfile = async (profileId, updatedProfile) => {
-  return UserModel.updateOne(
+  return UserModel.findByIdAndUpdate(
     { _id: profileId },
     {
       $set: updatedProfile,
     },
-  );
+    { new: true },
+  ).populate('segments');
 };
 
 const setSegmentAssignments = async (userId, segmentIds) => {

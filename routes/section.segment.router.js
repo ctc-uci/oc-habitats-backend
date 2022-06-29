@@ -127,4 +127,14 @@ router.get('/section/:id', async (req, res) => {
   }
 });
 
+// Get unassigned segments
+router.get('/segments/unassigned', async (_, res) => {
+  try {
+    const unassigned = await sectionSegmentService.getUnassigned();
+    res.status(200).send(unassigned);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
 module.exports = router;
