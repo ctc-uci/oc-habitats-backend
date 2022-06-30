@@ -151,5 +151,3 @@ module.exports = {
     return results;
   },
 };
-  getUnassignedSegments: async () => {
-    return Segment.find({ assigned: false }).select('_id');
