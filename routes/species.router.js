@@ -2,9 +2,10 @@ const express = require('express');
 
 const router = express.Router();
 const speciesService = require('../services/species.service');
+const { verifyToken } = require('./auth.router');
 
 // get species
-router.get('/', async (req, res) => {
+router.get('/', verifyToken, async (req, res) => {
   try {
     const allSpecies = await speciesService.getAllSpecies();
     res.status(200).send(allSpecies);
@@ -15,7 +16,7 @@ router.get('/', async (req, res) => {
 });
 
 // change species to listed/not listed
-router.put('/:id/:newListing', async (req, res) => {
+router.put('/:id/:newListing', verifyToken, async (req, res) => {
   const { id, newListing } = req.params;
   try {
     const changeListing = await speciesService.changeListing(id, newListing);
@@ -31,7 +32,7 @@ router.put('/:id/:newListing', async (req, res) => {
 });
 
 // add new species
-router.post('/', async (req, res) => {
+router.post('/', verifyToken, async (req, res) => {
   try {
     console.log(req.body);
     const species = await speciesService.addNewSpecies(req.body);
@@ -42,7 +43,7 @@ router.post('/', async (req, res) => {
   }
 });
 
-router.put('/:id', async (req, res) => {
+router.put('/:id', verifyToken, async (req, res) => {
   const { id } = req.params;
   try {
     const mongoResponse = await speciesService.updateSpecies(id, req.body);
@@ -53,7 +54,7 @@ router.put('/:id', async (req, res) => {
 });
 
 // delete species
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', verifyToken, async (req, res) => {
   const { id } = req.params;
   try {
     const deletedSpecies = await speciesService.deleteSpecies(id);

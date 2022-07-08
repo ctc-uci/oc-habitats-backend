@@ -7,7 +7,7 @@ const router = express.Router();
 // submission routes
 
 // get submission
-router.get('/submission/:id', async (req, res) => {
+router.get('/submission/:id', verifyToken, async (req, res) => {
   const { id } = req.params;
   try {
     const foundSubmission = await monitorLogService.getSubmission(id);
@@ -23,7 +23,7 @@ router.get('/submission/:id', async (req, res) => {
 });
 
 // get submissions
-router.get('/submissions', async (req, res) => {
+router.get('/submissions', verifyToken, async (req, res) => {
   try {
     const filters = req.query;
     const allSubmissions = await monitorLogService.getSubmissions(filters);
@@ -35,7 +35,7 @@ router.get('/submissions', async (req, res) => {
 });
 
 // delete submission
-router.delete('/submission/:id', async (req, res) => {
+router.delete('/submission/:id', verifyToken, async (req, res) => {
   const { id } = req.params;
   try {
     const deletedSubmission = await monitorLogService.deleteSubmission(id);
@@ -51,7 +51,7 @@ router.delete('/submission/:id', async (req, res) => {
 });
 
 // update submission
-router.post('/submission/:id', async (req, res) => {
+router.post('/submission/:id', verifyToken, async (req, res) => {
   const { id } = req.params;
   try {
     console.log(JSON.stringify(req.body, null, 4));
@@ -82,7 +82,7 @@ router.post('/submission', verifyToken, async (req, res) => {
 // form routes
 
 // get form
-router.get('/form', async (_, res) => {
+router.get('/form', verifyToken, async (_, res) => {
   try {
     const foundForm = await monitorLogService.getForm();
     if (!foundForm) {
@@ -97,7 +97,7 @@ router.get('/form', async (_, res) => {
 });
 
 // update form
-router.post('/form', async (req, res) => {
+router.post('/form', verifyToken, async (req, res) => {
   try {
     const updatedForm = await monitorLogService.updateForm(req.body);
     if (updatedForm.nModified === 0) {

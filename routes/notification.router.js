@@ -15,7 +15,7 @@ router.get('/', verifyToken, async (req, res) => {
   }
 });
 
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', verifyToken, async (req, res) => {
   const { id } = req.params;
   try {
     const deletedNotification = await notificationService.deleteNotification(id);
@@ -31,7 +31,7 @@ router.delete('/:id', async (req, res) => {
 });
 
 // create notification
-router.post('/', async (req, res) => {
+router.post('/', verifyToken, async (req, res) => {
   try {
     req.body.userId = req.body.firebaseId;
     delete req.body.firebaseId;

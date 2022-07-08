@@ -2,9 +2,10 @@ const express = require('express');
 
 const router = express.Router();
 const numbersService = require('../services/numbers.service');
+const { verifyToken } = require('./auth.router');
 
 // get all numbers
-router.get('/', async (req, res) => {
+router.get('/', verifyToken, async (req, res) => {
   try {
     const allNumbers = await numbersService.getAllNumbers();
     res.status(200).send(allNumbers);
@@ -15,7 +16,7 @@ router.get('/', async (req, res) => {
 });
 
 // add new number
-router.post('/', async (req, res) => {
+router.post('/', verifyToken, async (req, res) => {
   try {
     const number = await numbersService.addNewNumber(req.body);
     res.status(200).send(number);
@@ -26,7 +27,7 @@ router.post('/', async (req, res) => {
 });
 
 // delete number
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', verifyToken, async (req, res) => {
   const { id } = req.params;
   try {
     const deletedNumber = await numbersService.deleteNumber(id);
@@ -42,7 +43,7 @@ router.delete('/:id', async (req, res) => {
 });
 
 // update number
-router.put('/:id', async (req, res) => {
+router.put('/:id', verifyToken, async (req, res) => {
   const { id } = req.params;
   try {
     const updatedNumber = await numbersService.updateNumber(id, req.body);
