@@ -60,7 +60,7 @@ const humanHeaders = [
 ];
 
 const disclaimer =
-  'OC Habtiats strives to survey as many of the segments as possible each month. Some segments may not have been surveyed due to volunteer cancellation (due to illness, weather, or some other reason). Some segments are regularly not getting surveyed due to access issues (parking or land structures).  Some segments get more attention than others since we are aware the SNPL use these segments more often or there are issues with these segments that need more regular attention. ';
+  'OC Habitats strives to survey as many of the segments as possible each month. Some segments may not have been surveyed due to volunteer cancellation (due to illness, weather, or some other reason). Some segments are regularly not getting surveyed due to access issues (parking or land structures).  Some segments get more attention than others since we are aware the SNPL use these segments more often or there are issues with these segments that need more regular attention. ';
 
 const reportsDirectory = `${__dirname}\\..\\reports`;
 // const convertToPascal = (text) => {
@@ -165,7 +165,7 @@ const convertToCSV = (submission) => {
       const codesAr = [];
 
       formattedInput.bandTabs.forEach((band) => {
-        codesAr.push(band.code);
+        codesAr.push(band.manualCode ? band.manualCode : band.code);
       });
 
       formattedInput.nesting = formatArray(formattedInput.nesting);
