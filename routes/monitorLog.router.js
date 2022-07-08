@@ -54,6 +54,7 @@ router.delete('/submission/:id', async (req, res) => {
 router.post('/submission/:id', async (req, res) => {
   const { id } = req.params;
   try {
+    console.log(JSON.stringify(req.body, null, 4));
     const updatedSubmission = await monitorLogService.updateSubmission(id, req.body);
     if (updatedSubmission.nModified === 0) {
       res.status(400).json({ message: `Submission ${id} not updated` });

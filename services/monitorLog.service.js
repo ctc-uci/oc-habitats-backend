@@ -261,6 +261,23 @@ const getSubmissionsByMonth = async (query) => {
   ]);
 };
 
+const getSubmissionsByDates = async (startDate, endDate) => {
+  return Submission.find({
+    date: {
+      $gte: new Date(startDate),
+      $lte: new Date(endDate),
+    },
+    status: 'APPROVED',
+  })
+    .populate('submitter', 'firstName lastName -_id')
+    .populate('segment', '-_id segmentId')
+    .populate('sessionPartners', 'firstName lastName -_id')
+    .populate('listedSpecies.species', 'name -_id')
+    .populate('additionalSpecies.entries.species', 'name -_id')
+    .populate('predators.species', '-_id')
+    .sort({ date: 'asc' });
+};
+
 const getSubmission = async (submissionId) => {
   return Submission.findOne({ _id: submissionId });
 };
@@ -344,5 +361,6 @@ module.exports = {
   getSubmissionsByMonth,
   getListedByMonth,
   getSubmissions,
+  getSubmissionsByDates,
   createSubmission,
 };
