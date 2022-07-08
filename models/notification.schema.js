@@ -7,10 +7,6 @@ const notificationSchema = new mongoose.Schema({
     type: String,
     ref: 'User',
   },
-  type: {
-    type: String,
-    enum: ['MONITOR_LOG_APPROVED', 'CHANGES_REQUESTED'],
-  },
 });
 
 module.exports = mongoose.model('Notification', notificationSchema);
