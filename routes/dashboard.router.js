@@ -120,42 +120,4 @@ router.get('/dashboard', async (req, res) => {
   }
 });
 
-router.get('/test-dash', async (_, res) => {
-  try {
-    const query = getDateQuery();
-    const listedResults = await monitorLogService.testSpecies(query);
-
-    // Process listed species into easier format for front end
-    const adjustedResults = [...listedResults];
-    adjustedResults.forEach((result) => {
-      const dict = {};
-      result.info.forEach((submission) => {
-        if (submission.segment in dict) {
-          dict[submission.segment].totalAdults += submission.entries.totalAdults;
-          dict[submission.segment].totalFledges += submission.entries.totalFledges;
-          dict[submission.segment].totalChicks += submission.entries.totalChicks;
-        } else if (submission.entries) {
-          dict[submission.segment] = {
-            totalAdults: submission.entries.totalAdults,
-            totalFledges: submission.entries.totalFledges,
-            totalChicks: submission.entries.totalChicks,
-          };
-        } else {
-          dict[submission.segment] = {
-            totalAdults: 0,
-            totalFledges: 0,
-            totalChicks: 0,
-          };
-        }
-      });
-      result.segments = dict;
-      delete result.info;
-    });
-
-    res.status(200).send(adjustedResults);
-  } catch (err) {
-    res.status(500).send(err.message);
-  }
-});
-
 module.exports = router;
