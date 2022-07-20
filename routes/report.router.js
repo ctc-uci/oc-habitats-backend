@@ -177,6 +177,9 @@ router.post('/report', async (req, res) => {
         .map((a) => [a.title, a._id.toString()])
         .concat(HUMAN_ACTIVITIES)
         .sort();
+      if (startDate === null) {
+        startDate = new Date();
+      }
       const month = `- ${moment(startDate).format('MMMM YYYY')}`;
       const logs = await Promise.all(await formatLogs(reports, birds, activities));
       const [segmentNames, segmentCounts] = await getSegmentCounts(reports);
