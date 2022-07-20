@@ -1,230 +1,52 @@
+/* eslint-disable no-console */
 /* eslint-disable no-underscore-dangle */
 const express = require('express');
 const fs = require('fs');
-const AdmZip = require('adm-zip');
+const XlsxTemplate = require('xlsx-template');
+const moment = require('moment');
+const { intToExcelCol } = require('excel-column-name');
 const monitorLogService = require('../services/monitorLog.service');
 const segmentService = require('../services/section.segment.service');
+const Species = require('../models/species.schema');
+const formService = require('../services/form.service');
 
 const router = express.Router();
 
-const generalHeaders = [
-  'Surveyor Name',
-  'Survey Segment',
-  'Date',
-  'Survey Start Time',
-  'Survey End Time',
-  'Temperature (F)',
-  'Cloud Cover (%)',
-  'Precipitation',
-  'Wind (Speed/Direction)',
-  'Tides(ft)',
-  'Overall Habitat Type',
-  'Habitat Width (ft)',
-  'Partners',
-];
+const HUMAN_ACTIVITIES = [
+  [
+    'Humans Sitting',
+    'Human Sitting/Walking/Running, Sports, Bikes (Non-Motorized), Fires, Fishing',
+    'beachActivity',
+  ],
+  [
+    'Humans Walking/Running/Surfing',
+    'Surfers, Windsurfers, Kite Sailing, Kayakers, SUPs, Other',
+    'waterActivity',
+  ],
+  ['Equipment', 'Drone in Use, Fan Paragliding, Kite Flying', 'airborneActivity'],
+  ['Vehicles under 10mph', 'ATV & Equipment, Bikes, Boards, Other', 'speedingVehicles'],
+  ['Vehicles over 10mph', 'Cars, ATV & Equipment, Bikes, Boards, Other', 'nonSpeedingVehicles'],
+  ['Dogs: Off Leash', 'Dogs, Cats, Other', 'offLeashAnimals'],
+  ['Dogs: On Leash', 'Dogs, Cats, Other', 'onLeashAnimals'],
+].map(([a, _, c]) => [a, c]);
 
-const listedAnimalHeaders = [
-  'Map #',
-  'Adults',
-  'Fledges',
-  'Chicks',
-  'Time',
-  'Habitat Description',
-  'GPS',
-  'Cross Street/Towers',
-  '# of Male Adults',
-  '# of Male Fledges',
-  '# of Male Chicks',
-  '# of Female Adults',
-  '# of Female Fledges',
-  '# of Female Chicks',
-  'Nest & Eggs',
-  'Behaviors Observed',
-  'Banding Code',
-  'Accuracy Confidence',
-  'Additional Notes',
-];
 
-const nonListedHeaders = ['Species', 'Total', 'Notes'];
-
-const humanHeaders = [
-  'Beach Activity',
-  'Water Activity',
-  'Airborne Activity',
-  '[Speeding] Motorized Vehicles',
-  '[Non-Speeding] Motorized Vehicles',
-  '[Off Leash] Domestic Animals',
-  '[On Leash] Domestic Animals',
-  'Outreach',
-  'Other Notes',
-];
-
-const disclaimer =
-  'OC Habitats strives to survey as many of the segments as possible each month. Some segments may not have been surveyed due to volunteer cancellation (due to illness, weather, or some other reason). Some segments are regularly not getting surveyed due to access issues (parking or land structures).  Some segments get more attention than others since we are aware the SNPL use these segments more often or there are issues with these segments that need more regular attention. ';
-
-const reportsDirectory = `${__dirname}\\..\\reports`;
 // const convertToPascal = (text) => {
 //   return text.replace(/((?<!^)[A-Z](?![A-Z]))(?=\S)/g, ' $1').replace(/^./, (s) => s.toUpperCase());
 // };
 
-const joinValues = (valuesList) => {
-  let row = '';
-  let size;
-  if (Array.isArray(valuesList)) {
-    valuesList.forEach((value) => {
-      size = Object.values(value).length;
-      Object.values(value).forEach((entry, index) => {
-        if (index === size - 2) row += `${entry}\r\n`;
-        else if (index !== size - 1) {
-          row += `${entry},`;
-        }
-      });
-    });
-  } else {
-    // const size = Object.values(valuesList).length;
-    size = Object.values(valuesList).length;
-    Object.values(valuesList).forEach((entry, index) => {
-      if (index === size - 2) row += `${entry}\r\n`;
-      else if (index !== size - 1) {
-        row += `${entry},`;
-      }
-    });
-  }
-
-  return row;
-};
-
-const joinKeys = (keysList) => {
-  let row = '';
-  // let size;
-  // if (Array.isArray(keysList)) {
-  //   keysList.forEach((key) => {
-  //     size = Object.keys(key).length;
-  //     Object.keys(key).forEach((entry, index) => {
-  //       if (index === size - 2) row += `${entry}\r\n`;
-  //       else if (index !== size - 1) {
-  //         row += `${entry},`;
-  //       }
-  //     });
-  //   });
-  // } else {
-  const size = Object.keys(keysList).length;
-  Object.keys(keysList).forEach((entry, index) => {
-    if (index === size - 2) row += `${entry}\r\n`;
-    else if (index !== size - 1) {
-      row += `${entry},`;
-    }
-  });
-  // }
-  return row;
-};
-
-const formatArray = (ar) => {
-  return `"${ar}"`;
-};
-
-const convertToCSV = (submission) => {
-  // Append General Information Headers
-  let csv = `General Information\r\n${generalHeaders.join(',')}`;
-  let additionalString = '';
-
-  // Append Additional General Information Headers
-  if (submission.generalAdditionalFieldValues) {
-    csv += joinKeys(submission.generalAdditionalFieldValues);
-    additionalString = joinValues(submission.generalAdditionalFieldValues);
-  }
-
-  // Append General Information Fields
-  csv += `\r\n${submission.submitter.firstName} ${submission.submitter.lastName},${
-    submission.segment.segmentId
-  },${new Date(submission.date).toDateString()},${submission.startTime},${submission.endTime},${
-    submission.temperature
-  },${submission.cloudCover},${submission.precipitation},${submission.windSpeed} ${
-    submission.windDirection
-  },${submission.tides},${submission.habitatType},${
-    submission.habitatWidth
-  },"${submission.sessionPartners.toString()}"`;
-
-  // Append ADDITIONAL General Information Fields
-  csv += `,${additionalString}\r\n\r\n`;
-  additionalString = '';
-
-  // Append Listed Species, Header, and Fields
-  submission.listedSpecies.forEach((entry) => {
-    csv += `${entry.species.name}\r\n${listedAnimalHeaders.join(',')}\r\n`;
-    entry.entries.forEach((input) => {
-      const formattedInput = { ...input.toJSON() };
-      delete formattedInput._id;
-      let formattedGps = '';
-      formattedInput.gps.forEach((set) => {
-        const temp = { ...set };
-        delete temp._id;
-        formattedGps += JSON.stringify(temp).replace(/['"]+/g, '');
-      });
-      formattedInput.gps = formatArray(formattedGps);
-      const codesAr = [];
-
-      formattedInput.bandTabs.forEach((band) => {
-        codesAr.push(band.manualCode ? band.manualCode : band.code);
-      });
-
-      formattedInput.nesting = formatArray(formattedInput.nesting);
-      formattedInput.sex = formattedInput.sex.toString();
-      formattedInput.bandTabs = formatArray(codesAr);
-      formattedInput.behaviors = formatArray(formattedInput.behaviors);
-      csv += joinValues(formattedInput);
-    });
-
-    csv += `\r\nInjured ${entry.species.name}\r\n${entry.injuredCount}\r\n\r\n`;
-  });
-
-  // Append Non Listed Species Title, Headers, and Fields
-  csv += `Non-Listed Species\r\n${nonListedHeaders.join(',')}\r\n`;
-  submission.additionalSpecies.entries.forEach((addSpecie) => {
-    csv += `${addSpecie.species.name},${addSpecie.count},${addSpecie.notes}\r\n`;
-  });
-
-  csv += `\r\nInjured Terrestrial Wildlife\r\n${submission.additionalSpecies.injuredCount}\r\n`;
-
-  // // Append Predator Title + Headers
-  const predatorHeaders = [];
-  const predatorCount = [];
-  submission.predators.forEach((predator) => {
-    predatorHeaders.push(predator.species.name);
-    predatorCount.push(predator.count);
-  });
-  csv += `\r\n${predatorHeaders},Other predators(s)\r\n`;
-  csv += `${predatorCount},${submission.predatorOthers || ''}\r\n`;
-
-  // Append Human Activity Title + Headers
-  csv += `\r\nHuman Activity\r\n${humanHeaders.join(',')}`;
-  // // Append Additional Human Activity Headers
-  // if (submission.humanActivityAdditionalFieldValues) {
-  //   csv += joinKeys(submission.humanActivityAdditionalFieldValues.toJSON());
-  //   additionalString = joinValues(submission.humanActivityAdditionalFieldValues.toJSON());
-  // }
-  // // Append Human Activity Fields
-  // csv += '\r\n';
-  // csv += joinValues(submission.humanActivityEntries.toJSON());
-  // // Append Additional Human Activity Fields
-  // csv += additionalString;
-
-  csv += '\r\n\r\nSegment Totals\r\n';
-
-  return csv;
-};
-
 const getSegmentNames = async () => {
-  const segments = await segmentService.getSegNames().then((dict) => {
-    return dict.map((segment) => {
-      return segment.toJSON().segmentId;
-    });
+  const dict = await segmentService.getSegNames();
+  return dict.map((segment) => {
+    return segment.toJSON().segmentId;
   });
-  return segments;
 };
 
-const getSegmentRow = async (submissions) => {
-  let segmentString = '';
+const convertTime = (militaryTime) => {
+  return moment(militaryTime, 'HH:mm').format('hh:mm a');
+};
+
+const getSegmentCounts = async (submissions) => {
   const segments = await getSegmentNames();
   const segmentDictionary = Object.assign({}, ...segments.map((segment) => ({ [segment]: 0 })));
   submissions.forEach((submission) => {
@@ -232,59 +54,207 @@ const getSegmentRow = async (submissions) => {
       segmentDictionary[submission.segment.segmentId] += 1;
     }
   });
-  segmentString += joinKeys(segmentDictionary);
-  segmentString += joinValues(segmentDictionary);
-  return segmentString;
+  const keys = Object.keys(segmentDictionary);
+  keys.sort((a, b) => a.length - b.length || a.localeCompare(b));
+  const values = keys.map((k) => segmentDictionary[k]);
+  return [keys, values];
 };
 
-const createCSV = (data, id) => {
-  try {
-    fs.writeFileSync(`${reportsDirectory}\\report-${id}.csv`, data, { flag: 'wx' });
-  } catch (err) {
-    console.log('ERR writing csv', err);
+const getLocation = (listedSpeciesEntry) => {
+  const { gps, crossStreet } = listedSpeciesEntry;
+  if (gps.some((c) => c && c.longitude && c.latitude)) {
+    return (
+      gps
+        .map((c) => `${c.latitude}/${c.longitude}`)
+        .filter((s) => s !== '/')
+        .join(', ') + (crossStreet ? ` | ${crossStreet}` : '')
+    );
   }
+  return crossStreet;
 };
 
-router.get('/report', async (req, res) => {
-  let { startDate, endDate } = req.body;
-  startDate = new Date(startDate).setHours(0, 0, 0);
-  endDate = new Date(endDate).setHours(23, 59, 59, 999);
+const getSpecies = async () => {
+  return Species.find();
+};
+
+const formatLogs = async (reports, birds, activities) => {
+  // console.log(JSON.stringify(reports, null, 4));
+  return reports.map(async (report) => {
+    // report.listedSpecies.keys().map((id) => {
+    //   return console.log(id);
+    // });
+    const speciesIds = Array.from(report.listedSpecies?.keys() || []);
+    speciesIds.sort();
+    const listedSpecies = await Promise.all(
+      speciesIds.map(async (id, idx) => {
+        const { entries } = report.listedSpecies.get(id);
+
+        const res = [];
+        res.push([
+          `count${idx + 1}`,
+          entries.reduce(
+            (sum, { totalAdults, totalFledges }) => sum + totalAdults + totalFledges,
+            0,
+          ),
+        ]);
+        res.push([
+          `chicks${idx + 1}`,
+          entries.reduce((sum, { totalChicks }) => sum + totalChicks, 0),
+        ]);
+        res.push([`time${idx + 1}`, entries.map((e) => convertTime(e.time)).join(', ')]);
+        res.push([
+          `banding${idx + 1}`,
+          entries.map((e) => e.bandTabs.map((tab) => tab.code).join(', ')).join(', '),
+        ]);
+        const locations = entries.map(getLocation);
+        res.push([`locationa${idx + 1}`, locations[0] || '']);
+        res.push([`locationb${idx + 1}`, locations[1] || '']);
+        return res;
+      }),
+    );
+    const listedObj = Object.fromEntries(listedSpecies.reduce((a, b) => a.concat(b), []));
+
+    const birdCounts = new Array(birds.length).fill(0);
+    const additionalSpecies = Array.from(report.additionalSpecies.entries?.keys() || []);
+    const speciesIndexes = new Map();
+    birds.forEach((b, idx) => speciesIndexes.set(b._id.toString(), idx));
+    additionalSpecies.forEach((id) => {
+      const species = report.additionalSpecies.entries.get(id);
+      birdCounts[speciesIndexes.get(id)] += species.count;
+    });
+
+    const humanActivityCounts = new Array(activities.length).fill(0);
+    const humanActivity = Array.from(report.humanActivity?.keys() || []);
+    const activityIndexes = new Map();
+    activities.forEach((a, idx) => activityIndexes.set(a[1], idx));
+    humanActivity.forEach((id) => {
+      humanActivityCounts[activityIndexes.get(id)] += report.humanActivity.get(id);
+    });
+
+    return {
+      date: moment(report.date).format('MM/DD/yyyy'),
+      segment: report.segment?.segmentId,
+      ...listedObj,
+      beachCast: report.additionalSpecies?.beachCast,
+      issues: report.humanActivityOtherNotes,
+      birds: birdCounts.map((c) => (c === 0 ? '' : c)),
+      humanActivity: humanActivityCounts.map((c) => (c === 0 ? '' : c)),
+    };
+  });
+};
+
+const getHumanActivities = async () => {
+  return (await formService.getFormByType('human-activity'))?.additionalFields;
+};
+
+router.post('/report', async (req, res) => {
+  const { date } = req.body;
+  const { logIds } = req.body;
+  let [startDate, endDate] = [null, null];
+  if (date) {
+    startDate = moment(date).startOf('month');
+    endDate = moment(date).endOf('month').endOf('day');
+  }
   try {
-    const reports = await monitorLogService.getSubmissionsByDates(startDate, endDate);
-    if (!reports.length) {
-      res.status(400).json({ message: `Reports from ${startDate} to  ${endDate} doesn't exist` });
+    let reports;
+    if (logIds) {
+      reports = await monitorLogService.getSubmissionsByIds(logIds);
     } else {
-      const segStr = await getSegmentRow(reports);
+      reports = await monitorLogService.getSubmissionsByDates(startDate, endDate);
+    }
 
-      reports.forEach((report) => {
-        let csvData = convertToCSV(report);
-        csvData += `${segStr}\r\n${disclaimer}`;
-        createCSV(csvData, report._id.toString());
-      });
-      const zip = new AdmZip();
-      fs.readdirSync(reportsDirectory).forEach((file) => {
-        zip.addLocalFile(`${reportsDirectory}\\${file}`);
-      });
-      res.writeHead(200, {
-        'Content-Disposition': `attachment; filename="${new Date(
-          startDate,
-        ).toLocaleDateString()}_${new Date(endDate).toLocaleDateString()}_reports.zip"`,
-        'Content-Type': 'application/zip',
-      });
-      const zipFileContents = zip.toBuffer();
-      res.end(zipFileContents);
+    if (!reports.length) {
+      res.status(400).json({ message: `Reports from ${startDate} to ${endDate} doesn't exist` });
+    } else {
+      const allSpecies = await getSpecies();
+      allSpecies.sort((a, b) => (a.name < b.name ? -1 : 1));
+      const birds = allSpecies.filter(
+        (s) =>
+          s.category === 'NON_LISTED' ||
+          s.category === 'LISTED' ||
+          s.category === 'NON_LISTED_PREDATOR',
+      );
+      const activities = (await getHumanActivities())
+        .map((a) => [a.title, a._id.toString()])
+        .concat(HUMAN_ACTIVITIES)
+        .sort();
+      if (startDate === null) {
+        startDate = new Date();
+      }
+      const month = `- ${moment(startDate).format('MMMM YYYY')}`;
+      const logs = await Promise.all(await formatLogs(reports, birds, activities));
+      const [segmentNames, segmentCounts] = await getSegmentCounts(reports);
 
-      // res.status(200).send('good');
+      const sheetData = {
+        logs,
+        month,
+        birds: birds.map((b) => b.name),
+        humanActivity: activities.map((a) => a[0]),
+        sums: new Array(activities.length - 1)
+          .fill('')
+          .concat(['Total:', ''])
+          .concat(
+            new Array(birds.length)
+              .fill(0)
+              .map(
+                (_, idx) =>
+                  `=SUM(${intToExcelCol(18 + activities.length + idx)}4:${intToExcelCol(
+                    18 + activities.length + idx,
+                  )}${4 + logs.length - 1})`,
+              ),
+          ),
+        segments: segmentNames.map((_, idx) => ({
+          name: segmentNames[idx],
+          count: segmentCounts[idx],
+        })),
+      };
+
+      // Create a template
+      fs.readFile('template.xlsx', (err, data) => {
+        const template = new XlsxTemplate(data);
+
+        // Replacements take place on first sheet
+        const sheetNumber = 1;
+
+        // Perform substitution
+        template.substitute(sheetNumber, sheetData);
+
+        // Get binary data
+        const output = template.generate({ type: 'base64' });
+        // fs.createWriteStream('test.xlsx').write(output);
+        // fs.writeFileSync('test.xlsx', output);
+        res.writeHead(200, {
+          'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+          'Content-Disposition': 'attachment; filename=report.xlsx',
+        });
+        res.end(Buffer.from(output, 'base64'));
+        // res.status(200).send('good');
+        // const segStr = await getSegmentRow(reports);
+
+        // reports.forEach(async (report) => {
+        //   let csvData = await convertToCSV(report);
+        //   csvData += `${segStr}\r\n${disclaimer}`;
+        //   createCSV(csvData, report._id.toString());
+        // });
+        // const zip = new AdmZip();
+        // fs.readdirSync(reportsDirectory).forEach((file) => {
+        //   zip.addLocalFile(`${reportsDirectory}\\${file}`);
+        // });
+        // res.writeHead(200, {
+        //   'Content-Disposition': `attachment; filename="${new Date(
+        //     startDate,
+        //   ).toLocaleDateString()}_${new Date(endDate).toLocaleDateString()}_reports.zip"`,
+        //   'Content-Type': 'application/zip',
+        // });
+        // const zipFileContents = zip.toBuffer();
+        // res.end(zipFileContents);
+
+        // res.status(200).send('good');
+      });
     }
   } catch (err) {
     console.error(err);
     res.status(400).json({ error: err });
-  } finally {
-    fs.readdirSync(reportsDirectory).forEach((file) => {
-      fs.unlink(`${reportsDirectory}\\${file}`, (err) => {
-        if (err) console.log(err);
-      });
-    });
   }
 });
 module.exports = router;
