@@ -278,6 +278,22 @@ const getSubmissionsByDates = async (startDate, endDate) => {
     .sort({ date: 'asc' });
 };
 
+const getSubmissionsByIds = async (ids) => {
+  return Submission.find({
+    _id: {
+      $in: ids,
+    },
+    status: 'APPROVED',
+  })
+    .populate('submitter', 'firstName lastName -_id')
+    .populate('segment', '-_id segmentId')
+    .populate('sessionPartners', 'firstName lastName -_id')
+    .populate('listedSpecies.species', 'name -_id')
+    .populate('additionalSpecies.entries.species', 'name -_id')
+    .populate('predators.species', '-_id')
+    .sort({ date: 'asc' });
+};
+
 const getSubmission = async (submissionId) => {
   return Submission.findOne({ _id: submissionId });
 };
@@ -359,6 +375,7 @@ module.exports = {
   deleteSubmission,
   getSubmission,
   getSubmissionsByMonth,
+  getSubmissionsByIds,
   getListedByMonth,
   getSubmissions,
   getSubmissionsByDates,

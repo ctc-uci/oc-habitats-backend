@@ -46,16 +46,6 @@ const additionalSpeciesSchema = new mongoose.Schema({
   notes: String,
 });
 
-const predatorSchema = new mongoose.Schema({
-  species: { type: mongoose.Types.ObjectId, ref: 'Species' },
-  count: Number,
-});
-
-const humanActivitySchema = new mongoose.Schema({
-  humanActivity: { type: mongoose.Types.ObjectId, ref: 'HumanActivity' },
-  count: Number,
-});
-
 const submissionSchema = new mongoose.Schema({
   segment: { type: mongoose.Types.ObjectId, ref: 'Segment' },
   date: Date,
@@ -88,9 +78,15 @@ const submissionSchema = new mongoose.Schema({
     type: Map,
     of: String,
   },
-  predators: [predatorSchema],
+  predators: {
+    type: Map,
+    of: Number,
+  },
   predatorsOther: String,
-  humanActivity: [humanActivitySchema],
+  humanActivity: {
+    type: Map,
+    of: Number,
+  },
   humanActivityOutreach: String,
   humanActivityOtherNotes: String,
   submitter: { type: String, ref: 'User' },
