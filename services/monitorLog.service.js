@@ -315,9 +315,27 @@ const getListedByMonth = async (query) => {
     },
     // Stage 3 - prepare segment for lookup
     { $unwind: '$segment' },
-    // Stage 4 - prepare listedSpecies for lookup
-    { $unwind: '$listedSpecies' },
-    // Stage 5 - lookup each listed species info
+    // Stage 4 - change structure of listedSpecies
+    {
+      $addFields: {
+        listedSpecies: {
+          $map: {
+            input: { $objectToArray: '$listedSpecies' },
+            as: 'ls',
+            in: {
+              species: { $toObjectId: '$$ls.k' },
+              entries: '$$ls.v.entries',
+              injuredCount: '$$ls.v.injuredCount',
+            },
+          },
+        },
+      },
+    },
+    // Stage 5 - prepare listedSpecies for lookup
+    {
+      $unwind: '$listedSpecies',
+    },
+    // Stage 6 - lookup each listed species info
     {
       $lookup: {
         from: 'species',
@@ -326,15 +344,15 @@ const getListedByMonth = async (query) => {
         as: 'listedSpecies.species',
       },
     },
-    // Stage 6 - turn each listed specie as an object
+    // Stage 7 - turn each listed specie as an object
     {
       $unwind: '$listedSpecies.species',
     },
-    // Stage 7 - prepare each listed specie entry for look up
+    // Stage 8 - prepare each listed specie entry for look up
     {
       $unwind: { path: '$listedSpecies.entries', preserveNullAndEmptyArrays: true },
     },
-    // Stage 8 - Group listed species by name and get their injured count
+    // Stage 9 - Group listed species by name and get their injured count
     {
       $group: {
         _id: '$listedSpecies.species.name',
@@ -347,7 +365,7 @@ const getListedByMonth = async (query) => {
         injured: { $sum: '$listedSpecies.injuredCount' },
       },
     },
-    // Stage 9 - sort data by listed specie name
+    // Stage 10 - sort data by listed specie name
     {
       $sort: { _id: 1 },
     },

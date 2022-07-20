@@ -30,6 +30,7 @@ const HUMAN_ACTIVITIES = [
   ['Dogs: On Leash', 'Dogs, Cats, Other', 'onLeashAnimals'],
 ].map(([a, _, c]) => [a, c]);
 
+
 // const convertToPascal = (text) => {
 //   return text.replace(/((?<!^)[A-Z](?![A-Z]))(?=\S)/g, ' $1').replace(/^./, (s) => s.toUpperCase());
 // };
