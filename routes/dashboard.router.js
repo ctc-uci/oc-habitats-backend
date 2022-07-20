@@ -1,5 +1,6 @@
 /* eslint-disable no-param-reassign */
 const express = require('express');
+const { verifyToken } = require('./auth.router');
 
 const router = express.Router();
 const monitorLogService = require('../services/monitorLog.service');
@@ -20,7 +21,7 @@ const getDateQuery = () => {
   };
 };
 
-router.get('/dashboard', async (req, res) => {
+router.get('/dashboard', verifyToken, async (req, res) => {
   try {
     const query = getDateQuery();
     // Get all the submissions for the month
