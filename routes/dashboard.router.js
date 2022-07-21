@@ -1,5 +1,6 @@
 /* eslint-disable no-param-reassign */
 const express = require('express');
+const { verifyToken } = require('./auth.router');
 
 const router = express.Router();
 const monitorLogService = require('../services/monitorLog.service');
@@ -20,7 +21,7 @@ const getDateQuery = () => {
   };
 };
 
-router.get('/dashboard', async (req, res) => {
+router.get('/dashboard', verifyToken, async (req, res) => {
   try {
     const query = getDateQuery();
     // Get all the submissions for the month
@@ -40,11 +41,17 @@ router.get('/dashboard', async (req, res) => {
           dict[submission.segment].totalAdults += submission.entries.totalAdults;
           dict[submission.segment].totalFledges += submission.entries.totalFledges;
           dict[submission.segment].totalChicks += submission.entries.totalChicks;
-        } else {
+        } else if (submission.entries) {
           dict[submission.segment] = {
             totalAdults: submission.entries.totalAdults,
             totalFledges: submission.entries.totalFledges,
             totalChicks: submission.entries.totalChicks,
+          };
+        } else {
+          dict[submission.segment] = {
+            totalAdults: 0,
+            totalFledges: 0,
+            totalChicks: 0,
           };
         }
       });
@@ -55,7 +62,7 @@ router.get('/dashboard', async (req, res) => {
     let completedSubmissions = { submissions: [] };
     const emergentIssueData = {
       injuredTerrestrial: { title: 'Injured Terrestrial Wildlife', count: 0, segments: [] },
-      speedingVehicles: { title: 'Injured Speeding Vehicles', count: 0, segments: [] },
+      speedingVehicles: { title: 'Speeding Vehicles', count: 0, segments: [] },
     };
 
     if (submissionsResults.length) {

@@ -5,14 +5,12 @@ const getAllUserNotifications = async (userId) => {
 };
 
 const createNotification = async (notification) => {
-  if (!notification.title || !notification.message || !notification.userId || !notification.type) {
+  if (!notification.message || !notification.userId) {
     throw new Error('Arguments missing in notification');
   }
   const createdNotification = new NotificationModel({
-    title: notification.title,
     message: notification.message,
     userId: notification.userId,
-    type: notification.type,
   });
   return createdNotification.save();
 };

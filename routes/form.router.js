@@ -1,6 +1,7 @@
 /* eslint-disable no-console */
 const express = require('express');
 const formService = require('../services/form.service');
+const { verifyToken } = require('./auth.router');
 
 const router = express.Router();
 
@@ -11,7 +12,7 @@ const router = express.Router();
 // delete routes
 
 // create form
-router.post('/:type', async (req, res) => {
+router.post('/:type', verifyToken, async (req, res) => {
   const { type } = req.params;
   const { additionalFields } = req.body;
   try {
@@ -23,7 +24,7 @@ router.post('/:type', async (req, res) => {
   }
 });
 
-router.post('/create/field', async (req, res) => {
+router.post('/create/field', verifyToken, async (req, res) => {
   const { formType, fieldBody } = req.body;
   try {
     await formService.createFieldInForm(formType, fieldBody);
@@ -36,7 +37,7 @@ router.post('/create/field', async (req, res) => {
 });
 
 // create form
-router.post('/:type', async (req, res) => {
+router.post('/:type', verifyToken, async (req, res) => {
   const { type } = req.params;
   const { additionalFields } = req.body;
   try {
@@ -49,7 +50,7 @@ router.post('/:type', async (req, res) => {
 });
 
 // create field
-router.post('/create/field', async (req, res) => {
+router.post('/create/field', verifyToken, async (req, res) => {
   const { formType, fieldBody } = req.body;
   try {
     await formService.createFieldInForm(formType, fieldBody);
@@ -62,7 +63,7 @@ router.post('/create/field', async (req, res) => {
 });
 
 // read form
-router.get('/:type', async (req, res) => {
+router.get('/:type', verifyToken, async (req, res) => {
   const { type } = req.params;
   try {
     const foundForm = await formService.getFormByType(type);
@@ -78,7 +79,7 @@ router.get('/:type', async (req, res) => {
 });
 
 // update form field by id
-router.put('/update/field', async (req, res) => {
+router.put('/update/field', verifyToken, async (req, res) => {
   const { type, fieldId, fieldBody } = req.body;
   try {
     await formService.updateFormFieldById(type, fieldId, fieldBody);
@@ -90,7 +91,7 @@ router.put('/update/field', async (req, res) => {
 });
 
 // update form
-router.put('/update/:type', async (req, res) => {
+router.put('/update/:type', verifyToken, async (req, res) => {
   const { type } = req.params;
   const { newField } = req.body;
   try {
@@ -107,7 +108,7 @@ router.put('/update/:type', async (req, res) => {
 });
 
 // delete form
-router.delete('/:type', async (req, res) => {
+router.delete('/:type', verifyToken, async (req, res) => {
   const { type } = req.params;
   try {
     const deletedForm = await formService.deleteForm(type);
@@ -123,7 +124,7 @@ router.delete('/:type', async (req, res) => {
 });
 
 // delete form field by id
-router.delete('/delete/field', async (req, res) => {
+router.delete('/delete/field', verifyToken, async (req, res) => {
   const { formType, fieldId } = req.body;
   try {
     await formService.deleteFormFieldById(formType, fieldId);
