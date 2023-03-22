@@ -16,12 +16,14 @@
     "*.js": "yarn run eslint"
   },
   "dependencies": {
+    "@firebase/app-compat": "^0.2.5",
+    "@firebase/app-types": "^0.9.0",
     "adm-zip": "^0.5.9",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
     "dotenv": "^10.0.0",
-    "eslint": "^8.1.0",
-    "eslint-config-airbnb-base": "^14.2.1",
+    "eslint": "^8.2.0",
+    "eslint-config-airbnb-base": "^15",
     "eslint-plugin-import": "^2.25.2",
     "eslint-plugin-prettier": "^4.0.0",
     "excel-column-name": "^1.0.1",
