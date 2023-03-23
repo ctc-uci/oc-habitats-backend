@@ -30,7 +30,6 @@ const HUMAN_ACTIVITIES = [
   ['Dogs: On Leash', 'Dogs, Cats, Other', 'onLeashAnimals'],
 ].map(([a, _, c]) => [a, c]);
 
-
 // const convertToPascal = (text) => {
 //   return text.replace(/((?<!^)[A-Z](?![A-Z]))(?=\S)/g, ' $1').replace(/^./, (s) => s.toUpperCase());
 // };
@@ -79,6 +78,7 @@ const getSpecies = async () => {
 
 const formatLogs = async (reports, birds, activities) => {
   // console.log(JSON.stringify(reports, null, 4));
+  const allSpecies = await getSpecies();
   return reports.map(async (report) => {
     // report.listedSpecies.keys().map((id) => {
     //   return console.log(id);
@@ -120,7 +120,11 @@ const formatLogs = async (reports, birds, activities) => {
     birds.forEach((b, idx) => speciesIndexes.set(b._id.toString(), idx));
     additionalSpecies.forEach((id) => {
       const species = report.additionalSpecies.entries.get(id);
-      birdCounts[speciesIndexes.get(id)] += species.count;
+      if (id === String(allSpecies.find((i) => i.code === 'Other')._id)) {
+        birdCounts[speciesIndexes.get(id)] += species.reduce((prev, next) => prev + next.count, 0);
+      } else {
+        birdCounts[speciesIndexes.get(id)] += species.count;
+      }
     });
 
     const humanActivityCounts = new Array(activities.length).fill(0);
