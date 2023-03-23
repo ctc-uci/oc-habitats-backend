@@ -41,10 +41,10 @@ const listedSpeciesSchema = new mongoose.Schema({
   },
 });
 
-const additionalSpeciesSchema = new mongoose.Schema({
-  count: Number,
-  notes: String,
-});
+// const additionalSpeciesSchema = new mongoose.Schema({
+//   count: Number,
+//   notes: String,
+// });
 
 const submissionSchema = new mongoose.Schema({
   segment: { type: mongoose.Types.ObjectId, ref: 'Segment' },
@@ -69,7 +69,7 @@ const submissionSchema = new mongoose.Schema({
   additionalSpecies: {
     entries: {
       type: Map,
-      of: additionalSpeciesSchema,
+      of: Object,
     },
     injuredCount: Number,
     beachCast: Number,
