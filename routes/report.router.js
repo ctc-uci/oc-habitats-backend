@@ -139,7 +139,7 @@ const formatLogs = async (reports, birds, activities) => {
       date: moment(report.date).format('MM/DD/yyyy'),
       segment: report.segment?.segmentId,
       ...listedObj,
-      beachCast: report.additionalSpecies?.beachCast,
+      beachCast: report.additionalSpecies?.beachCast ?? 0,
       issues: report.humanActivityOtherNotes,
       birds: birdCounts.map((c) => (c === 0 ? '' : c)),
       humanActivity: humanActivityCounts.map((c) => (c === 0 ? '' : c)),
@@ -194,9 +194,13 @@ router.post('/report', async (req, res) => {
         month,
         birds: birds.map((b) => b.name),
         humanActivity: activities.map((a) => a[0]),
-        sums: new Array(activities.length - 1)
+        sums: new Array(activities.length + 1)
           .fill('')
-          .concat(['Total:', ''])
+          .map(
+            (_, idx) =>
+              `=SUM(${intToExcelCol(15 + idx)}4:${intToExcelCol(15 + idx)}${3 + logs.length})`,
+          )
+          .concat(['', 'Total:'])
           .concat(
             new Array(birds.length)
               .fill(0)
