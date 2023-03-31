@@ -27,9 +27,13 @@ const createInvite = async (invite) => {
     throw new Error('Arguments missing in invite');
   }
 
-  const existingEmail = await UserModel.findOne({ email: invite.email });
+  let existingEmail = await UserModel.findOne({ email: invite.email });
   if (existingEmail) {
-    throw new Error('This email is already associated with an account');
+    throw new Error('This email is already associated with an existing account!');
+  }
+  existingEmail = await AdminInviteModel.findOne({ email: invite.email });
+  if (existingEmail) {
+    throw new Error('This email is already associated with an existing invite!');
   }
 
   const createdInvite = new AdminInviteModel({
